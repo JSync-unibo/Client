@@ -11,6 +11,7 @@ include "xml_utils.iol"
 include "console.iol"
 include "file.iol"
 
+execution{ sequential }
 
 //servizio embeddato da client.ol
 

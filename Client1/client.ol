@@ -33,14 +33,6 @@ main
 	valueToPrettyString@StringUtils( serversList )( result );
 	println@Console( result )();
 
-	//creazione variazione della variabile 
-
-	l = #serversList.server;
-	serversList.server[l].nome = "Server3";
-	serversList.server[l].indirizzo = "localhost:8002";
-
-	valueToPrettyString@StringUtils( serversList )( result );
-	println@Console( result )();
 
 	writeFile@ToFileManager(serversList)(x)
 }
