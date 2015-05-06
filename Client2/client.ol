@@ -19,14 +19,19 @@ inputPort FromCli {
 }
 
 //Embedding del servizio FileManager
-outputPort ToFileManager {
+outputPort FileReader {
 	Interfaces: FileManagerInterface
 }
-
 embedded {
-	Jolie: "fileManager.ol" in ToFileManager
+	Jolie: "fileManager/readFile.ol" in FileReader
 }
 
+outputPort FileWriter {
+	Interfaces: FileManagerInterface 
+}
+embedded {
+	Jolie: "fileManager/writeFile.ol" in FileWriter
+}
 execution{ concurrent }
 
 init
@@ -35,7 +40,7 @@ init
 	//legge il file xml e lo salva dentro alla variabile serverList
 
 	//IMPORTANTE => il file di configurazione è da rinominare per trovarlo!
-  	readFile@ToFileManager()(serversList)
+  	readFile@FileReader()(serversList)
 }
 
 
@@ -46,8 +51,10 @@ main
   sendCommand(input)(response) {
 
 	  	if( input.command == "list servers") {
-	  		
-	  		response="ho ricevuto il comando"
+	  		for(i=0, i< #serversList.server, i++) {
+	  			
+	  			response += serversList.server[i].nome+ " ----> "+serversList.server[i].indirizzo+ "\n"
+	  		}
 	  	}
 	  	else if(input.command == "lista new_repos") {
 	  		

@@ -12,14 +12,4 @@
 			<indirizzo _jolie_type="string">localhost:8001</indirizzo>
 		</server>
 
-		<server _jolie_type="void">
-			<nome _jolie_type="string">Server3</nome>
-			<indirizzo _jolie_type="string">localhost:8002</indirizzo>
-		</server>
-
-		<server _jolie_type="void">
-			<nome _jolie_type="string">Server4</nome>
-			<indirizzo _jolie_type="string">localhost:8003</indirizzo>
-		</server>
-
 	</serverList>
