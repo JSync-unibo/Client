@@ -26,6 +26,7 @@ embedded {
 	Jolie: "fileManager/writeFile.ol" in FileWriter
 }
 
+
 init
 {
 	//legge il file xml e lo salva dentro alla variabile serverList
@@ -36,18 +37,16 @@ init
 
 main
 {
-	//fa il dump della variabile e la stampa
-	
+
+	valueToPrettyString@StringUtils(serversList)(res);
+	println@Console( res )();
 
 	len = #serversList.server;
 
-	serversList.server[len].nome = "Server3";
-	serversList.server[len].indirizzo = "localhost:8002";
+	serversList.server[len].nome="nome";
+	serversList.server[len].indirizzo="indirizzo";
 
-	valueToPrettyString@StringUtils( serversList )( result );
-	println@Console( result )();
 
-	writeFile@FileWriter(serversList)(x);
-
-	println@Console( x )()
+	//scrive il file
+	writeFile@FileWriter(serversList)()
 }

@@ -32,5 +32,5 @@ type ConfingType: void
 interface FileManagerInterface {
  
   	RequestResponse: 	readFile (void)(ConfingType),
-  						writeFile (ConfingType)(bool)
+  						writeFile (ConfingType)(void)
 }
