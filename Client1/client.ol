@@ -37,16 +37,6 @@ init
 
 main
 {
-
-	valueToPrettyString@StringUtils(serversList)(res);
-	println@Console( res )();
-
-	len = #serversList.server;
-
-	serversList.server[len].nome="nome";
-	serversList.server[len].indirizzo="indirizzo";
-
-
 	//scrive il file
 	writeFile@FileWriter(serversList)()
 }
