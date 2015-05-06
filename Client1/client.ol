@@ -35,6 +35,25 @@ init
   	readFile@FileReader()(serversList)
 }
 
+//Setta la location in base al nome e l'inidirizzo del server
+
+define registro
+{
+	
+  	IndirizzoServer.protocol = "sodep";
+  	name -> serversList.server[i].nome;
+  	address -> serverList.server[i].indirizzo;
+  	for(i=0, i<#serversList.server, i++) {
+  		
+  		if( name == server.name ) {
+  			
+  			IndirizzoServer.location = "socket:// " + address
+  		  
+  		}
+  	} 
+}
+
+
 main
 {
 	//scrive il file
