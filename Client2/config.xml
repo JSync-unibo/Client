@@ -13,6 +13,7 @@
 		</server>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		<server _jolie_type="void">
 			<nome _jolie_type="string">Server3</nome>
@@ -25,4 +26,6 @@
 		</server>
 
 >>>>>>> origin/master
+=======
+>>>>>>> 3121e39388054fbf619d3ee295cf3a4cbd0ef216
 	</serverList>

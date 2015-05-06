@@ -36,14 +36,10 @@ interface CliInterface {
 //Interfaccia fra il client ed il server
 interface ClientInterface { 
 
-  RequestResponse: listServers(CommandType)(string),
-  				   listRepo(CommandType)(string),
-  				   listRepoLocal(CommandType)(string),
-  				   addServer(CommandType)(string),
-  				   removeServer(CommandType)(string),
-  				   addRepository(CommandType)(string),
-  				   push(CommandType)(string),
-  				   pull(CommandType)(string),
-  				   delete(CommandType)(string)
+  RequestResponse:listRepo(CommandType)(string),
+  				        addRepository(CommandType)(string),
+  				        push(CommandType)(string),
+  				        pull(CommandType)(string),
+  				        delete(CommandType)(string)
 
 }
