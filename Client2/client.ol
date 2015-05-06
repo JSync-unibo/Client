@@ -8,7 +8,9 @@
 
 include "console.iol"
 include "Interfaces/interfaceLocalA.iol"
-
+include "interfaces/interfaceLocalB.iol"
+include "string_utils.iol"
+include "types/Binding.iol"
 
 //Porta che collega il client con il cli attraverso l'embedding
 inputPort FromCli {
@@ -16,42 +18,72 @@ inputPort FromCli {
   Interfaces: CliInterface 
 }
 
+//Embedding del servizio FileManager
+outputPort ToFileManager {
+	Interfaces: FileManagerInterface
+}
+
+embedded {
+	Jolie: "fileManager.ol" in ToFileManager
+}
+
+execution{ concurrent }
+
+init
+{
+	
+	//legge il file xml e lo salva dentro alla variabile serverList
+
+	//IMPORTANTE => il file di configurazione è da rinominare per trovarlo!
+  	readFile@ToFileManager()(serversList)
+}
+
 
 main
 {
+  
+
   sendCommand(input)(response) {
-  	if( input.command == "list servers") {
-  		
-  		response="ho ricevuto il comando"
-  	}
-  	else if(input.command == "lista new_repos") {
-  		
-  		response= "non ho ricevuto il comando"
-  	}
-  	else if(input.command == "lista reg_repos") {
-  		response= "non ho ricevuto il comando"
-  	}
 
-  	else if(input.command == "addServer") {
-  		response= "non ho ricevuto il comando"
-  	}
+	  	if( input.command == "list servers") {
+	  		
+	  		response="ho ricevuto il comando"
+	  	}
+	  	else if(input.command == "lista new_repos") {
+	  		
+	  		response= "non ho ricevuto il comando"
+	  	}
+	  	else if(input.command == "lista reg_repos") {
+	  		response= "non ho ricevuto il comando"
+	  	}
 
-  	else if(input.command == "removeServer") {
-  		response= "non ho ricevuto il comando"
-  	}
+	  	else if(input.command == "addServer") {
+	  		response= "non ho ricevuto il comando"
+	  	}
 
-  	else if(input.command == "addRepository") {
-  		response= "non ho ricevuto il comando"
-  	}
+	  	else if(input.command == "removeServer") {
+	  		response= "non ho ricevuto il comando"
+	  	}
 
-  	else if(input.command == "push") {
-  		response= "non ho ricevuto il comando"
-  	}
-  	else if(input.command == "pull") {
-  		response= "non ho ricevuto il comando"
-  	}
-  	else if(input.command == "delete") {
-  		response= "non ho ricevuto il comando"
-  	}
-  }
+	  	else if(input.command == "addRepository") {
+	  		response= "non ho ricevuto il comando"
+	  	}
+
+	  	else if(input.command == "push") {
+	  		response= "non ho ricevuto il comando"
+	  	}
+	  	else if(input.command == "pull") {
+	  		response= "non ho ricevuto il comando"
+	  	}
+	  	else if(input.command == "delete") {
+	  		response= "non ho ricevuto il comando"
+	  	}
+	  	else if(input.command == "close") {
+	  		response= "chiudi"
+	  	}
+	  	else
+	  		response = "Non hai inserito un comando valido"
+	  		
+		
+	}
 }

@@ -4,10 +4,13 @@
 * Data => 04/05/2015
 * Parent => Client
 *
+* Servizio che accetta in input dei comandi, che vengono inviati al client
+* attraverso l'embedding ed aspetta una stringa di risposta
 **/
 
 include "console.iol"
 include "Interfaces/interfaceLocalA.iol"
+
 
 outputPort ToClient{
   Interfaces: CliInterface
@@ -28,8 +31,8 @@ main
 	  	print@Console( ">>> " )();
 	  	in( root.command );
 	  	sendCommand@ToClient(root)(result);
-	  	println@Console( result )()
-	  	//println@Console( "Received command: " + "\"" + command + "\"" )()
+	  	println@Console( result )();
+	  	println@Console( "---------------------------------------------------------" )()
 	}
 
   	
