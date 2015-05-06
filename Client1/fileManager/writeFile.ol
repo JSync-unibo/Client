@@ -5,7 +5,6 @@
  *		Parent 	=> 	Client
  *
  **/
-
 include "../interfaces/interfaceLocalB.iol"
 include "xml_utils.iol"
 include "file.iol"
@@ -29,7 +28,7 @@ main
   	 *
   	 *
   	 **/
-  	writeFile(variable)(isCreated){
+  	writeFile(variable)(){
 
   		//crea la variabile che servirà come parametri per la conversione xml
   		stringXml.rootNodeName = "config";
@@ -38,11 +37,11 @@ main
   		//trasforma la variabile in una stringa in formato xml
 		valueToXml@XmlUtils(stringXml)(fileXml);
 
+        //paramentri della scrittura file
 		file.content = fileXml;
 	  	file.filename = "config.xml";
 
 		//crea il file xml partendo dalla stringa nello stesso formato 
-		writeFile@File(fileXml)()
-  		
+		writeFile@File(file)()
   	}
 }
