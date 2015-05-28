@@ -40,12 +40,12 @@ outputPort FileReader {
 	Interfaces: FileManagerInterface
 }
 embedded {
-	Jolie: "fileManager/readFile.ol" in FileReader
+	Jolie: "../client_utilities/fileManager/readFile.ol" in FileReader
 }
 
 outputPort FileWriter {
 	Interfaces: FileManagerInterface
 }
 embedded {
-	Jolie: "fileManager/writeFile.ol" in FileWriter
+	Jolie: "../client_utilities/fileManager/writeFile.ol" in FileWriter
 }
