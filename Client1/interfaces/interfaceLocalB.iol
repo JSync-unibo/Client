@@ -34,3 +34,18 @@ interface FileManagerInterface {
   	RequestResponse: 	readFile (void)(ConfingType),
   						writeFile (ConfingType)(void)
 }
+
+//Embedding del servizio FileManager
+outputPort FileReader {
+	Interfaces: FileManagerInterface
+}
+embedded {
+	Jolie: "fileManager/readFile.ol" in FileReader
+}
+
+outputPort FileWriter {
+	Interfaces: FileManagerInterface
+}
+embedded {
+	Jolie: "fileManager/writeFile.ol" in FileWriter
+}
