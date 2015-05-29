@@ -13,16 +13,17 @@
  * in input
 */
 type CommandType: void {
-	.command: string
+	 
+
+    .command: string
 
     .parameters?: void {
+
     	.serverName: string
     	.serverAddress?: string
     	.repoName?: string
     	.localPath?: string
-    	
     }
-	
 }
 
 //Interfaccia fra il cli ed il client
@@ -48,5 +49,5 @@ outputPort ToClient{
 }
 
 embedded {
-  Jolie: "client.ol" in ToClient
+  Jolie: "../client_utilities/client.ol" in ToClient
 }

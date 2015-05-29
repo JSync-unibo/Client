@@ -20,8 +20,8 @@ main
 {
 
   	/**
-	 *
-	 *	ri-scrive il file xml (se non lo trova non genera fault, ma lo crea per la prima volta)
+	   *
+	   *	ri-scrive il file xml (se non lo trova non genera fault, ma lo crea per la prima volta)
   	 *
   	 *	input -> variabile "ConfigType"
   	 *	output -> boolean

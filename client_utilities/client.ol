@@ -9,53 +9,74 @@
 include "console.iol"
 
 include "../client_utilities/interfaces/interfaceLocalA.iol"
-include "../client_utilities/interfaces/interfaceLocalB.iol"
+include "interfaces/interfaceLocalB.iol"
 include "string_utils.iol"
 include "types/Binding.iol"
 
 //Porta che collega il client con il cli attraverso l'embedding
 inputPort FromCli {
-  Location: "local"
-  Interfaces: CliInterface 
-}
 
-//Embedding del servizio FileManager
-
-outputPort FileReader {
-  Interfaces: FileManagerInterface
-}
-
-embedded {
-  Jolie: "../client_utilities/fileManager/readFile.ol" in FileReader
-}
-
-outputPort FileWriter {
-  Interfaces: FileManagerInterface
-}
-
-embedded {
-  Jolie: "../client_utilities/fileManager/writeFile.ol" in FileWriter
+  	Location: "local"
+  	Interfaces: CliInterface 
 }
 
 init
 {
-  //legge il file xml e lo salva dentro alla variabile serverList
+  	readFile@FileReader()(serversList);
 
-  //IMPORTANTE => il file di configurazione è da rinominare per trovarlo!
-    readFile@FileReader()(serversList)
+  	if(!serversList.readed){
+
+  		//undef( serversList.readed );
+
+  		writeFile@FileWriter(serversList)()
+  	}
+}
+
+define registro
+{
+	
+    IndirizzoServer.protocol = "sodep";
+
+    name -> serversList.server[i].nome;
+    address -> serversList.server[i].indirizzo;
+
+    for(i=0, i<#serversList.server, i++) {
+
+        if( name == serverName ) {
+
+            IndirizzoServer.location = "socket://" + address
+
+        }
+    } 
 }
 
 main
 {
-  
-  sendCommand(input)(response) {
 
+  	sendCommand(input)(response) {
+
+  		/* 
+  		 * ritorna la lista dei server
+  		 * se non esiste ritorna una stringa di errore
+  		 */
 	  	if( input.command == "list servers") {
+
+	  		tmp = "";
+
 	  		for(i=0, i< #serversList.server, i++) {
 	  			
-	  			response += serversList.server[i].nome+ " ----> "+serversList.server[i].indirizzo+ "\n"
+	  			tmp += serversList.server[i].nome+ " ----> "+serversList.server[i].indirizzo+ "\n"
+	  		};
+
+	  		if(!tmp){
+
+	  			response = "non esistono servers"
 	  		}
+	  		else
+	  			response = tmp
 	  	}
+
+
 	  	else if(input.command == "lista new_repos") {
 	  		
 	  		response= "non ho ricevuto il comando"
@@ -90,6 +111,6 @@ main
 	  	}
 	  	else
 	  		response = "Non hai inserito un comando valido"
-	  	}	
 
+  	}
 }

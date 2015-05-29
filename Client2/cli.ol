@@ -13,9 +13,9 @@ include "../client_utilities/interfaces/interfaceLocalA.iol"
 
 init
 {
+  	
 	registerForInput@Console()()
 }
-
 
 main
 {
@@ -25,7 +25,9 @@ main
 	  	print@Console( ">>> " )();
 
 	  	in( root.command );
-	  	sendCommand@ToClient(root)(result);
+
+	  	sendCommand@ToClient( root )(result);
+
 	  	println@Console( result )()
 	}
 }
