@@ -102,24 +102,37 @@ main
   		// Ritorna la lista dei server e se non esiste ritorna una stringa di errore
 	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
-	  		// Refresh della variabile
-	  		readFile;
-
-			tmp = "";
-
-			// Crea l'output
-	  		for(i=0, i< #configList.server, i++) {
+	  		scope(dati) {
 	  			
-	  			tmp += configList.server[i].nome+ " --> "+configList.server[i].indirizzo+ "\n"
-	  		};
+	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n" );
 
-	  		// Prepara la variabile response, cioè l'output che sarà visualizzato
-	  		if(tmp==""){
+	  			if(#resultSplit.result == 2) {
+			  		// Refresh della variabile
+			  		readFile;
 
-	  			response = "Non esistono servers\n"
-	  		}
-	  		else
-	  			response = tmp
+					tmp = "";
+
+					// Crea l'output
+			  		for(i=0, i< #configList.server, i++) {
+			  			
+			  			tmp += configList.server[i].nome+ " --> "+configList.server[i].indirizzo+ "\n"
+			  		};
+
+			  		// Prepara la variabile response, cioè l'output che sarà visualizzato
+			  		if(tmp==""){
+
+			  			response = "Non esistono servers\n"
+			  		}
+			  		else {
+			  			response = tmp
+			  		}
+			  	}
+
+			  	else {
+
+			  		throw( datiNonCorretti )
+			  	}
+			}
 
 	  	}
 
@@ -130,7 +143,7 @@ main
 	  			
 	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n" );
 
-	  			if(resultSplit == 3) {
+	  			if(#resultSplit.result == 3) {
 
 					readFile;
 
@@ -153,25 +166,39 @@ main
 	  	// Ritorna la lista delle repositories locali e se non sono presenti ritorna una stringa di avviso
 	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
 
-	  		readFile;
-	  		temp ="";
+	  		scope(dati) {
+	  			
+	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n" );
 
-	  		for(j = 0, j < #configList.localRepo, j++) {
+	  			if(#resultSplit.result == 2) {
+			  		
+			  		readFile;
+			  		temp ="";
 
-	  			temp += configList.localRepo[i].nome + " " + configList.localRepo[i].versione + " " + configList.localRepo[i].file + "\n"
-	  		};
+			  		for(j = 0, j < #configList.localRepo, j++) {
 
-	  		if(temp == "") {
+			  			temp += configList.localRepo[i].nome + " " + configList.localRepo[i].versione + " " + configList.localRepo[i].file + "\n"
+			  		};
 
-	  			response = "Non sono presenti repositories locali\n"
-	  		} 
-	  		else
-	  			response = temp
-	  	}
+			  		if(temp == "") {
+
+			  			response = "Non sono presenti repositories locali\n"
+			  		} 
+			  		else {
+			  			response = temp
+			  		}
+			  
+			  	}
+
+			  	else {
+			  		throw( datiNonCorretti )
+			  	}
+			}
+		}
 
 	  	// Se il comando non è riconosciuto
 	  	else
-	  		response = "Not recognized command.\n"
+	  		response = "Comando non riconosciuto\n"
 	  	
 
   	}
