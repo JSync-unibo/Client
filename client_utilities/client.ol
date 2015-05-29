@@ -228,11 +228,12 @@ main
 	  			}
 
 	  			else{
-	  				
+
 	  				response= "Il server inserito non esiste\n"
 	  			}
 
 	  		}
+	  	}
 
 	  	else
 	  		response = "Comando non riconosciuto\n"
