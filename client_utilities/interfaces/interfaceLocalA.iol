@@ -29,7 +29,7 @@ type CommandType: void {
 //Interfaccia fra il cli ed il client
 interface CliInterface {
 
-  RequestResponse: sendCommand(CommandType)(string) 
+  RequestResponse: sendCommand(string)(string) 
 
 }
 

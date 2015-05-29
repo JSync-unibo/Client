@@ -28,6 +28,8 @@ init
 
   		//undef( serversList.readed );
 
+  		serversList.readed = true;
+
   		writeFile@FileWriter(serversList)()
   	}
 }
@@ -50,14 +52,15 @@ define registro
     } 
 }
 
+execution{ sequential }
 main
 {
 
   	sendCommand(input)(response) {
 
-  		input.command.regex = " ";
+  		input.regex = " ";
 
-	  	split@StringUtils(input.command)(resultSplit);
+	  	split@StringUtils(input)(resultSplit);
 
   		/* 
   		 * ritorna la lista dei server

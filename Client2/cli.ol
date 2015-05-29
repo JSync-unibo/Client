@@ -26,7 +26,7 @@ main
 
 	  	in( root.command );
 
-	  	sendCommand@ToClient( root )(result);
+	  	sendCommand@ToClient( root.command )( result );
 
 	  	println@Console( result )()
 	}
