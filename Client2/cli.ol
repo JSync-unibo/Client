@@ -26,8 +26,8 @@ define help
 
  command
  - list servers
- - addServer     <name> <address>
  - list reg_repos
+ - addServer     <name> <address>
  - removeServer  <name> <address>
 " 
 )()

@@ -27,11 +27,8 @@ define help
  command
  - list servers
  - addServer     <name> <address>
-<<<<<<< Updated upstream
  - list reg_repos
-=======
  - removeServer  <name> <address>
->>>>>>> Stashed changes
 " 
 )()
 }
