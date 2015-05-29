@@ -140,6 +140,24 @@ main
 			response= "server aggiunto\n"
 	  	}
 
+	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
+
+	  		readFile;
+	  		temp ="";
+
+	  		for(j = 0, j < #configList.localRepo, j++) {
+
+	  			temp += configList.localRepo[i].nome + " " + configList.localRepo[i].versione + " " + configList.localRepo[i].file + "\n"
+	  		};
+
+	  		if(temp == "") {
+
+	  			response = "Non sono presenti repository locali\n"
+	  		} 
+	  		else
+	  			response = temp
+	  	}
+
 	  	//se il comando non è riuconosciuto
 	  	else
 	  		response = "Not recognized command.\n"
