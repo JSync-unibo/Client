@@ -123,31 +123,30 @@ main
 
 	  	}
 
-	  	// Aggiunge il nuovo server, con i relativi controlli nel caso non si inserisca nome ed indirizzo
+	  	// Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano i dati corretti
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
-	  		if(!is_defined( resultSplit.result[1] )) {
+	  		scope(dati) {
+	  			
+	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n" );
 
-	  			response = "Si prega di inserire nome ed indirizzo del server\n"
-	  		}
+	  			if(resultSplit == 3) {
 
-	  		else if(!is_defined( resultSplit.result[2] )) {
+					readFile;
 
-	  			response = "Si prega di inserire l'indirizzo del server\n"
-	  		}
+			  		size = #configList.server;
 
-	  		else {
+			  		configList.server[size].nome = resultSplit.result[1];
+			  		configList.server[size].indirizzo = resultSplit.result[2];
 
-				readFile;
+			  		writeFile;
 
-		  		size = #configList.server;
+					response= "Server aggiunto\n"
+				}
 
-		  		configList.server[size].nome = resultSplit.result[1];
-		  		configList.server[size].indirizzo = resultSplit.result[2];
-
-		  		writeFile;
-
-				response= "Server aggiunto\n"
+				else
+					throw(datiNonCorretti)
+			
 			}
 	  	}
 
