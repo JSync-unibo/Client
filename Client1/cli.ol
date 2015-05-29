@@ -20,7 +20,7 @@ init
 define help
 {
   	println@Console( 
-" JSync Unibo Vers 0.2.0
+" JSync Unibo Vers 0.3.0
  Copyright LOBESTER 2015. All right reserved.
 
  usage : [command] <parameters>
