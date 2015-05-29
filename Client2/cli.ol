@@ -11,14 +11,6 @@
 include "console.iol"
 include "../client_utilities/interfaces/interfaceLocalA.iol"
 
-outputPort ToClient{
-  Interfaces: CliInterface
-}
-
-embedded {
-  Jolie: "client.ol" in ToClient
-}
-
 init
 {
 	registerForInput@Console()()

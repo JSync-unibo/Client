@@ -42,3 +42,11 @@ interface ClientInterface {
   				         delete(CommandType)(string)
 
 }
+
+outputPort ToClient{
+  Interfaces: CliInterface
+}
+
+embedded {
+  Jolie: "client.ol" in ToClient
+}

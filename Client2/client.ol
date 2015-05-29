@@ -37,8 +37,6 @@ embedded {
   Jolie: "../client_utilities/fileManager/writeFile.ol" in FileWriter
 }
 
-execution{ concurrent }
-
 init
 {
   //legge il file xml e lo salva dentro alla variabile serverList
