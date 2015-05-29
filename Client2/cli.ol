@@ -22,7 +22,7 @@ main
 	while( root.command != "close" ){
 
 	  	println@Console( "Insert new command" )();
-	  	print@Console( ">>> " )();
+	  	print@Console( "\n>>> " )();
 
 	  	in( root.command );
 
