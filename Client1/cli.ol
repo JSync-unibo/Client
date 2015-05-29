@@ -21,14 +21,17 @@ define help
 {
   	println@Console( 
 " JSync Unibo Vers 0.2.0
+ Copyright LOBESTER 2015. All right reserved.
 
  usage : [command] <parameters>
 
- command
+ List Command :
  - list servers
- - addServer     <name> <address>
  - list reg_repos
- - removeServer  <name> <address>
+
+ Server Command : 
+ - addServer     <name> <address>
+ - removeServer  <name> 
 " 
 )()
 }
