@@ -32,5 +32,20 @@ type ConfingType: void
 interface FileManagerInterface {
  
   	RequestResponse: 	readFile (void)(ConfingType),
-  						writeFile (ConfingType)(bool)
+  						writeFile (ConfingType)(void)
+}
+
+//Embedding del servizio FileManager
+outputPort FileReader {
+	Interfaces: FileManagerInterface
+}
+embedded {
+	Jolie: "../client_utilities/fileManager/readFile.ol" in FileReader
+}
+
+outputPort FileWriter {
+	Interfaces: FileManagerInterface
+}
+embedded {
+	Jolie: "../client_utilities/fileManager/writeFile.ol" in FileWriter
 }
