@@ -24,7 +24,7 @@ define help
 
  usage : [command] <parameters>
 
- COMMAND
+ command
  - list servers
  - addServer     <name> <address>
 " 
