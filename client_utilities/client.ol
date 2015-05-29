@@ -86,12 +86,8 @@ main
   		 * se non esiste ritorna una stringa di errore
   		 */
 	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
-<<<<<<< HEAD
 
 	  		readFile;
-=======
->>>>>>> origin/master
-
 			tmp = "";
 
 	  		for(i=0, i< #configList.server, i++) {
@@ -110,18 +106,7 @@ main
 
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
-<<<<<<< HEAD
 			readFile;
-=======
-<<<<<<< HEAD
-	  		serversList.server[#serversList.server].nome = resultSplit.result[1];
-	  		serversList.server[#serversList.server].indirizzo = resultSplit.result[2];
-	  		
-	  		writeFile@FileWriter(serversList)();
-	  		response= "Server inserito"
-=======
-	  		//serversList.server[#serversList.server];
->>>>>>> origin/master
 
 	  		size = #configList.server;
 
@@ -129,14 +114,8 @@ main
 	  		configList.server[size].nome = resultSplit.result[1];
 	  		configList.server[size].indirizzo = resultSplit.result[2];
 
-<<<<<<< HEAD
 	  		writeFile;
-=======
-			response= "Server inserito"
->>>>>>> origin/master
-	  	}
->>>>>>> origin/master
-
+	  		
 			response= "server aggiunto\n"
 	  	}
 
