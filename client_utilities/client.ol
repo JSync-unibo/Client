@@ -136,16 +136,26 @@ main
 
 	  	}
 
-	  	// Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano i dati corretti
+	  	/* Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
+	  	 * i dati corretti oppure se il server già esiste
+	  	 */
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
 	  		scope(dati) {
 	  			
-	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n" );
+	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n");
+	  			install( serverDoppio => response = "Il nome del server inserito gia' esiste\n" );
 
 	  			if(#resultSplit.result == 3) {
 
 					readFile;
+
+					for(i = 0, i < #configList.server, i++) {
+
+						if(resultSplit.result[1] == configList.server[i].nome) {
+							throw( serverDoppio )
+						}
+					};
 
 			  		size = #configList.server;
 
@@ -157,9 +167,10 @@ main
 					response= "Server aggiunto\n"
 				}
 
-				else
+				else {
 					throw(datiNonCorretti)
-			
+				}
+				
 			}
 	  	}
 
