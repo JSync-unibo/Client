@@ -64,7 +64,7 @@ main
   		 * ritorna la lista dei server
   		 * se non esiste ritorna una stringa di errore
   		 */
-	  	if( resultSplit.result[0] == "list_servers") {
+	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
 	  		tmp = "";
 
