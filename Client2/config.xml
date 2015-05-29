@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><configList _jolie_type="void"><server _jolie_type="void"><indirizzo _jolie_type="string">indirizzo</indirizzo><nome _jolie_type="string">nome</nome></server><server _jolie_type="void"><indirizzo _jolie_type="string">indirizzo1</indirizzo><nome _jolie_type="string">nome1</nome></server><server _jolie_type="void"><indirizzo _jolie_type="string">indirizzo2</indirizzo><nome _jolie_type="string">nome2</nome></server><vuoto _jolie_type="bool">true</vuoto></configList>
+=======
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><config _jolie_type="void"><readed _jolie_type="bool">true</readed><server _jolie_type="void"><indirizzo _jolie_type="string">indirizzo</indirizzo><nome _jolie_type="string">nome</nome></server><server _jolie_type="void"><indirizzo _jolie_type="string">indirizzo</indirizzo><nome _jolie_type="string">nome</nome></server></config>
+>>>>>>> origin/master
