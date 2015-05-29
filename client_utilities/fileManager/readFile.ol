@@ -28,9 +28,7 @@ main
 	 *  fault->		FileNotFound [ eccezione che viene sollevata quando non esiste il file, in questo caso si crea una variabile vuota]
 	 **/
   	readFile(clientName)(response){
-
-  		undef( file );
-
+  		
   		//utilizzo uno scope per non ritornare un fault con la RR
   		//ma per dare la possibilità di tornare lo stesso la variabile
 		scope( fileXml )

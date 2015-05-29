@@ -9,7 +9,7 @@
 include "console.iol"
 
 include "../client_utilities/interfaces/interfaceLocalA.iol"
-include "interfaces/interfaceLocalB.iol"
+//include "interfaces/interfaceLocalB.iol"
 include "string_utils.iol"
 include "types/Binding.iol"
 
@@ -22,14 +22,8 @@ inputPort FromCli {
 
 init
 {
-  	readFile@FileReader()(serversList);
-
-  	if(!serversList.readed){
-
-  		//undef( serversList.readed );
-
-  		writeFile@FileWriter(serversList)()
-  	}
+	serversList;
+  	readFile
 }
 
 define registro
@@ -50,38 +44,80 @@ define registro
     } 
 }
 
-execution{ sequential }
+define readFile{
+	
+	scope( fileXml )
+	{
+
+		undef( file );
+
+	  	//se non esiste il file xml ritorna una variabile vuote
+		install( FileNotFound => serversList );//response.readed = false );
+
+		//paramentri per la lettura del file
+	  	file.filename = "config.xml";
+		file.format = "binary";
+
+		//lettura file xml di configurazione
+		readFile@File(file)(configFile);
+
+		//salva il file di configurazione nella variabile response
+		xmlToValue@XmlUtils(configFile)(serversList)
+	}
+}
+
+//execution{ sequential }
 main
 {
 
+
   	sendCommand(input)(response) {
 
+
+  		valueToPrettyString@StringUtils(serversList)(response)
+
+  		/*
   		input.regex = " ";
 
 	  	split@StringUtils(input)(resultSplit);
 
-  		/* 
-  		 * ritorna la lista dei server
-  		 * se non esiste ritorna una stringa di errore
-  		 */
-	  	if( resultSplit.result[0] == "list_servers") {
+	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
 	  		tmp = "";
 
+	  		//readFile@FileReader()(serversList);
+
+
 	  		for(i=0, i< #serversList.server, i++) {
 	  			
-	  			tmp += serversList.server[i].nome+ " ----> "+serversList.server[i].indirizzo+ "\n"
+	  			tmp += serversList.server[i].nome+ " --> "+serversList.server[i].indirizzo+ "\n"
 	  		};
 
 	  		if(tmp==""){
 
-	  			response = "Non esistono servers"
+	  			response = "Non esistono servers\n"
 	  		}
 	  		else
 	  			response = tmp
 	  	}
 
+	  	else if(resultSplit.result[0] == "addServer"){
 
+	  		size = #serversList.server;
+
+	  		serversList.server[size].nome = resultSplit.result[1];
+	  		serversList.server[size].indirizzo = resultSplit.result[2];
+
+	  		writeFile@FileWriter(serversList)();
+
+			response= "Server inserito\n"
+	  	}
+
+	  	else
+
+	  		reponse = "comando errato\n"
+		*/
+	  	/*
 	  	else if(input.command == "lista new_repos") {
 	  		
 	  		response= "non ho ricevuto il comando"
@@ -101,7 +137,7 @@ main
 
 	  		writeFile@FileWriter(serversList)();
 
-			response= "Server inserito"
+			response= "Server inserito\n"
 	  	}
 
 	  	else if(input.command == "removeServer") {
@@ -127,5 +163,6 @@ main
 	  	else
 	  		response = "Non hai inserito un comando valido"
 
+		*/
   	}
 }
