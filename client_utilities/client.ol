@@ -94,10 +94,10 @@ main
 
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
-	  		serverList.server[#serversList.server].nome = resultSplit.result[1];
-	  		serverList.server[#serversList.server].indirizzo = resultSplit.result[2];
-
-	  		writeFile@FileWriter(serverList)();
+	  		serversList.server[#serversList.server].nome = resultSplit.result[1];
+	  		serversList.server[#serversList.server].indirizzo = resultSplit.result[2];
+	  		
+	  		writeFile@FileWriter(serversList)();
 	  		response= "Server inserito"
 	  	}
 
