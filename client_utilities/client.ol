@@ -210,27 +210,40 @@ main
 		// Cancella il server inserito
 		else if(resultSplit.result[0] == "removeServer"){
 
-			readFile;
+			scope(dati) {
+	  			
+	  			install( datiNonCorretti => response = "I dati inseriti non sono corretti\n" );
 
-	  		for(i=0, i< #configList.server, i++) {
+	  			if(#resultSplit.result == 2) {
+					
+					readFile;
 
-	  			if(resultSplit.result[1] == configList.server[i].nome){
+			  		for(i=0, i< #configList.server, i++) {
 
-	  				undef(configList.server[i]);
+			  			if(resultSplit.result[1] == configList.server[i].nome){
 
-	  				for(j=i, j<#configList.server, j++){
+			  				undef(configList.server[i]);
 
-	  					configList.server[i] = configList.server[j]
-	  				};
+			  				for(j=i, j<#configList.server, j++){
 
-	  				response= "Server eliminato\n";
-	  				writeFile
+			  					configList.server[i] = configList.server[j]
+			  				};
+
+			  				response= "Server eliminato\n";
+			  				writeFile
+			  			}
+
+			  			else{
+
+			  				response= "Il server inserito non esiste\n"
+			  			}
+
+	  				}
 	  			}
 
-	  			else{
-
-	  				response= "Il server inserito non esiste\n"
-	  			}
+	  			else {
+			  		throw( datiNonCorretti )
+			  	}
 
 	  		}
 	  	}
