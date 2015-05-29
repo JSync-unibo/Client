@@ -55,11 +55,15 @@ main
 
   	sendCommand(input)(response) {
 
+  		input.command.regex = " ";
+
+	  	split@StringUtils(input.command)(resultSplit);
+
   		/* 
   		 * ritorna la lista dei server
   		 * se non esiste ritorna una stringa di errore
   		 */
-	  	if( input.command == "list servers") {
+	  	if( resultSplit.result[0] == "list_servers") {
 
 	  		tmp = "";
 
@@ -70,7 +74,7 @@ main
 
 	  		if(!tmp){
 
-	  			response = "non esistono servers"
+	  			response = "Non esistono servers"
 	  		}
 	  		else
 	  			response = tmp
@@ -85,8 +89,13 @@ main
 	  		response= "non ho ricevuto il comando"
 	  	}
 
-	  	else if(input.command == "addServer") {
-	  		response= "non ho ricevuto il comando"
+	  	else if(resultSplit.result[0] == "addServer") {
+	  		
+	  		serverList.server[#serversList.server].nome = resultSplit.result[1];
+	  		serverList.server[#serversList.server].indirizzo = resultSplit.result[2];
+
+	  		writeFile@FileWriter(serverList)();
+	  		response= "Server inserito"
 	  	}
 
 	  	else if(input.command == "removeServer") {
