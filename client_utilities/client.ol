@@ -235,7 +235,6 @@ main
 	  		}
 	  	}
 
-	  	}
 	  	else
 	  		response = "Comando non riconosciuto\n"
 	  	
