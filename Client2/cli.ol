@@ -17,28 +17,12 @@ init
 	registerForInput@Console()()
 }
 
-define help
-{
-  	println@Console( 
-" JSync Unibo Vers 0.2.0
-
- usage : [command] <parameters>
-
- COMMAND
- - list servers
- - addServer     <name> <address>
-" 
-)()
-}
-
 main
 {
-
-	help;
-
 	while( root.command != "close" ){
 
-	  	print@Console( ">>> " )();
+	  	println@Console( "Insert new command" )();
+	  	print@Console( "\n>>> " )();
 
 	  	in( root.command );
 
