@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+	<serverList _jolie_type="void">
+
+		<server _jolie_type="void">
+			<nome _jolie_type="string">Server1</nome>
+			<indirizzo _jolie_type="string">localhost:8000</indirizzo>
+		</server>
+
+		<server _jolie_type="void">
+			<nome _jolie_type="string">Server2</nome>
+			<indirizzo _jolie_type="string">localhost:8001</indirizzo>
+		</server>
+
+	</serverList>

@@ -27,7 +27,7 @@ main
 	 *
 	 *  fault->		FileNotFound [ eccezione che viene sollevata quando non esiste il file, in questo caso si crea una variabile vuota]
 	 **/
-  	readFile(clientName)(response){
+  	readFile()(response){
 
   		undef( file );
 
