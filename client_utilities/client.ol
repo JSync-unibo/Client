@@ -19,13 +19,22 @@ inputPort FromCli {
   	Interfaces: CliInterface 
 }
 
+/** 
+ *	legge il file xml e ritorna tutti i dati contenuti, sottoforma di una variabile 
+ *	può generare FileNotFound, in quel caso si segna che è vuota
+ *
+ *  l'intero file è salvato quindi nella variabile configList
+ *
+ *  fault->		FileNotFound [ eccezione che viene sollevata quando non esiste il file, in questo caso si scrive il file]
+ **/
 define readFile
 {
+	
 	scope( fileXml )
 	{
 		undef( file );
 
-	  	//se non esiste il file xml ritorna una variabile vuote
+	  	//se non esiste il file xml setta la variabile come vuota
 		install( FileNotFound => configList.vuoto = true );
 
 		//paramentri per la lettura del file
@@ -40,6 +49,13 @@ define readFile
 	}
 }
 
+/**
+ *
+ *	scrive il file xml (se non lo trova non genera fault, ma lo crea per la prima volta)
+ *  partendo dalla variabile configList 
+ *  
+ *
+ */
 define writeFile
 {
 	undef( file );
@@ -60,8 +76,10 @@ define writeFile
 
 init
 {
+	//legge il file xml
   	readFile;
 
+  	//se non esiste allora lo scrive
 	if(!configList)
 
 		writeFile
@@ -72,6 +90,7 @@ execution{ sequential }
 main
 {
 
+	//accetta una stringa e ritorna il risultato sempre sotto forma di stringa
   	sendCommand(input)(response) {
 
   		
@@ -79,22 +98,24 @@ main
 
 	  	split@StringUtils(input)(resultSplit);
 
-
-
   		/* 
   		 * ritorna la lista dei server
   		 * se non esiste ritorna una stringa di errore
   		 */
 	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
+	  		//refresh della variabile
 	  		readFile;
+
 			tmp = "";
 
+			//crea l'output
 	  		for(i=0, i< #configList.server, i++) {
 	  			
 	  			tmp += configList.server[i].nome+ " --> "+configList.server[i].indirizzo+ "\n"
 	  		};
 
+	  		//prepara la variabile response, che è l'output che verrà visualizzato
 	  		if(tmp==""){
 
 	  			response = "Non esistono servers\n"
@@ -104,23 +125,24 @@ main
 
 	  	}
 
+	  	//aggiunge il nuovo server
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
 			readFile;
 
 	  		size = #configList.server;
 
-
 	  		configList.server[size].nome = resultSplit.result[1];
 	  		configList.server[size].indirizzo = resultSplit.result[2];
 
 	  		writeFile;
-	  		
+
 			response= "server aggiunto\n"
 	  	}
 
+	  	//se il comando non è riuconosciuto
 	  	else
-	  		response = "Non hai inserito un comando valido\n"
+	  		response = "Not recognized command.\n"
 	  	
 
   	}
