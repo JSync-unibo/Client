@@ -28,8 +28,6 @@ init
 
   		//undef( serversList.readed );
 
-  		serversList.readed = true;
-
   		writeFile@FileWriter(serversList)()
   	}
 }
@@ -66,7 +64,7 @@ main
   		 * ritorna la lista dei server
   		 * se non esiste ritorna una stringa di errore
   		 */
-	  	if( resultSplit.result[0] == "list_servers") {
+	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
 	  		tmp = "";
 
@@ -75,7 +73,7 @@ main
 	  			tmp += serversList.server[i].nome+ " ----> "+serversList.server[i].indirizzo+ "\n"
 	  		};
 
-	  		if(!tmp){
+	  		if(tmp==""){
 
 	  			response = "Non esistono servers"
 	  		}
@@ -94,11 +92,24 @@ main
 
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
+<<<<<<< HEAD
 	  		serversList.server[#serversList.server].nome = resultSplit.result[1];
 	  		serversList.server[#serversList.server].indirizzo = resultSplit.result[2];
 	  		
 	  		writeFile@FileWriter(serversList)();
 	  		response= "Server inserito"
+=======
+	  		//serversList.server[#serversList.server];
+
+	  		size = #serversList.server;
+
+	  		serversList.server[size].nome = resultSplit.result[1];
+	  		serversList.server[size].indirizzo = resultSplit.result[2];
+
+	  		writeFile@FileWriter(serversList)();
+
+			response= "Server inserito"
+>>>>>>> origin/master
 	  	}
 
 	  	else if(input.command == "removeServer") {
