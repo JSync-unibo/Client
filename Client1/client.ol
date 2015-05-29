@@ -22,7 +22,7 @@ init
     serverName = "Server1"
 }
 
-//setta la location in base al nome e l'inidirizzo del server
+//setta la location in base al nome e l'indirizzo del server
 
 define registro
 {

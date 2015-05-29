@@ -9,8 +9,7 @@
 **/
 
 include "console.iol"
-include "interfaces/interfaceLocalA.iol"
-
+include "../client_utilities/interfaces/interfaceLocalA.iol"
 
 outputPort ToClient{
   Interfaces: CliInterface
