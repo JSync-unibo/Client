@@ -196,7 +196,24 @@ main
 			}
 		}
 
-	  	// Se il comando non è riconosciuto
+		//Cancella il server inserito
+		else if(resultSplit.result[0] == "removeServer"){
+			readFile;
+	  		for(i=0, i< #configList.server, i++) {
+	  			if(resultSplit.result[1] == configList.server[i].nome){
+	  				undef(configList.server[i]);
+	  				for(j=i, j<#configList.server, j++){
+	  					configList.server[i] = configList.server[j]
+	  				};
+	  				response= "server eliminato\n";
+	  				writeFile
+	  			}
+	  			else{
+	  				response= "Il server inserito non esiste\n"
+	  			}
+
+	  		}
+
 	  	else
 	  		response = "Comando non riconosciuto\n"
 	  	

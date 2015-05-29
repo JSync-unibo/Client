@@ -28,6 +28,7 @@ define help
  - list servers
  - addServer     <name> <address>
  - list reg_repos
+ - removeServer  <name> <address>
 " 
 )()
 }
