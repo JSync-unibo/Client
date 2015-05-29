@@ -11,8 +11,6 @@ include "types/Binding.iol"
 type ConfingType: void
 {
 
-	.readed:bool
-
 	.server*: void
 	{
 		.nome: string

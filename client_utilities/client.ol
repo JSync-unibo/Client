@@ -6,12 +6,11 @@
 *
 **/
 
-include "console.iol"
-
 include "../client_utilities/interfaces/interfaceLocalA.iol"
-include "interfaces/interfaceLocalB.iol"
-include "string_utils.iol"
 include "types/Binding.iol"
+include "string_utils.iol"
+include "xml_utils.iol"
+include "file.iol"
 
 //Porta che collega il client con il cli attraverso l'embedding
 inputPort FromCli {
@@ -20,112 +19,110 @@ inputPort FromCli {
   	Interfaces: CliInterface 
 }
 
-init
+define readFile
 {
-  	readFile@FileReader()(serversList);
+	scope( fileXml )
+	{
+		undef( file );
 
-  	if(!serversList.readed){
+	  	//se non esiste il file xml ritorna una variabile vuote
+		install( FileNotFound => configList.vuoto = true );
 
-  		//undef( serversList.readed );
+		//paramentri per la lettura del file
+	  	file.filename = "config.xml";
+		file.format = "binary";
 
-  		writeFile@FileWriter(serversList)()
-  	}
+		//lettura file xml di configurazione
+		readFile@File(file)(configFile);
+
+		//salva il file di configurazione nella variabile response
+		xmlToValue@XmlUtils(configFile)(configList)
+	}
 }
 
-define registro
+define writeFile
 {
-	
-    IndirizzoServer.protocol = "sodep";
+	undef( file );
 
-    name -> serversList.server[i].nome;
-    address -> serversList.server[i].indirizzo;
+	stringXml.rootNodeName = "configList";
+	stringXml.root << configList;
 
-    for(i=0, i<#serversList.server, i++) {
+	//trasforma la variabile in una stringa in formato xml
+	valueToXml@XmlUtils(stringXml)(fileXml);
 
-        if( name == serverName ) {
+    //paramentri della scrittura file
+	file.content = fileXml;
+  	file.filename = "config.xml";
 
-            IndirizzoServer.location = "socket://" + address
+	//crea il file xml partendo dalla stringa nello stesso formato 
+	writeFile@File(file)()
+}
 
-        }
-    } 
+init
+{
+  	readFile;
+
+	if(!configList)
+
+		writeFile
 }
 
 execution{ sequential }
+
 main
 {
 
   	sendCommand(input)(response) {
 
+  		
   		input.regex = " ";
 
 	  	split@StringUtils(input)(resultSplit);
+
+
 
   		/* 
   		 * ritorna la lista dei server
   		 * se non esiste ritorna una stringa di errore
   		 */
-	  	if( resultSplit.result[0] == "list_servers") {
+	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
-	  		tmp = "";
+	  		readFile;
 
-	  		for(i=0, i< #serversList.server, i++) {
+			tmp = "";
+
+	  		for(i=0, i< #configList.server, i++) {
 	  			
-	  			tmp += serversList.server[i].nome+ " ----> "+serversList.server[i].indirizzo+ "\n"
+	  			tmp += configList.server[i].nome+ " --> "+configList.server[i].indirizzo+ "\n"
 	  		};
 
 	  		if(tmp==""){
 
-	  			response = "Non esistono servers"
+	  			response = "Non esistono servers\n"
 	  		}
 	  		else
 	  			response = tmp
-	  	}
 
-
-	  	else if(input.command == "lista new_repos") {
-	  		
-	  		response= "non ho ricevuto il comando"
-	  	}
-	  	else if(input.command == "lista reg_repos") {
-	  		response= "non ho ricevuto il comando"
 	  	}
 
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
-	  		//serversList.server[#serversList.server];
+			readFile;
 
-	  		size = #serversList.server;
+	  		size = #configList.server;
 
-	  		serversList.server[size].nome = resultSplit.result[1];
-	  		serversList.server[size].indirizzo = resultSplit.result[2];
 
-	  		writeFile@FileWriter(serversList)();
+	  		configList.server[size].nome = resultSplit.result[1];
+	  		configList.server[size].indirizzo = resultSplit.result[2];
 
-			response= "Server inserito"
+	  		writeFile;
+
+			response= "server aggiunto\n"
 	  	}
 
-	  	else if(input.command == "removeServer") {
-	  		response= "non ho ricevuto il comando"
-	  	}
-
-	  	else if(input.command == "addRepository") {
-	  		response= "non ho ricevuto il comando"
-	  	}
-
-	  	else if(input.command == "push") {
-	  		response= "non ho ricevuto il comando"
-	  	}
-	  	else if(input.command == "pull") {
-	  		response= "non ho ricevuto il comando"
-	  	}
-	  	else if(input.command == "delete") {
-	  		response= "non ho ricevuto il comando"
-	  	}
-	  	else if(input.command == "close") {
-	  		response= "chiudi"
-	  	}
 	  	else
-	  		response = "Non hai inserito un comando valido"
+	  		response = "Non hai inserito un comando valido\n"
+	  	
 
   	}
 }
