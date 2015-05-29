@@ -125,21 +125,35 @@ main
 
 	  	}
 
-	  	//aggiunge il nuovo server
+	  	// Aggiunge il nuovo server, con i relativi controlli nel caso non si inserisca nome ed indirizzo
 	  	else if(resultSplit.result[0] == "addServer") {
 	  		
-			readFile;
+	  		if(!is_defined( resultSplit.result[1] )) {
 
-	  		size = #configList.server;
+	  			response = "Si prega di inserire nome ed indirizzo del server\n"
+	  		}
 
-	  		configList.server[size].nome = resultSplit.result[1];
-	  		configList.server[size].indirizzo = resultSplit.result[2];
+	  		else if(!is_defined( resultSplit.result[2] )) {
 
-	  		writeFile;
+	  			response = "Si prega di inserire l'indirizzo del server\n"
+	  		}
 
-			response= "server aggiunto\n"
+	  		else {
+
+				readFile;
+
+		  		size = #configList.server;
+
+		  		configList.server[size].nome = resultSplit.result[1];
+		  		configList.server[size].indirizzo = resultSplit.result[2];
+
+		  		writeFile;
+
+				response= "server aggiunto\n"
+			}
 	  	}
 
+	  	// Ritorna la lista delle repositories locali e se non sono presenti ritorna una stringa di avviso
 	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
 
 	  		readFile;
