@@ -31,10 +31,12 @@ main
 {
 	
 	registerForInput@Console()();
+	
 	while( root.command != "close" ){
 
 	  	println@Console( "Insert new command" )();
 	  	print@Console( ">>> " )();
+
 	  	in( root.command );
 	  	sendCommand@ToClient(root)(result);
 	  	println@Console( result )();
@@ -42,6 +44,10 @@ main
 	  	println@Console( "------------------------------------------" )()
 =======
 	  	println@Console( "---------------------------------------------------------" )()
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/master
 >>>>>>> origin/master
 	}
 
