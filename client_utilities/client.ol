@@ -138,8 +138,41 @@ main
 			  		throw( datiNonCorretti )
 			  	
 			}
+		}
 
-	  	}
+		/* 
+	  	 * Ritorna la lista delle repositories locali 
+	  	 * se non sono presenti ritorna una stringa di avviso
+	  	 */
+	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
+
+	  		scope(dati) {
+	  			
+	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+
+	  			if(#resultSplit.result == 2) {
+
+			  		readFile;
+			  		temp ="";
+
+			  		for(j = 0, j < #configList.localRepo, j++) {
+
+			  			temp += " "+configList.localRepo[i].nome + " " + configList.localRepo[i].versione + " " + configList.localRepo[i].file + "\n"
+			  		};
+
+			  		if(temp == "") {
+
+			  			response = " Non sono presenti repositories locali\n"
+			  		} 
+			  		else {
+			  			response = temp
+			  		}
+			  
+			  	}
+			  	else 
+			  		throw( datiNonCorretti )
+			}
+		}
 
 	  	/* 
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
@@ -184,41 +217,7 @@ main
 				
 			}
 	  	}
-
-	  	/* 
-	  	 * Ritorna la lista delle repositories locali 
-	  	 * se non sono presenti ritorna una stringa di avviso
-	  	 */
-	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
-
-	  		scope(dati) {
-	  			
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
-
-	  			if(#resultSplit.result == 2) {
-
-			  		readFile;
-			  		temp ="";
-
-			  		for(j = 0, j < #configList.localRepo, j++) {
-
-			  			temp += " "+configList.localRepo[i].nome + " " + configList.localRepo[i].versione + " " + configList.localRepo[i].file + "\n"
-			  		};
-
-			  		if(temp == "") {
-
-			  			response = " Non sono presenti repositories locali\n"
-			  		} 
-			  		else {
-			  			response = temp
-			  		}
-			  
-			  	}
-			  	else 
-			  		throw( datiNonCorretti )
-			}
-		}
-
+	  	
 		/*
 		 * Cancella il server inserito
 		 * con un ulteriore ciclo riordina l'array di sottonodi
@@ -228,10 +227,15 @@ main
 			scope(dati) {
 	  			
 	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+	  			install( serverNonEsiste => response = " Il server inserito non esiste\n" );
 
 	  			if(#resultSplit.result == 2) {
 					
 					readFile;
+
+	  				if( !is_defined( configList.server ) )
+
+	  					throw( serverNonEsiste );
 
 			  		for(i = 0, i < #configList.server, i++) {
 
@@ -251,7 +255,7 @@ main
 			  			}
 
 			  			else
-			  				response = " Il server inserito non esiste\n"
+			  				throw( serverNonEsiste )
 	  				}
 	  			}
 	  			else 
