@@ -217,7 +217,7 @@ main
 				
 			}
 	  	}
-	  	
+
 		/*
 		 * Cancella il server inserito
 		 * con un ulteriore ciclo riordina l'array di sottonodi
@@ -237,6 +237,8 @@ main
 
 	  					throw( serverNonEsiste );
 
+	  				trovato = false;
+
 			  		for(i = 0, i < #configList.server, i++) {
 
 			  			//il caso in cui trova il server da eliminare
@@ -247,16 +249,20 @@ main
 
 			  				for(j = i, j < #configList.server, j++){
 
-			  					configList.server[i] = configList.server[j]
+			  					configList.server[i] = configList.server[j+1]
 			  				};
 
-			  				response = " Server eliminato\n";
-			  				writeFile
-			  			}
+							writeFile;
 
-			  			else
-			  				throw( serverNonEsiste )
-	  				}
+			  				trovato = true
+			  			}
+	  				};
+
+	  				if(trovato)			
+	  					response = " Server eliminato\n"
+	  				
+	  				else
+	  					throw(serverNonEsiste)
 	  			}
 	  			else 
 			  		throw( datiNonCorretti )
