@@ -5,10 +5,14 @@
 Componenti:
 
 - Gianmarco Spinaci 0000691241
+<<<<<<< HEAD
 - Michele Lorubio   0000693868
 - Chiara Babina 	0000693799
 -
 
+=======
+- Michele Lorubio 0000693868
+>>>>>>> origin/master
 
 ## Introduzione
 
