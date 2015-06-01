@@ -1,18 +1,13 @@
-Ôªø# JSync - Esame di Laboratorio Sistemi Operativi A.A. 2015-2016
+# JSync - Esame di Laboratorio Sistemi Operativi A.A. 2015-2016
 
 ## LOBSTER
 
 Componenti:
 
 - Gianmarco Spinaci 0000691241
-<<<<<<< HEAD
 - Michele Lorubio   0000693868
 - Chiara Babina 	0000693799
--
-
-=======
-- Michele Lorubio 0000693868
->>>>>>> origin/master
+- Valentina Tosto 0000692741
 
 ## Introduzione
 
@@ -30,11 +25,11 @@ Le istruzioni per eseguire una demo di esecuzione. La demo deve contenere almeno
 
 ### Struttura del Progetto
 
-Come √® stato diviso il progetto. E.g., 
+Come Ë stato diviso il progetto. E.g., 
 
-Il progetto √® diviso in Servers e Clients. I Servers fanno l'embedding dei servizi S1, S2 e S3 per gestire le funzionalit√† A, B, e C...
+Il progetto Ë diviso in Servers e Clients. I Servers fanno l'embedding dei servizi S1, S2 e S3 per gestire le funzionalit‡ A, B, e C...
 
-I Clients hanno queste funzionalit√† che sono implementate dei sotto-servizi C1, C2 e C3...
+I Clients hanno queste funzionalit‡ che sono implementate dei sotto-servizi C1, C2 e C3...
 
 ### Sezione su `push`
 
