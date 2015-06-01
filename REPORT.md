@@ -7,7 +7,7 @@ Componenti:
 - Gianmarco Spinaci 0000691241
 - Michele Lorubio   0000693868
 - Chiara Babina 	0000693799
-- Valentina Tosto 0000692741
+- Valentina Tosto   0000692741
 
 ## Introduzione
 
