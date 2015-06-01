@@ -39,14 +39,14 @@ Il Client è collegato alla Cli attraverso l'embedding, così da essere connessi l
 Nel Client definiamo inizialmente due metodi, uno per la lettura del file xml e l'altro per la scrittura, i quali sono richiamati nell'init all'avvio del programma, dove nello specifico il readFile legge il file esistente, mentre il writeFile lo crea se non esiste.
 Ogni comando che il Client riceve viene splittato, così da esaminare ogni stringa inserita, e di seguito descriviamo i vari servizi implementati.
 
- ### LIST SERVERS & LIST REG_REPOS
- Abbiamo creato uno scope poichè gestiamo delle eccezioni, nel caso in cui l'utente abbia inserito troppi parametri; invece se si scrive il giusto comando viene richiamato il metodo della lettura del file xml e si verificano due casi: se la lista è piena, allora per ogni server/repository del file xml, viene stampato il suo nome e indirizzo (server), oppure il suo nome, la versione e i files contenuti (repository); altrimenti se la lista è vuota viene stampato un messaggio di avviso.
+### LIST SERVERS & LIST REG_REPOS
+Abbiamo creato uno scope poichè gestiamo delle eccezioni, nel caso in cui l'utente abbia inserito troppi parametri; invece se si scrive il giusto comando viene richiamato il metodo della lettura del file xml e si verificano due casi: se la lista è piena, allora per ogni server/repository del file xml, viene stampato il suo nome e indirizzo (server), oppure il suo nome, la versione e i files contenuti (repository); altrimenti se la lista è vuota viene stampato un messaggio di avviso.
 
- ### ADD SERVER
- Abbiamo creato uno scope per gestire le eccezioni, in caso di parametri scritti in modo non corretto oppure se manca il nome e/o l'indirizzo. Quando si aggiunge un server si richiama il metodo readFile e si effettua un controllo se il nome del server esiste già, in tal caso viene stampato un messaggio, altrimenti tutti i dati vengono inseriti nel file xml, richiamando il metodo writeFile.
+### ADD SERVER
+Abbiamo creato uno scope per gestire le eccezioni, in caso di parametri scritti in modo non corretto oppure se manca il nome e/o l'indirizzo. Quando si aggiunge un server si richiama il metodo readFile e si effettua un controllo se il nome del server esiste già, in tal caso viene stampato un messaggio, altrimenti tutti i dati vengono inseriti nel file xml, richiamando il metodo writeFile.
 
- ### REMOVE SERVER
- Anche in questo caso si crea uno scope per gestire le solite eccezioni. Se la lista dei server è vuota allora viene sollevata un'eccezione, altrimenti per ogni server della lista si controlla il nome, e se corrisponde a quello da rimuovere viene eliminato dalla lista che in seguito viene riordinata. 
+### REMOVE SERVER
+Anche in questo caso si crea uno scope per gestire le solite eccezioni. Se la lista dei server è vuota allora viene sollevata un'eccezione, altrimenti per ogni server della lista si controlla il nome, e se corrisponde a quello da rimuovere viene eliminato dalla lista che in seguito viene riordinata. 
  
 
 ### Sezione su `push`
