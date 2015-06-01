@@ -25,6 +25,8 @@ define help
 
  usage : [command] <parameters>
 
+ - help                             Show this dialog
+
  List Command :
  - list servers                     Show list of registred servers
  - list reg_repos                   Show list of local repositories
