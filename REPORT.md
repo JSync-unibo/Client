@@ -6,7 +6,7 @@ Componenti:
 
 - Gianmarco Spinaci 0000691241
 - Michele Lorubio   0000693868
-- 
+- Chiara Babina 	0000693799
 -
 
 
