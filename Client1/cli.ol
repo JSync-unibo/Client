@@ -43,12 +43,21 @@ main
 
 	while( root.command != "close" ){
 
-	  	print@Console( ">>> " )();
+		print@Console( ">>> " )();
 
-	  	in( root.command );
+		in( root.command );
 
-	  	sendCommand@ToClient( root.command )( result );
+		if(root.command == "help") {
 
-	  	println@Console( result )()
+	  		help
+
+	  	}
+
+	  	else {
+
+			sendCommand@ToClient( root.command )( result );
+
+			println@Console( result )()
+		}
 	}
 }
