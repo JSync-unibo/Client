@@ -5,10 +5,7 @@
 Componenti:
 
 - Gianmarco Spinaci 0000691241
-- Michele Lorubio   0000693868
-- 
--
-
+- Michele Lorubio 0000693868
 
 ## Introduzione
 
