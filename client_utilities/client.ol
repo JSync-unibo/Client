@@ -249,7 +249,7 @@ main
 
 			  				for(j = i, j < #configList.server, j++){
 
-			  					configList.server[i] = configList.server[j+1]
+			  					configList.server[i] = configList.server[j]
 			  				};
 
 							writeFile;
