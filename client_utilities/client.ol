@@ -1,12 +1,16 @@
 /**
 *
-* Author => Gruppo A: Valentina Tosto, Chiara Babina
+* Author => Gruppo LOBSTER
 * Data => 04/05/2015
 * Parent => Client
 *
 **/
 
+//interfacce
 include "../client_utilities/interfaces/interfaceLocalA.iol"
+include "../client_utilities/interfaces/toServer.iol"
+
+
 include "types/Binding.iol"
 include "string_utils.iol"
 include "xml_utils.iol"
@@ -17,6 +21,27 @@ inputPort FromCli {
 
   	Location: "local"
   	Interfaces: CliInterface 
+}
+
+
+//Setta la location in base al nome e l'inidirizzo del server
+
+define registro
+{
+	
+  	ServerConnection.protocol = "sodep";
+
+  	name -> configList.server[i].nome;
+  	address -> configList.server[i].indirizzo;
+
+  	for(i=0, i<#configList.server, i++) {
+  		
+  		if( name == message.serverName ) {
+  			
+  			ServerConnection.location = "socket://" + address
+  		  
+  		}
+  	} 
 }
 
 /** 
@@ -266,6 +291,35 @@ main
 	  			}
 	  			else 
 			  		throw( datiNonCorretti )
+	  		}
+	  	}
+
+	  	/*
+	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos" ){
+
+	  		//nomeServer = resultSplit.result[2];
+
+	  		//registro;
+
+	  		//println@Console( string )(ServerConnection.location)
+	  	}*/
+
+	  	else if(resultSplit.result[0] == "addRepository"){
+
+	  		scope( ConnectException )
+	  		{
+	  			// Salta questa eccezione quando non esiste il server 
+	  			install( IOException => response = "Errore di connessione, server non raggiungibile o inesistente\n" );
+
+	  			undef( message.serverName );
+
+		  		message.serverName = resultSplit.result[1];
+		  		message.repoName = resultSplit.result[2];
+		  		message.localPath = resultSplit.result[3];
+
+		  		registro;
+
+		  		addRepository@ServerConnection(message)(response)
 	  		}
 	  	}
 

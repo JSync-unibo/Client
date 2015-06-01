@@ -26,12 +26,15 @@ define help
  usage : [command] <parameters>
 
  List Command :
- - list servers                     Show list of registred servers
- - list reg_repos                   Show list of local repositories
+ - list servers                         Show list of registred servers
+ - list reg_repos                       Show list of local repositories
 
  Server Command : 
- - addServer     <name> <address>   Add selected server
- - removeServer  <name>             Remove selected server
+ - addServer     <name> <address>       Add selected server
+ - removeServer  <name>                 Remove selected server
+
+ repositories Command :
+ - AddRepository <name> <repo> <path>   Add new Repository in selected server, with <path> name
 " 
 )()
 }
