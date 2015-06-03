@@ -13,7 +13,7 @@ type ToServerType: void{
 //Interfaccia fra il client ed il server
 interface ToServerInterface { 
 
-  RequestResponse: listRepo(string)(string),
+  	RequestResponse: listRepo(string)(string),
 
 		            addRepository(ToServerType)(string),
 	                push(ToServerType)(string),
