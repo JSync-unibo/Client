@@ -309,7 +309,8 @@ main
 	  		scope( ConnectException )
 	  		{
 	  			// Salta questa eccezione quando non esiste il server 
-	  			install( IOException => response = " Errore di connessione, server non raggiungibile o inesistente\n" );
+	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
+	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
 
 	  			//undef( message.serverName );
 
@@ -319,10 +320,15 @@ main
 
 		  		registro;
 
-		  		addRepository@ServerConnection(message)(response)
+		  		addRepository@ServerConnection(message)(responseMessage);
+
+		  		if(responseMessage.error) throw( AddError )
+
+		  		else
+		  			response = responseMessage.message
+					
 	  		}
 	  	}
-
 
 	  	else
 	  		response = " Comando non riconosciuto\n"
