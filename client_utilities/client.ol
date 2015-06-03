@@ -1,12 +1,12 @@
-/**
+/*
 *
 * Author => Gruppo LOBSTER
 * Data => 04/05/2015
 * Parent => Client
 *
-**/
+*/
 
-//interfacce
+// Importazione delle interfacce
 include "../client_utilities/interfaces/interfaceLocalA.iol"
 include "../client_utilities/interfaces/toServer.iol"
 
@@ -24,7 +24,13 @@ inputPort FromCli {
 }
 
 
-//Setta la location in base al nome e l'inidirizzo del server
+/* 
+ * Setta la location in base al nome ed indirizzo del server.
+ * Per ogni server presente nella lista, se il nome è uguale
+ * a quello scritto in input, allora setta la location del
+ * server tramite il suo indirizzo preso dalla lista
+ *
+ */
 
 define registro
 {
@@ -44,14 +50,12 @@ define registro
   	} 
 }
 
-/** 
- *	legge il file xml e ritorna tutti i dati contenuti, sottoforma di una variabile 
- *	Può generare FileNotFound, in quel caso si segna che è vuota
+/* 
+ *	Legge il file xml e ritorna tutti i dati contenuti, sottoforma di una variabile.
+ *	Può generare FileNotFound, in quel caso si segna che è vuota.
  *
- *  l'intero file è salvato quindi nella variabile configList
- *
- *  fault->	FileNotFound [ eccezione che viene sollevata quando non esiste il file, in questo caso si scrive il file]
- **/
+ *  In seguito l'intero file è salvato nella variabile configList, convertendolo
+ */
 define readFile
 {
 	
@@ -69,17 +73,14 @@ define readFile
 		// Lettura file xml di configurazione
 		readFile@File(file)(configFile);
 
-		// Salva il file di configurazione nella variabile response
+		// Salva il file di configurazione nella variabile configList
 		xmlToValue@XmlUtils(configFile)(configList)
 	}
 }
 
-/**
- *
+/*
  *	Scrive il file xml (se non lo trova non genera fault, ma lo crea per la prima volta)
- *  partendo dalla variabile configList 
- *  
- *
+ *  partendo dalla variabile configList  
  */
 define writeFile
 {
@@ -127,7 +128,7 @@ main
 
  
   		/*
-  		 * Ritorna la lista dei server 
+  		 * Ritorna la lista dei server,
   		 * se non esiste ritorna una stringa di errore
   		 */
 	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
@@ -166,7 +167,7 @@ main
 		}
 
 		/* 
-	  	 * Ritorna la lista delle repositories locali 
+	  	 * Ritorna la lista delle repositories locali,
 	  	 * se non sono presenti ritorna una stringa di avviso
 	  	 */
 	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
@@ -244,7 +245,7 @@ main
 	  	}
 
 		/*
-		 * Cancella il server inserito
+		 * Cancella il server inserito,
 		 * con un ulteriore ciclo riordina l'array di sottonodi
 		 */
 		else if(resultSplit.result[0] == "removeServer"){
@@ -266,10 +267,10 @@ main
 
 			  		for(i = 0, i < #configList.server, i++) {
 
-			  			//il caso in cui trova il server da eliminare
+			  			// Il caso in cui trova il server da eliminare
 			  			if(resultSplit.result[1] == configList.server[i].nome){
 
-			  				//lo elimina e riordina l'array
+			  				// Lo elimina e riordina l'array
 			  				undef(configList.server[i]);
 
 			  				for(j = i, j < #configList.server, j++){
@@ -305,12 +306,8 @@ main
 	  	}*/
 
 	  	/*
- 		 * Restituisce:
-
- 		 * responseMessage
- 		 	-error:boolean
- 		 	-message:string
- 		 *
+ 		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
+ 		 * o sull'impossibilità di creare la repository
 	  	 */
 	  	else if(resultSplit.result[0] == "addRepository"){
 
@@ -320,14 +317,16 @@ main
 	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
 	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
 
-	  			//undef( message.serverName );
-
+	  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
 		  		message.serverName = resultSplit.result[1];
 		  		message.repoName = resultSplit.result[2];
 		  		message.localPath = resultSplit.result[3];
 
+		  		// Richiama il registro definito all'inizio
 		  		registro;
 
+		  		// Invia tutto al server, il quale ritorna un errore (se presente) 
+		  		// Ed un messaggio che descrive l'errore
 		  		addRepository@ServerConnection(message)(responseMessage);
 
 		  		if(responseMessage.error) throw( AddError )
@@ -338,6 +337,7 @@ main
 	  		}
 	  	}
 
+	  	// Messaggio di avviso di comando scritto non correttamente
 	  	else
 	  		response = " Comando non riconosciuto\n"
   	}

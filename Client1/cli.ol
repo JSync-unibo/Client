@@ -1,12 +1,12 @@
-/**
+/*
 *
 * Author => Gruppo A: Valentina Tosto, Chiara Babina
 * Data => 04/05/2015
 * Parent => Client
 * 
-* Servizio che accetta in input dei comandi, che vengono inviati al client 
+* Servizio che accetta in input dei comandi, inviati al client 
 * attraverso l'embedding, ed aspetta una stringa di risposta.
-**/
+*/
 
 include "console.iol"
 include "../client_utilities/interfaces/interfaceLocalA.iol"
@@ -16,6 +16,7 @@ init
   	
 	registerForInput@Console()()
 }
+
 
 define help
 {
@@ -33,7 +34,7 @@ define help
  - addServer     <name> <address>       Add selected server
  - removeServer  <name>                 Remove selected server
 
- repositories Command :
+ Repositories Command :
  - AddRepository <name> <repo> <path>   Add new Repository in selected server, with <path> name
 " 
 )()
@@ -42,8 +43,15 @@ define help
 main
 {
 
+	// Si richiama help, con tutti i comandi disponibili
 	help;
 
+	/*
+	 * Fino a quando il comando inserito non è uguale a close,
+	 * accetta in input uno dei comandi: 
+	 * - help -> sarà ristampata la lista dei comandi disponibili
+	 * - comando della lista -> è inviato al client ed il cli aspetta una risposta
+	 */
 	while( root.command != "close" ){
 
 		print@Console( ">>> " )();
