@@ -304,6 +304,14 @@ main
 	  		//println@Console( string )(ServerConnection.location)
 	  	}*/
 
+	  	/*
+ 		 * Restituisce:
+
+ 		 * responseMessage
+ 		 	-error:boolean
+ 		 	-message:string
+ 		 *
+	  	 */
 	  	else if(resultSplit.result[0] == "addRepository"){
 
 	  		scope( ConnectException )
