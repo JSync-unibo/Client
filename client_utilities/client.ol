@@ -170,35 +170,41 @@ main
 	  	 * Ritorna la lista delle repositories locali,
 	  	 * se non sono presenti ritorna una stringa di avviso
 	  	 */
-	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
+		
+	  	else if( resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
 
 	  		scope(dati) {
 	  			
 	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+				
+				if(#resultSplit.result == 2) {
+	  				
+	  				tmp = "";
+	  				printRepo.directory = "LocalRepo";
+	  				list@File(printRepo)(repo);
+					for(i = 0, i < #repo.result, i++){
+						
+						tmp += " " + repo.result[i]
+					
+					};
+					
+					if(tmp==""){
 
-	  			if(#resultSplit.result == 2) {
-
-			  		readFile;
-			  		temp ="";
-
-			  		for(j = 0, j < #configList.localRepo, j++) {
-
-			  			temp += " "+configList.localRepo[i].nome + " " + configList.localRepo[i].versione + " " + configList.localRepo[i].file + "\n"
-			  		};
-
-			  		if(temp == "") {
-
-			  			response = " Non sono presenti repositories locali\n"
-			  		} 
-			  		else {
-			  			response = temp
+			  			response = " Non esisto repositories locali\n"
 			  		}
-			  
+			  		else {
+			  			response = tmp
+			  		}
+			  	
 			  	}
-			  	else 
-			  		throw( datiNonCorretti )
+			  	else {
+					throw(datiNonCorretti)
+				}
 			}
+				
 		}
+		
+		
 
 	  	/* 
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
