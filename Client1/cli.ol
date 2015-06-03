@@ -24,11 +24,15 @@ define help
 " JSync Unibo Vers 0.3.0
  Copyright LOBESTER 2015. All right reserved.
 
- usage : [command] <parameters>
+ Usage : [command] <parameters>
+
+ Optional :
+ - help                                 Show this help message
 
  List Command :
  - list servers                         Show list of registred servers
  - list reg_repos                       Show list of local repositories
+ - list new_repos                       Show list of all online repositories
 
  Server Command : 
  - addServer     <name> <address>       Add selected server

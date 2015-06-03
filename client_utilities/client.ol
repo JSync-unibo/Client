@@ -44,7 +44,7 @@ define registro
   		
   		if( name == message.serverName ) {
   			
-  			ServerConnection.location = "socket://" + address
+  			ServerConnection.location = address
   		  
   		}
   	} 
@@ -295,15 +295,27 @@ main
 	  		}
 	  	}
 
-	  	/*
+	  	
 	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos" ){
 
-	  		//nomeServer = resultSplit.result[2];
+	  		scope( ConnectException )
+	  		{
+	  			// Salta questa eccezione quando non esiste il server 
+	  			//install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
 
-	  		//registro;
+	  			tmp = "";
 
-	  		//println@Console( string )(ServerConnection.location)
-	  	}*/
+		  		for (i=0, i< #configList.server, i++) {
+
+		  			ServerConnection.location = configList.server[i].indirizzo;
+		  			listRepo@ServerConnection()(responseMessage);
+
+		  			tmp += responseMessage		  			
+		  		};
+
+		  		response = tmp
+	  		}
+	  	}
 
 	  	/*
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
