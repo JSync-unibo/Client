@@ -326,8 +326,9 @@ main
 			  			// Inserito l'indirizzo per collegarsi al server
 			  			ServerConnection.location = configList.server[i].indirizzo;
 
+			  			tmp += " - "+configList.server[i].nome +":\n";
+			  			
 			  			registro;
-
 			  			listRepo@ServerConnection()(responseMessage);
 
 			  			tmp += responseMessage  + " "			
@@ -381,7 +382,7 @@ main
 			  			//creo la repository locale
 			  			mkdir@File("localRepo/"+message.repoName)(success);
 
-			  			//cerco tutti i dati nella cartella locale da caricare
+			  			//cerco tutti i file nella cartella locale da caricare
 			  			toSearch.directory = message.localPath;
 			  			list@File(toSearch)(listaFile);
 

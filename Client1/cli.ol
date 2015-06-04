@@ -66,7 +66,7 @@ main
 		if(root.command == "help") 
 
 	  		help
-
+	  	
 	  	else {
 
 			sendCommand@ToClient( root.command )( result );
