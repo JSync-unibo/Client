@@ -10,6 +10,11 @@ type ToServerType: void{
     .localPath?: string
 }
 
+type FileRequestType: void {
+  .filename: string
+}
+
+
 
 /*
  * Tipo che si riferisce alla risposta che riceve il Client, 
@@ -36,4 +41,5 @@ interface ToServerInterface {
 
 outputPort ServerConnection {
 	Interfaces: ToServerInterface
+  RequestResponse: getFile( FileRequestType )( raw )
 }

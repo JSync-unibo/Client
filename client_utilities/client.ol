@@ -15,6 +15,7 @@ include "types/Binding.iol"
 include "string_utils.iol"
 include "xml_utils.iol"
 include "file.iol"
+include "console.iol"
 
 // Porta che collega il client con il cli attraverso l'embedding
 inputPort FromCli {
@@ -362,7 +363,14 @@ main
 		  		if(responseMessage.error) throw( AddError )
 
 		  		else
-		  			response = responseMessage.message
+		  			response = responseMessage.message;
+		  			file.filename = "ciao.txt";
+		  			file.format ="binary";
+		  			readFile@File(file)(responseM);
+		  			println@Console( responseM )()
+		  			//getFile@ServerConnection( file )( file.content );
+		  			//file.filename = "LocalRepo/repo1/ciao.txt";
+		  			//writeFile@File( file )( void )
 					
 	  		}
 	  	}
