@@ -346,41 +346,72 @@ main
 	  		{
 	  			// Salta questa eccezione quando non esiste il server 
 	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
+	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
 	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
 
-	  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
-		  		message.serverName = resultSplit.result[1];
-		  		message.repoName = resultSplit.result[2];
-		  		message.localPath = resultSplit.result[3];
+	  			if(#resultSplit.result == 4) {
+		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
+			  		message.serverName = resultSplit.result[1];
+			  		message.repoName = resultSplit.result[2];
+			  		message.localPath = resultSplit.result[3];
 
-		  		// Richiama il registro definito all'inizio
-		  		registro;
+			  		// Richiama il registro definito all'inizio
+			  		registro;
 
-		  		// Invia tutto al server, il quale ritorna un errore (se presente) 
-		  		// Ed un messaggio che descrive l'errore
-		  		addRepository@ServerConnection(message)(responseMessage);
+			  		// Invia tutto al server, il quale ritorna un errore (se presente) 
+			  		// Ed un messaggio che descrive l'errore
+			  		addRepository@ServerConnection(message)(responseMessage);
 
-		  		if(responseMessage.error) throw( AddError )
+			  		if(responseMessage.error) throw( AddError )
 
-		  		else{
+			  		else{
 
-		  			toSearch.directory = "localRepo/"+ message.localPath;
+			  			toSearch.directory = "localRepo/"+ message.localPath;
 
-		  			list@File(toSearch)(listaFile);
+			  			list@File(toSearch)(listaFile);
 
-		  			for(i=0, i<#listaFile.result, i++){
+			  			for(i=0, i<#listaFile.result, i++){
 
-		  				readedFile.filename = "localRepo/"+ message.localPath +"/"+listaFile.result[i];
-		  				readedFile.format ="binary";
+			  				readedFile.filename = "localRepo/"+ message.localPath +"/"+listaFile.result[i];
+			  				readedFile.format ="binary";
 
-		  				readFile@File(readedFile)(toSend.content);
-		  				toSend.filename = message.repoName+"/"+listaFile.result[i];
+			  				readFile@File(readedFile)(toSend.content);
+			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
 
-		  				sendFile@ServerConnection( toSend )
-		  			}
-				};
+			  				sendFile@ServerConnection( toSend )
+			  			}
+					};
 
-				response = responseMessage.message
+					response = responseMessage.message
+				}
+				else
+					throw( datiNonCorretti )
+	  		}
+	  	}
+
+	  	else if(resultSplit.result[0] == "delete"){
+
+			scope(dati) {
+
+	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
+	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+
+	  			if(#resultSplit.result == 3) {
+
+	  				message.serverName = resultSplit.result[1];
+			  		message.repoName = resultSplit.result[2];
+
+			  		registro;
+	  					
+	  				delete@ServerConnection(message)(responseMessage);	
+
+
+			  		response = responseMessage.message
+
+
+	  			}
+	  			else 
+			  		throw( datiNonCorretti )
 	  		}
 	  	}
 
