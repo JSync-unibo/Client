@@ -405,8 +405,17 @@ main
 	  					
 	  				delete@ServerConnection(message)(responseMessage);	
 
+	  				if(responseMessage.error) {
 
-			  		response = responseMessage.message
+			  			response = responseMessage.message
+			  		}
+
+			  		else {
+
+			  			deleteDir@File("LocalRepo/"+message.repoName)(deleted);
+
+			  			response = responseMessage.message
+			  		}
 
 
 	  			}
