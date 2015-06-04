@@ -362,16 +362,25 @@ main
 
 		  		if(responseMessage.error) throw( AddError )
 
-		  		else
-		  			response = responseMessage.message;
-		  			file.filename = "ciao.txt";
-		  			file.format ="binary";
-		  			readFile@File(file)(responseM);
-		  			println@Console( responseM )()
-		  			//getFile@ServerConnection( file )( file.content );
-		  			//file.filename = "LocalRepo/repo1/ciao.txt";
-		  			//writeFile@File( file )( void )
-					
+		  		else{
+
+		  			toSearch.directory = "localRepo/"+ message.localPath;
+
+		  			list@File(toSearch)(listaFile);
+
+		  			for(i=0, i<#listaFile.result, i++){
+
+		  				readedFile.filename = "localRepo/"+ message.localPath +"/"+listaFile.result[i];
+		  				readedFile.format ="binary";
+
+		  				readFile@File(readedFile)(toSend.content);
+		  				toSend.filename = message.repoName+"/"+listaFile.result[i];
+
+		  				sendFile@ServerConnection( toSend )
+		  			}
+				};
+
+				response = responseMessage.message
 	  		}
 	  	}
 

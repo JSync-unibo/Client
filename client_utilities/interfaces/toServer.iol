@@ -12,9 +12,8 @@ type ToServerType: void{
 
 type FileRequestType: void {
   .filename: string
+  .content: raw
 }
-
-
 
 /*
  * Tipo che si riferisce alla risposta che riceve il Client, 
@@ -33,13 +32,15 @@ interface ToServerInterface {
 
   	RequestResponse: listRepo(void)(string),
 
-		            addRepository(ToServerType)(ResponseMessage),
-	                push(ToServerType)(ResponseMessage),
-  				    pull(ToServerType)(ResponseMessage),
-  				    delete(ToServerType)(ResponseMessage)
+                    addRepository(ToServerType)(ResponseMessage),
+                    push(ToServerType)(ResponseMessage),
+                    pull(ToServerType)(ResponseMessage),
+                    delete(ToServerType)(ResponseMessage)
+
+    OneWay: sendFile( FileRequestType )
+                    
 }
 
 outputPort ServerConnection {
-	Interfaces: ToServerInterface
-  RequestResponse: getFile( FileRequestType )( raw )
+    Interfaces: ToServerInterface
 }
