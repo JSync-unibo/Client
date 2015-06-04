@@ -53,6 +53,9 @@ Questo è un comando nel quale è indispensabile l'intervento del server. Infatti 
 vogliamo creare ed il nome della directory locale del client che andremo a copiare; poi richiamiamo il registro, che ha il compito di ricercare nella lista dei server il nome di quello richiesto in input, ed in seguito prelevare il suo indirizzo, così da connettersi a questo server. 
 Infine si connette il client con tale server, attraverso la porta creata, e si inviano i dati della repository da creare. Ciò che il client si aspetta di ricevere sarà un messaggio di successo (se la rep è stata aggiunta) oppure di errore. 
 
+### LIST NEW_REPOS
+Questo comando si collega al server, catturando un'eccezione nel caso in cui questo non sia disponibile, e invia la richiesta della stampa delle repositories. Viene inserito l'indirizzo a cui collegarsi al server, e poi viene richiamato il metodo registro per fare il collegamento. In seguito il server salva i nomi di tutte le repositories presenti in una stringa, che ritorna al client.
+
 ### Sezione su `push`
 
 Abbiamo implementato la funzione di `push` ...
