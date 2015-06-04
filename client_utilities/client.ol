@@ -350,6 +350,7 @@ main
 	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
 
 	  			if(#resultSplit.result == 4) {
+	  				
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
 			  		message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
@@ -366,19 +367,30 @@ main
 
 			  		else{
 
-			  			toSearch.directory = "localRepo/"+ message.localPath;
+			  			//creo la repository locale
+			  			mkdir@File("localRepo/"+message.repoName)(success);
 
+			  			//cerco tutti i dati nella cartella locale da caricare
+			  			toSearch.directory = message.localPath;
 			  			list@File(toSearch)(listaFile);
 
+			  			//controllo tutti i file nella cartella locale
 			  			for(i=0, i<#listaFile.result, i++){
 
-			  				readedFile.filename = "localRepo/"+ message.localPath +"/"+listaFile.result[i];
+			  				//preparo il file per la lettura
+			  				readedFile.filename = message.localPath+"/"+listaFile.result[i];
 			  				readedFile.format ="binary";
 
+			  				//preparo il file per la scrittura
 			  				readFile@File(readedFile)(toSend.content);
 			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
 
-			  				sendFile@ServerConnection( toSend )
+			  				//invio il singolo file per la scrittura sul server
+			  				sendFile@ServerConnection( toSend );
+
+			  				//scrivo il singolo file nella repo locale
+			  				toSend.filename = "localRepo/"+toSend.filename;
+			  				writeFile@File(toSend)()
 			  			}
 					};
 
