@@ -126,7 +126,6 @@ main
 
 	  	split@StringUtils(input)(resultSplit);
 
- 
   		/*
   		 * Ritorna la lista dei server,
   		 * se non esiste ritorna una stringa di errore
@@ -170,7 +169,6 @@ main
 	  	 * Ritorna la lista delle repositories locali,
 	  	 * se non sono presenti ritorna una stringa di avviso
 	  	 */
-		
 	  	else if( resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
 
 	  		scope(dati) {
@@ -207,8 +205,6 @@ main
 				
 		}
 		
-		
-
 	  	/* 
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
 	  	 * i dati corretti oppure se il server già esiste
