@@ -180,11 +180,14 @@ main
 				if(#resultSplit.result == 2) {
 	  				
 	  				tmp = "";
+
 	  				printRepo.directory = "LocalRepo";
+
 	  				list@File(printRepo)(repo);
+
 					for(i = 0, i < #repo.result, i++){
 						
-						tmp += " " + repo.result[i]
+						tmp += " " + repo.result[i] +"\n"
 					
 					};
 					

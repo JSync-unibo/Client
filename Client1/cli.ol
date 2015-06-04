@@ -62,11 +62,9 @@ main
 
 		in( root.command );
 
-		if(root.command == "help") {
+		if(root.command == "help") 
 
 	  		help
-
-	  	}
 
 	  	else {
 
