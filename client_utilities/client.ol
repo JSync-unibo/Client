@@ -358,11 +358,7 @@ main
 	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
 
 	  			if(#resultSplit.result == 4) {
-<<<<<<< HEAD
 	  				
-=======
-
->>>>>>> origin/master
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
 			  		message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
