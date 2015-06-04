@@ -39,7 +39,7 @@ define help
  - removeServer  <name>                 Remove selected server
 
  Repositories Command :
- - AddRepository <name> <repo> <path>   Add new Repository in selected server, with <path> name
+ - addRepository <name> <repo> <path>   Add new Repository in selected server, with <path> name
 " 
 )()
 }

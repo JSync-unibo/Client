@@ -309,23 +309,36 @@ main
 
 	  		scope( ConnectException )
 	  		{
+	  			
 	  			// Salta questa eccezione quando non esiste il server 
-	  			//install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
+	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
+	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti \n");
 
-	  			tmp = "";
+	  			if(#resultSplit.result == 2) {
+	  				
+		  			tmp = "";
 
-		  		for (i=0, i< #configList.server, i++) {
+			  		for (i=0, i< #configList.server, i++) {
+			  			
+			  			// Inserito l'indirizzo per collegarsi al server
+			  			ServerConnection.location = configList.server[i].indirizzo;
 
-		  			ServerConnection.location = configList.server[i].indirizzo;
-		  			listRepo@ServerConnection()(responseMessage);
+			  			registro;
 
-		  			tmp += responseMessage		  			
-		  		};
+			  			listRepo@ServerConnection()(responseMessage);
 
-		  		response = tmp
+			  			tmp += responseMessage  + " "			
+			  		};
+
+			  		response = tmp
+
+			  	}
+			  	else {
+
+			  		throw( datiNonCorretti )
+			  	}
 	  		}
 	  	}
-
 	  	/*
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
  		 * o sull'impossibilità di creare la repository
