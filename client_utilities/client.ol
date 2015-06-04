@@ -165,6 +165,7 @@ main
 			  	
 			}
 		}
+		
 
 		/* 
 	  	 * Ritorna la lista delle repositories locali,
@@ -205,6 +206,7 @@ main
 			}
 				
 		}
+
 		
 	  	/* 
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
@@ -250,9 +252,10 @@ main
 			}
 	  	}
 
+
 		/*
-		 * Cancella il server inserito,
-		 * con un ulteriore ciclo riordina l'array di sottonodi
+		 * Cancella il server inserito, con un ulteriore ciclo riordina l'array di sottonodi, e si
+		 * gestiscono le eccezioni in caso il server non esista oppure di dati inseriti non correttamente
 		 */
 		else if(resultSplit.result[0] == "removeServer"){
 
@@ -301,13 +304,16 @@ main
 	  		}
 	  	}
 
-	  	
+
+	   /*
+	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
+	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
+	  	*/
 	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos" ){
 
 	  		scope( ConnectException )
 	  		{
 	  			
-	  			// Salta questa eccezione quando non esiste il server 
 	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
 	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti \n");
 
@@ -336,6 +342,8 @@ main
 			  	}
 	  		}
 	  	}
+
+
 	  	/*
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
  		 * o sull'impossibilità di creare la repository
@@ -344,13 +352,17 @@ main
 
 	  		scope( ConnectException )
 	  		{
-	  			// Salta questa eccezione quando non esiste il server 
+
 	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
 	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
 	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
 
 	  			if(#resultSplit.result == 4) {
+<<<<<<< HEAD
 	  				
+=======
+
+>>>>>>> origin/master
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
 			  		message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
@@ -360,11 +372,14 @@ main
 			  		registro;
 
 			  		// Invia tutto al server, il quale ritorna un errore (se presente) 
-			  		// Ed un messaggio che descrive l'errore
+			  		// ed un messaggio che descrive l'errore
 			  		addRepository@ServerConnection(message)(responseMessage);
 
 			  		if(responseMessage.error) throw( AddError )
 
+			  		// Altrimenti si prendono tutti i file della cartella richiesta
+			  		// ed ognuno di essi viene convertito in binario per leggere il contenuto,
+			  		// in seguito si rinomina secondo il nome scritto in input e si invia al server
 			  		else{
 
 			  			//creo la repository locale
@@ -396,11 +411,17 @@ main
 
 					response = responseMessage.message
 				}
+
 				else
 					throw( datiNonCorretti )
 	  		}
 	  	}
 
+
+	  	/*
+	  	 * Cancellazione della repository nel server e nel client, gestendo le eccezioni in caso di server irraggiungibile
+	  	 * oppure di dati inseriti non correttamente.
+	  	 */
 	  	else if(resultSplit.result[0] == "delete"){
 
 			scope(dati) {
@@ -413,24 +434,27 @@ main
 	  				message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 
+			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
-	  					
+	  				
+	  				// Invio dei dati al server, aspettando un messaggio di risposta	
 	  				delete@ServerConnection(message)(responseMessage);	
 
+	  				// Se si è verificato un errore, viene stampato il messaggio relativo
 	  				if(responseMessage.error) {
 
 			  			response = responseMessage.message
 			  		}
 
+			  		// Altrimenti viene richiamato il metodo per eliminare la cartella locale
 			  		else {
 
 			  			deleteDir@File("LocalRepo/"+message.repoName)(deleted);
 
 			  			response = responseMessage.message
 			  		}
-
-
 	  			}
+
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
