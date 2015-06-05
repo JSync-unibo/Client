@@ -45,7 +45,7 @@ define registro
   		
   		if( name == message.serverName ) {
   			
-  			ServerConnection.location = address
+  			ServerConnection.Location = address
   		  
   		}
   	} 
@@ -59,7 +59,8 @@ define registro
  */
 define readFile
 {
-	
+	undef( configList );
+
 	scope( fileXml )
 	{
 		undef( file );
@@ -89,6 +90,7 @@ define writeFile
 
 	stringXml.rootNodeName = "configList";
 	stringXml.root << configList;
+	stringXml.indent = true;
 
 	// Trasforma la variabile in una stringa in formato xml
 	valueToXml@XmlUtils(stringXml)(fileXml);
@@ -101,17 +103,6 @@ define writeFile
 	writeFile@File(file)()
 }
 
-init
-{
-	// Legge il file xml
-  	readFile;
-
-  	// Se non esiste allora lo scrive
-	if(!configList)
-
-		writeFile
-}
-
 execution{ sequential }
 
 main
@@ -121,6 +112,18 @@ main
 	 * Accetta una stringa e ritorna il risultato sempre sotto forma di stringa
 	 */
   	sendCommand(input)(response) {
+
+  		readFile;
+
+		if(!configList)
+
+			writeFile
+
+		else{
+
+			configList.vuoto = false;
+			writeFile
+		};
 
   		
   		input.regex = " ";
@@ -136,7 +139,7 @@ main
 	  		scope(dati) {
 	  			
 	  			// Nel caso in cui i dati inseriti non siano corretti
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
 	  			if(#resultSplit.result == 2) {
 
@@ -154,7 +157,7 @@ main
 			  		// Prepara la variabile response, cioè l'output che sarà visualizzato
 			  		if(tmp==""){
 
-			  			response = " Non esistono servers\n"
+			  			response = " There are no servers.\n"
 			  		}
 			  		else {
 			  			response = tmp
@@ -175,7 +178,7 @@ main
 
 	  		scope(dati) {
 	  			
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n" );
 				
 				if(#resultSplit.result == 2) {
 	  				
@@ -193,7 +196,7 @@ main
 					
 					if(tmp==""){
 
-			  			response = " Non esisto repositories locali\n"
+			  			response = " There are no local repositories.\n"
 			  		}
 			  		else {
 			  			response = tmp
@@ -204,7 +207,6 @@ main
 					throw(datiNonCorretti)
 				}
 			}
-				
 		}
 
 		
@@ -217,8 +219,8 @@ main
 	  		scope(dati) {
 	  			
 	  			// Salta un eccezione anche se esiste già il server con lo stesso nome
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n");
-	  			install( serverDoppio => response = " Il nome del server inserito gia' esiste\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n");
+	  			install( serverDoppio => response = " "+resultSplit.result[1]+" name is already in use.\n" );
 
 	  			if(#resultSplit.result == 3) {
 
@@ -242,7 +244,7 @@ main
 
 			  		writeFile;
 
-					response= " Server aggiunto\n"
+					response= " Success, server added.\n"
 				}
 
 				else {
@@ -261,11 +263,11 @@ main
 
 			scope(dati) {
 	  			
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
-	  			install( serverNonEsiste => response = " Il server inserito non esiste\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n");
+	  			install( serverNonEsiste => response = " "+resultSplit.result[1]+" does not exist.\n" );
 
 	  			if(#resultSplit.result == 2) {
-					
+
 					readFile;
 
 	  				if( !is_defined( configList.server ) )
@@ -282,22 +284,25 @@ main
 			  				// Lo elimina e riordina l'array
 			  				undef(configList.server[i]);
 
+			  				
 			  				for(j = i, j < #configList.server, j++){
 
 			  					configList.server[i] = configList.server[j]
 			  				};
-
-							writeFile;
-
+							
 			  				trovato = true
 			  			}
 	  				};
 
-	  				if(trovato)			
-	  					response = " Server eliminato\n"
+
+	  				if(trovato){
+	  					writeFile;
+	  					response = " Success, removed server.\n"
+	  				}
 	  				
 	  				else
 	  					throw(serverNonEsiste)
+
 	  			}
 	  			else 
 			  		throw( datiNonCorretti )
@@ -314,8 +319,8 @@ main
 	  		scope( ConnectException )
 	  		{
 	  			
-	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti \n");
+	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n");
 
 	  			if(#resultSplit.result == 2) {
 	  				
@@ -334,7 +339,13 @@ main
 			  			tmp += responseMessage  + " "			
 			  		};
 
-			  		response = tmp
+			  		if(tmp==""){
+
+			  			response = " There are no servers.\n"
+			  		}
+			  		else {
+			  			response = tmp
+			  		}
 
 			  	}
 			  	else {
@@ -354,9 +365,9 @@ main
 	  		scope( ConnectException )
 	  		{
 
-	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
-	  			install( AddError => response = " Impossibile creare la repository scelta\n" );
+	  			//install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n" );
+	  			install( AddError => response = responseMessage.message );
 
 	  			if(#resultSplit.result == 4) {
 	  				
@@ -403,7 +414,19 @@ main
 			  				//scrivo il singolo file nella repo locale
 			  				toSend.filename = "localRepo/"+toSend.filename;
 			  				writeFile@File(toSend)()
-			  			}
+			  			};
+
+			  			//preparazione del file di versione
+			  			toSend.filename = message.repoName+"/vers.txt";
+			  			roSend.content = "0.1";
+
+			  			//invio file
+			  			sendFile@ServerConnection( toSend );
+
+			  			//scrittura locale del file di versione
+			  			toSend.filename = "localRepo/"+toSend.filename;
+		  				writeFile@File(toSend)()
+
 					};
 
 					response = responseMessage.message
@@ -423,8 +446,8 @@ main
 
 			scope(dati) {
 
-	  			install( IOException => response = " Errore di connessione, il server e' inesistente o non raggiungibile\n" );
-	  			install( datiNonCorretti => response = " I dati inseriti non sono corretti\n" );
+	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
 	  			if(#resultSplit.result == 3) {
 
@@ -459,6 +482,6 @@ main
 
 	  	// Messaggio di avviso di comando scritto non correttamente
 	  	else
-	  		response = " Comando non riconosciuto\n"
+	  		response = " "+resultSplit.result[0]+" is not a recognized command. \n"
   	}
 }
