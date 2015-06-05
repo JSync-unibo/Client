@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configList _jolie_type="void">
 <server _jolie_type="void">
-<indirizzo _jolie_type="string">localhost:4000</indirizzo>
+<indirizzo _jolie_type="string">socket://localhost:4000</indirizzo>
 <nome _jolie_type="string">server1</nome>
 </server>
 <vuoto _jolie_type="bool">true</vuoto>

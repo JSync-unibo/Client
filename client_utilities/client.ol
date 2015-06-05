@@ -365,7 +365,7 @@ main
 	  		scope( ConnectException )
 	  		{
 
-	  			//install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 	  			install( AddError => response = responseMessage.message );
 
