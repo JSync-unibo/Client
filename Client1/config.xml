@@ -4,5 +4,9 @@
 <indirizzo _jolie_type="string">localhost:4000</indirizzo>
 <nome _jolie_type="string">server1</nome>
 </server>
+<server _jolie_type="void">
+<indirizzo _jolie_type="string">socket://localhost:5000</indirizzo>
+<nome _jolie_type="string">server2</nome>
+</server>
 <vuoto _jolie_type="bool">true</vuoto>
 </configList>
