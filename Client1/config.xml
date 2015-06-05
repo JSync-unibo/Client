@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configList _jolie_type="void">
 <server _jolie_type="void">
-<indirizzo _jolie_type="string">localhost:4000</indirizzo>
-<nome _jolie_type="string">server1</nome>
+<indirizzo _jolie_type="string">s3</indirizzo>
+<nome _jolie_type="string">s2</nome>
+</server>
+<server _jolie_type="void">
+<indirizzo _jolie_type="string">s3</indirizzo>
+<nome _jolie_type="string">s2</nome>
 </server>
 <server _jolie_type="void">
 <indirizzo _jolie_type="string">socket://localhost:5000</indirizzo>
