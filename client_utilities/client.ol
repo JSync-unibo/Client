@@ -59,7 +59,7 @@ define registro
  */
 define readFile
 {
-	undef( configList );
+	//undef( configList );
 
 	scope( fileXml )
 	{
