@@ -204,11 +204,12 @@ main
 			  				// Lo elimina e riordina l'array
 			  				undef(configList.server[i]);
 			  				
+			  				/*
 			  				for(j = i, j < #configList.server, j++){
 
 			  					configList.server[i] = configList.server[j]
 			  				};
-							
+							*/
 							// Setta la variabile a true, per segnalare che è stato trovato
 			  				trovato = true
 			  			}
@@ -247,34 +248,30 @@ main
 
 	  			if(#message.result == 2) {
 	  				
-		  			tmp = "";
+		  			if( #configList.server>0 ){
 
-			  		for (i=0, i< #configList.server, i++) {
-			  			
-			  			// Inserito l'indirizzo per collegarsi al server
-			  			ServerConnection.location = configList.server[i].indirizzo;
+				  		for (i=0, i< #configList.server, i++) {
+				  			
+				  			// Inserito l'indirizzo per collegarsi al server
+				  			ServerConnection.location = configList.server[i].address;
 
-			  			tmp += " - "+configList.server[i].nome +":\n";
-			  			
-			  			registro;
-			  			listRepo@ServerConnection()(responseMessage);
+				  			response += " - "+configList.server[i].name +":\n";
+				  			
+				  			registro;
+				  			listRepo@ServerConnection()(responseMessage);
 
-			  			tmp += responseMessage  + " "			
-			  		};
+				  			response += responseMessage  + " "			
+				  		}
+				  	}
 
-			  		if(tmp==""){
-
+			  		else
 			  			response = " There are no servers.\n"
-			  		}
-			  		else {
-			  			response = tmp
-			  		}
 
 			  	}
-			  	else {
 
+			  	else 
 			  		throw( datiNonCorretti )
-			  	}
+			  	
 	  		}
 	  	} ] { nullProcess }
 
@@ -295,9 +292,9 @@ main
 	  			if(#message.result == 4) {
 	  				
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
-			  		message.serverName = resultSplit.result[1];
-			  		message.repoName = resultSplit.result[2];
-			  		message.localPath = resultSplit.result[3];
+			  		message.serverName = message.result[1];
+			  		message.repoName = message.result[2];
+			  		message.localPath = message.result[3];
 
 			  		// Richiama il registro definito all'inizio
 			  		registro;
