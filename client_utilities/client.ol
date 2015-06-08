@@ -36,8 +36,8 @@ define registro
 	
   	ServerConnection.protocol = "sodep";
 
-  	name -> configList.server[i].nome;
-  	address -> configList.server[i].indirizzo;
+  	name -> configList.server[i].name;
+  	address -> configList.server[i].address;
 
   	for(i=0, i<#configList.server, i++) {
   		
