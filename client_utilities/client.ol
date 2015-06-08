@@ -245,7 +245,7 @@ main
 	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n");
 
-	  			if(#resultSplit.result == 2) {
+	  			if(#message.result == 2) {
 	  				
 		  			tmp = "";
 
@@ -292,7 +292,7 @@ main
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 	  			install( AddError => response = responseMessage.message );
 
-	  			if(#resultSplit.result == 4) {
+	  			if(#message.result == 4) {
 	  				
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
 			  		message.serverName = resultSplit.result[1];
@@ -376,7 +376,7 @@ main
 	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
-	  			if(#resultSplit.result == 3) {
+	  			if(#message.result == 3) {
 
 	  				message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
