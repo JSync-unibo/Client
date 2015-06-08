@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
+<serverList _jolie_type="void"/>
+=======
 <configList _jolie_type="void">
 <server _jolie_type="void">
 <indirizzo _jolie_type="string">s3</indirizzo>
@@ -14,3 +17,4 @@
 </server>
 <vuoto _jolie_type="bool">true</vuoto>
 </configList>
+>>>>>>> origin/master
