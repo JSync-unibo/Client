@@ -8,7 +8,7 @@
 
 include "string_utils.iol"
 
-//Interfaccia fra il cli ed il client
+// Interfaccia fra il cli ed il client, con i comandi possibili
 interface CliInterface {
 
     RequestResponse: 
@@ -25,6 +25,8 @@ interface CliInterface {
 
 }
 
+// Formato del file xml, che contiene un sottotipo server
+// (che può anche non esserci) con i relativi dati
 type xmlFileFormat: void { 
 
     .server*:void{
@@ -34,7 +36,8 @@ type xmlFileFormat: void {
     }
 }
 
-interface fileManager {
+// Interfaccia fra il client ed il file manager
+interface FileManager {
 
     RequestResponse: 
 
@@ -42,10 +45,22 @@ interface fileManager {
         writeXmlFile(xmlFileFormat)(void)
 }
 
+// Porta che collega il client con il cli, attraverso l'embedding
 outputPort ToClient{
+    
     Interfaces: CliInterface
 }
 
 embedded {
     Jolie: "../client_utilities/client.ol" in ToClient
+}
+
+// Porta che collega il client con il file manager da cui legge/scrive il file xml, sempre con l'embedding
+outputPort FileManager{
+    
+    Interfaces: FileManager
+}
+
+embedded {
+    Jolie: "../client_utilities/fileManager.ol" in FileManager
 }

@@ -7,7 +7,7 @@
 */
 
 // Importazione delle interfacce
-include "../client_utilities/interfaces/local.iol"
+include "../client_utilities/interfaces/localInterface.iol"
 include "../client_utilities/interfaces/toServer.iol"
 
 
@@ -21,14 +21,6 @@ inputPort FromCli {
 
   	Location: "local"
   	Interfaces: CliInterface 
-}
-
-outputPort FileManager {
-	Interfaces: fileManager
-}
-
-embedded {
-	Jolie: "fileManager/fileManager.ol" in FileManager
 }
 
 
@@ -57,19 +49,6 @@ define registro
   	} 
 }
 
-/*
-init
-{
-  	undef(configList);
-
-  	readXmlFile@FileManager()(configList);
-
-  	if(!is_defined( configList ))
-
-		writeXmlFile@FileManager(configList)()
-}
-*/
-
 execution{ concurrent }
 
 main
@@ -78,7 +57,7 @@ main
   		 * Ritorna la lista dei server,
   		 * se non esiste ritorna una stringa di errore
   		 */
-  		[ listServers( message )( response ) {
+  		[ listServers ( message )( response ) {
 
 	  		scope(dati) {
 
@@ -87,11 +66,7 @@ main
 
 	  			if(#message.result == 2) {
 
-	  				// Lettura del file xml, per controllare se già esiste o bisogna crearlo
-	  				//readConfigList;
-
-			  		// Refresh della variabile
-			  		//readFile;
+	  				// Lettura del file xml, con risultato la variabile contenente i server
 			  		readXmlFile@FileManager()(configList);
 
 
@@ -112,16 +87,14 @@ main
 			  		throw( datiNonCorretti )
 			}
 			  	
-			} ] { nullProcess }
+		} ] { nullProcess }
 
-		
-		
 
 		/* 
 	  	 * Ritorna la lista delle repositories locali,
 	  	 * se non sono presenti ritorna una stringa di avviso
 	  	 */
-		[ listRegRepos( message )( response ) {
+		[ listRegRepos ( message )( response ) {
 
 	  		scope(dati) {
 	  			
@@ -149,6 +122,7 @@ main
 					throw(datiNonCorretti)
 				}
 			}
+
 		} ] { nullProcess }
 
 		
@@ -156,8 +130,7 @@ main
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
 	  	 * i dati corretti oppure se il server già esiste
 	  	 */
-
-	  	[ addServer (message) (response) {
+	  	[ addServer (message)(response) {
 	  		
 	  		scope(dati) {
 	  			
@@ -165,11 +138,8 @@ main
 	  			install( datiNonCorretti => response = " Not correct data.\n");
 	  			install( serverDoppio => response = " "+message.result[1]+" name is already in use.\n" );
 
-
 	  			//response = message.result[1] +"\n"+message.result[2]
 	  			if(#message.result == 3) {
-
-					//readFile;
 
 					// Controllo in tutti i server salvati se esiste già lo stesso nome
 					// Se esiste salta il fault e rompe l'intero scope
@@ -177,6 +147,7 @@ main
 					for(i = 0, i < #configList.server, i++) {
 
 						if(message.result[1] == configList.server[i].nome) {
+							
 							throw( serverDoppio )
 						}
 					};
@@ -187,6 +158,7 @@ main
 			  		configList.server[size].name = message.result[1];
 			  		configList.server[size].address = message.result[2];
 
+			  		// Scrittura del file xml per aggiungere il nuovo server
 			  		writeXmlFile@FileManager(configList)();
 
 					response= " Success, server added.\n"
@@ -194,6 +166,7 @@ main
 
 				
 				else {
+
 					throw(datiNonCorretti)
 				}				
 			}
@@ -205,8 +178,7 @@ main
 		 * Cancella il server inserito, con un ulteriore ciclo riordina l'array di sottonodi, e si
 		 * gestiscono le eccezioni in caso il server non esista oppure di dati inseriti non correttamente
 		 */
-
-		[ removeServer (message) (response){
+		[ removeServer (message)(response){
 
 			scope(dati) {
 	  			
@@ -215,36 +187,35 @@ main
 
 	  			if(#message.result == 2) {
 
+	  				// Lettura del file xml, che ritorna la lista dei server
 					readXmlFile@FileManager()(configList);
-
-	  				if( !is_defined( configList.server ) )
-
-	  					throw( serverNonEsiste );
-
+			
+					// Setta la variabile di server trovato a false
 	  				trovato = false;
 
 			  		for(i = 0, i < #configList.server, i++) {
 
-			  			// Il caso in cui trova il server da eliminare
+			  			// In caso trova il server da eliminare
 			  			if(message.result[1] == configList.server[i].name){
 
 			  				// Lo elimina e riordina l'array
 			  				undef(configList.server[i]);
-
 			  				
 			  				for(j = i, j < #configList.server, j++){
 
 			  					configList.server[i] = configList.server[j]
 			  				};
 							
+							// Setta la variabile a true, per segnalare che è stato trovato
 			  				trovato = true
 			  			}
 	  				};
 
-
+	  				// Se è stato trovato scrive nuovamente il file, con il server rimosso
 	  				if(trovato){
 	  					
 	  					writeXmlFile@FileManager(configList)();
+
 	  					response = " Success, removed server.\n"
 	  				}
 	  				
@@ -255,16 +226,15 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
-	  	} ] { nullProcess }
 
+	  	} ] { nullProcess }
 
 
 	   /*
 	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
 	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
 	  	*/
-
-	  	[ listNewRepos (message) (response){
+	  	[ listNewRepos (message)(response){
 
 	  		scope( ConnectException )
 	  		{
@@ -306,13 +276,11 @@ main
 	  	} ] { nullProcess }
 
 
-
 	  	/*
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
  		 * o sull'impossibilità di creare la repository
 	  	 */
-
-	  	[ addRepos (message) (response){
+	  	[ addRepos (message)(response){
 
 	  		scope( ConnectException )
 	  		{
@@ -342,40 +310,44 @@ main
 			  		// in seguito si rinomina secondo il nome scritto in input e si invia al server
 			  		else{
 
-			  			//creo la repository locale
+			  			// Creo la repository locale
 			  			mkdir@File("localRepo/"+message.repoName)(success);
 
-			  			//cerco tutti i file nella cartella locale da caricare
+			  			// Cerco tutti i file nella cartella locale da caricare
 			  			toSearch.directory = message.localPath;
+			  			
 			  			list@File(toSearch)(listaFile);
 
-			  			//controllo tutti i file nella cartella locale
+			  			// Controllo tutti i file nella cartella locale
 			  			for(i=0, i<#listaFile.result, i++){
 
-			  				//preparo il file per la lettura
+			  				// Preparo il file per la lettura
 			  				readedFile.filename = message.localPath+"/"+listaFile.result[i];
+			  				
 			  				readedFile.format ="binary";
 
-			  				//preparo il file per la scrittura
+			  				// Preparo il file per la scrittura
 			  				readFile@File(readedFile)(toSend.content);
+			  				
 			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
 
-			  				//invio il singolo file per la scrittura sul server
+			  				// Invio il singolo file per la scrittura sul server
 			  				sendFile@ServerConnection( toSend );
 
-			  				//scrivo il singolo file nella repo locale
+			  				// Scrivo il singolo file nella repo locale
 			  				toSend.filename = "localRepo/"+toSend.filename;
+			  				
 			  				writeFile@File(toSend)()
 			  			};
 
-			  			//preparazione del file di versione
+			  			// Preparazione del file di versione
 			  			toSend.filename = message.repoName+"/vers.txt";
-			  			roSend.content = "0.1";
+			  			toSend.content = "0.1";
 
-			  			//invio file
+			  			// Invio file
 			  			sendFile@ServerConnection( toSend );
 
-			  			//scrittura locale del file di versione
+			  			// Scrittura locale del file di versione
 			  			toSend.filename = "localRepo/"+toSend.filename;
 		  				writeFile@File(toSend)()
 
@@ -394,8 +366,7 @@ main
 	  	 * Cancellazione della repository nel server e nel client, gestendo le eccezioni in caso di server irraggiungibile
 	  	 * oppure di dati inseriti non correttamente.
 	  	 */
-
-	  	[ delete (message) (response){
+	  	[ delete (message)(response){
 
 			scope(dati) {
 
@@ -431,6 +402,7 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
+
 	  	}] { nullProcess }
 
 	  	// Messaggio di avviso di comando scritto non correttamente

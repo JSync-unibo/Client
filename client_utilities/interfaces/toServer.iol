@@ -1,4 +1,12 @@
 /*
+*
+* Author => Gruppo LOBSTER
+* Data => 04/05/2015
+* Parent => Client
+*
+*/
+
+/*
  * Tipo che si riferisce al comando inserito in console
  * con un sottotipo opzionale con i parametri richiesti
  * in input
@@ -43,6 +51,7 @@ interface ToServerInterface {
                     
 }
 
+// Porta che collega il client con il server
 outputPort ServerConnection {
     Interfaces: ToServerInterface
 }

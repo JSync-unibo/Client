@@ -1,10 +1,20 @@
-include "../client_utilities/interfaces/local.iol"
+/*
+*
+* Author => Gruppo LOBSTER
+* Data => 04/05/2015
+* Parent => Client
+*
+*/
+
+include "../client_utilities/interfaces/localInterface.iol"
 include "file.iol"
 include "xml_utils.iol"
 
-inputPort LocalIn {
+// Porta che collega il file manager con il client
+inputPort FromClient {
+	
 	Location: "local"
-	Interfaces: fileManager
+	Interfaces: FileManager
 }
 
 execution{ concurrent }

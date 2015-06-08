@@ -9,7 +9,7 @@
 */
 
 include "console.iol"
-include "../client_utilities/interfaces/local.iol"
+include "../client_utilities/interfaces/localInterface.iol"
 
 
 init
@@ -74,43 +74,47 @@ main
 
 	  		split@StringUtils( root.command )( resultSplit );
 
+	  		// Ritorna la lista di servers
 	  		if(resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
 
 	  			listServers@ToClient( resultSplit )( result )
 	  		}
 
+	  		// Ritorna la lista delle repositories locali
 	  		else if( resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos" ) {
 
-	  			listRegRepos@ToClient( resultSplit )( result)
+	  			listRegRepos@ToClient( resultSplit )( result )
 
 	  		}
 	  		
+	  		// Aggiunge un server nella lista del file xml
 	  		else if ( resultSplit.result[0] == "addServer" ) {
 	  			
-	  			addServer@ToClient( resultSplit )(result)
+	  			addServer@ToClient( resultSplit )( result )
 	  		  
 	  		}
 
+	  		// Rimuove un server nella lista del file xml
 	  		else if ( resultSplit.result[0] == "removeServer" ) {
-	  			removeServer@ToClient( resultSplit )(result)
+	  			
+	  			removeServer@ToClient( resultSplit )( result )
 	  		  
 	  		}
 			
+			// Ritorna la lista delle repositories presenti nel server richiesto
 			else if ( resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos") {
-	  			listNewRepos@ToClient( resultSplit )(result)
+	  			
+	  			listNewRepos@ToClient( resultSplit )( result )
 	  		  
 	  		}
 
-	  		else if ( resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos") {
-	  			listNewRepos@ToClient( resultSplit )(result)
-	  		  
-	  		}
-
+	  		// Aggiunge una repository in locale e sul server, partendo da un path selezionato
 	  		else if ( resultSplit.result[0] == "addRepository") {
 	  			addRepos@ToClient( resultSplit )(result)
 	  		  
 	  		}
 
+	  		// Elimina una repository in locale e sul server
 			else if ( resultSplit.result[0] == "delete") {
 	  			delete@ToClient( resultSplit )(result)
 	  		  
@@ -121,9 +125,6 @@ main
 
 	  		push@ToClient( resultSplit )( result );
 												*/
-
-
-			//sendCommand@ToClient( resultSplit )( result );
 
 			println@Console( result )()
 		}

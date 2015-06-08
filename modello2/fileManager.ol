@@ -2,6 +2,8 @@ include "interfaceA.iol"
 include "file.iol"
 include "xml_utils.iol"
 
+/* Servizio contenente la lettura e la scrittura del file xml, da richiamare nei comandi */
+
 inputPort LocalIn {
 	Location: "local"
 	Interfaces: fileManager
@@ -12,9 +14,12 @@ execution{ concurrent }
 main
 {
 
-	/*
-
-	 */
+   /* 
+ 	* Legge il file xml e ritorna tutti i dati contenuti, sottoforma di una variabile.
+ 	* Può generare FileNotFound, in quel caso si segna che è vuota.
+ 	*
+ 	* In seguito l'intero file è salvato nella variabile configList, convertendolo
+ 	*/
   	[readXmlFile()(serverList){
 
   		scope( fileXml )
@@ -34,14 +39,17 @@ main
 			xmlToValue@XmlUtils(readedFile)(response)
 
 		}
+
   	}]{ 
   		undef(serverList);
   		undef(file) 
   	}
 
-  	/*
 
-  	 */
+   /*
+ 	* Scrive il file xml (se non lo trova non genera fault, ma lo crea per la prima volta)
+ 	* partendo dalla variabile configList  
+ 	*/
   	[writeXmlFile(serverList)(){
 
   		stringXml.rootNodeName = "serverList";
@@ -57,6 +65,7 @@ main
 
 		// Crea il file xml partendo dalla stringa nello stesso formato 
 		writeFile@File(file)()
+
   	}]{ 
   		undef(serverList);
   		undef(file) 
