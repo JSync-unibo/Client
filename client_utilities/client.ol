@@ -149,8 +149,7 @@ main
 					// Non avviene nessun inserimento
 					for(i = 0, i < #configList.server, i++) {
 
-						println@Console( configList.server[i].nome )();
-						if(message.result[1] == configList.server[i].nome) {
+						if(message.result[1] == configList.server[i].name) {
 							
 							throw( serverDoppio )
 						}

@@ -4,8 +4,4 @@
 <address _jolie_type="string">a1</address>
 <name _jolie_type="string">s1</name>
 </server>
-<server _jolie_type="void">
-<address _jolie_type="string">a1</address>
-<name _jolie_type="string">s1</name>
-</server>
 </serverList>
