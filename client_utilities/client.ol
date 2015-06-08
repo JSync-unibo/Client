@@ -7,12 +7,11 @@
 */
 
 // Importazione delle interfacce
-include "../client_utilities/interfaces/interfaceLocalA.iol"
+include "../client_utilities/interfaces/local.iol"
 include "../client_utilities/interfaces/toServer.iol"
 
 
 include "types/Binding.iol"
-include "string_utils.iol"
 include "xml_utils.iol"
 include "file.iol"
 include "console.iol"
@@ -24,6 +23,14 @@ inputPort FromCli {
   	Interfaces: CliInterface 
 }
 
+outputPort FileManager {
+	Interfaces: fileManager
+}
+
+embedded {
+	Jolie: "fileManager/fileManager.ol" in FileManager
+}
+
 
 /* 
  * Setta la location in base al nome ed indirizzo del server.
@@ -32,7 +39,6 @@ inputPort FromCli {
  * server tramite il suo indirizzo preso dalla lista
  *
  */
-
 define registro
 {
 	
@@ -51,187 +57,126 @@ define registro
   	} 
 }
 
-/* 
- *	Legge il file xml e ritorna tutti i dati contenuti, sottoforma di una variabile.
- *	Può generare FileNotFound, in quel caso si segna che è vuota.
- *
- *  In seguito l'intero file è salvato nella variabile configList, convertendolo
- */
-define readFile
-{
-	//undef( configList );
-
-	scope( fileXml )
-	{
-		undef( file );
-
-	  	// Se non esiste il file xml setta la variabile come vuota
-		install( FileNotFound => configList.vuoto = true );
-
-		// Paramentri per la lettura del file
-	  	file.filename = "config.xml";
-		file.format = "binary";
-
-		// Lettura file xml di configurazione
-		readFile@File(file)(configFile);
-
-		// Salva il file di configurazione nella variabile configList
-		xmlToValue@XmlUtils(configFile)(configList)
-	}
-}
-
 /*
- *	Scrive il file xml (se non lo trova non genera fault, ma lo crea per la prima volta)
- *  partendo dalla variabile configList  
- */
-define writeFile
+init
 {
-	undef( file );
+  	undef(configList);
 
-	stringXml.rootNodeName = "configList";
-	stringXml.root << configList;
-	stringXml.indent = true;
+  	readXmlFile@FileManager()(configList);
 
-	// Trasforma la variabile in una stringa in formato xml
-	valueToXml@XmlUtils(stringXml)(fileXml);
+  	if(!is_defined( configList ))
 
-    // Paramentri della scrittura file
-	file.content = fileXml;
-  	file.filename = "config.xml";
-
-	// Crea il file xml partendo dalla stringa nello stesso formato 
-	writeFile@File(file)()
+		writeXmlFile@FileManager(configList)()
 }
+*/
 
-execution{ sequential }
+execution{ concurrent }
 
 main
 {
-
-	/*
-	 * Accetta una stringa e ritorna il risultato sempre sotto forma di stringa
-	 */
-  	sendCommand(input)(response) {
-
-  		readFile;
-
-		if(!configList)
-
-			writeFile
-
-		else{
-
-			configList.vuoto = false;
-			writeFile
-		};
-
-  		
-  		input.regex = " ";
-
-	  	split@StringUtils(input)(resultSplit);
-
-  		/*
+		/*
   		 * Ritorna la lista dei server,
   		 * se non esiste ritorna una stringa di errore
   		 */
-	  	if( resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
+  		[ listServers( message )( response ) {
 
 	  		scope(dati) {
-	  			
+
 	  			// Nel caso in cui i dati inseriti non siano corretti
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
-	  			if(#resultSplit.result == 2) {
+	  			if(#message.result == 2) {
+
+	  				// Lettura del file xml, per controllare se già esiste o bisogna crearlo
+	  				//readConfigList;
 
 			  		// Refresh della variabile
-			  		readFile;
+			  		//readFile;
+			  		readXmlFile@FileManager()(configList);
 
-					tmp = "";
 
-					// Crea l'output
-			  		for(i = 0, i < #configList.server, i++) {
-			  			
-			  			tmp += " "+ configList.server[i].nome+ " - "+configList.server[i].indirizzo+ "\n"
-			  		};
+					if( #configList.server>0 ){
 
+						// Crea l'output
+				  		for(i = 0, i < #configList.server, i++) {
+				  			
+				  			response += " "+ configList.server[i].name+ " - "+configList.server[i].address+ "\n"
+				  		}
+
+				  	}
 			  		// Prepara la variabile response, cioè l'output che sarà visualizzato
-			  		if(tmp==""){
-
-			  			response = " There are no servers.\n"
-			  		}
-			  		else {
-			  			response = tmp
-			  		}
+			  		else
+						response = " There are no servers.\n"
 			  	}
 			  	else 
 			  		throw( datiNonCorretti )
-			  	
 			}
-		}
+			  	
+			} ] { nullProcess }
+
+		
 		
 
 		/* 
 	  	 * Ritorna la lista delle repositories locali,
 	  	 * se non sono presenti ritorna una stringa di avviso
 	  	 */
-	  	else if( resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos") {
+		[ listRegRepos( message )( response ) {
 
 	  		scope(dati) {
 	  			
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 				
-				if(#resultSplit.result == 2) {
-	  				
-	  				tmp = "";
+				if(#message.result == 2) {
 
 	  				printRepo.directory = "LocalRepo";
 
 	  				list@File(printRepo)(repo);
 
-					for(i = 0, i < #repo.result, i++){
-						
-						tmp += " " + repo.result[i] +"\n"
-					
-					};
-					
-					if(tmp==""){
+	  				if( #repo.result>0 ){
 
+						for(i = 0, i < #repo.result, i++){
+							
+							response += " " + repo.result[i] +"\n"
+						
+						}
+					}
+					
+					else
 			  			response = " There are no local repositories.\n"
-			  		}
-			  		else {
-			  			response = tmp
-			  		}
-			  	
 			  	}
 			  	else {
 					throw(datiNonCorretti)
 				}
 			}
-		}
+		} ] { nullProcess }
 
 		
 	  	/* 
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
 	  	 * i dati corretti oppure se il server già esiste
 	  	 */
-	  	else if(resultSplit.result[0] == "addServer") {
+
+	  	[ addServer (message) (response) {
 	  		
 	  		scope(dati) {
 	  			
 	  			// Salta un eccezione anche se esiste già il server con lo stesso nome
 	  			install( datiNonCorretti => response = " Not correct data.\n");
-	  			install( serverDoppio => response = " "+resultSplit.result[1]+" name is already in use.\n" );
+	  			install( serverDoppio => response = " "+message.result[1]+" name is already in use.\n" );
 
-	  			if(#resultSplit.result == 3) {
 
-					readFile;
+	  			//response = message.result[1] +"\n"+message.result[2]
+	  			if(#message.result == 3) {
+
+					//readFile;
 
 					// Controllo in tutti i server salvati se esiste già lo stesso nome
 					// Se esiste salta il fault e rompe l'intero scope
 					// Non avviene nessun inserimento
 					for(i = 0, i < #configList.server, i++) {
 
-						if(resultSplit.result[1] == configList.server[i].nome) {
+						if(message.result[1] == configList.server[i].nome) {
 							throw( serverDoppio )
 						}
 					};
@@ -239,36 +184,38 @@ main
 					// Inserisco il nuovo server nel primo spazio libero
 			  		size = #configList.server;
 
-			  		configList.server[size].nome = resultSplit.result[1];
-			  		configList.server[size].indirizzo = resultSplit.result[2];
+			  		configList.server[size].name = message.result[1];
+			  		configList.server[size].address = message.result[2];
 
-			  		writeFile;
+			  		writeXmlFile@FileManager(configList)();
 
 					response= " Success, server added.\n"
 				}
 
+				
 				else {
 					throw(datiNonCorretti)
-				}
-				
+				}				
 			}
-	  	}
+
+	  	}] { nullProcess }
 
 
 		/*
 		 * Cancella il server inserito, con un ulteriore ciclo riordina l'array di sottonodi, e si
 		 * gestiscono le eccezioni in caso il server non esista oppure di dati inseriti non correttamente
 		 */
-		else if(resultSplit.result[0] == "removeServer"){
+
+		[ removeServer (message) (response){
 
 			scope(dati) {
 	  			
 	  			install( datiNonCorretti => response = " Not correct data.\n");
-	  			install( serverNonEsiste => response = " "+resultSplit.result[1]+" does not exist.\n" );
+	  			install( serverNonEsiste => response = " "+message.result[1]+" does not exist.\n" );
 
-	  			if(#resultSplit.result == 2) {
+	  			if(#message.result == 2) {
 
-					readFile;
+					readXmlFile@FileManager()(configList);
 
 	  				if( !is_defined( configList.server ) )
 
@@ -279,7 +226,7 @@ main
 			  		for(i = 0, i < #configList.server, i++) {
 
 			  			// Il caso in cui trova il server da eliminare
-			  			if(resultSplit.result[1] == configList.server[i].nome){
+			  			if(message.result[1] == configList.server[i].name){
 
 			  				// Lo elimina e riordina l'array
 			  				undef(configList.server[i]);
@@ -296,7 +243,8 @@ main
 
 
 	  				if(trovato){
-	  					writeFile;
+	  					
+	  					writeXmlFile@FileManager(configList)();
 	  					response = " Success, removed server.\n"
 	  				}
 	  				
@@ -307,14 +255,16 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
-	  	}
+	  	} ] { nullProcess }
+
 
 
 	   /*
 	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
 	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
 	  	*/
-	  	else if(resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos" ){
+
+	  	[ listNewRepos (message) (response){
 
 	  		scope( ConnectException )
 	  		{
@@ -353,14 +303,16 @@ main
 			  		throw( datiNonCorretti )
 			  	}
 	  		}
-	  	}
+	  	} ] { nullProcess }
+
 
 
 	  	/*
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
  		 * o sull'impossibilità di creare la repository
 	  	 */
-	  	else if(resultSplit.result[0] == "addRepository"){
+
+	  	[ addRepos (message) (response){
 
 	  		scope( ConnectException )
 	  		{
@@ -435,14 +387,15 @@ main
 				else
 					throw( datiNonCorretti )
 	  		}
-	  	}
+	  	} ] { nullProcess }
 
 
 	  	/*
 	  	 * Cancellazione della repository nel server e nel client, gestendo le eccezioni in caso di server irraggiungibile
 	  	 * oppure di dati inseriti non correttamente.
 	  	 */
-	  	else if(resultSplit.result[0] == "delete"){
+
+	  	[ delete (message) (response){
 
 			scope(dati) {
 
@@ -478,10 +431,12 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
-	  	}
+	  	}] { nullProcess }
 
 	  	// Messaggio di avviso di comando scritto non correttamente
-	  	else
+	  	/*
+	  	else{
 	  		response = " "+resultSplit.result[0]+" is not a recognized command. \n"
-  	}
+	  	}
+  	*/
 }

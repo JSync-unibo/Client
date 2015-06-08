@@ -30,12 +30,14 @@ type ResponseMessage: void {
 //Interfaccia fra il client ed il server
 interface ToServerInterface { 
 
-  	RequestResponse: listRepo(void)(string),
+  	RequestResponse: 
 
-                    addRepository(ToServerType)(ResponseMessage),
-                    push(ToServerType)(ResponseMessage),
-                    pull(ToServerType)(ResponseMessage),
-                    delete(ToServerType)(ResponseMessage)
+        listRepo(void)(string),
+        
+        addRepository(ToServerType)(ResponseMessage),
+        push(ToServerType)(ResponseMessage),
+        pull(ToServerType)(ResponseMessage),
+        delete(ToServerType)(ResponseMessage)
 
     OneWay: sendFile( FileRequestType )
                     

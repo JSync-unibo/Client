@@ -9,7 +9,8 @@
 */
 
 include "console.iol"
-include "../client_utilities/interfaces/interfaceLocalA.iol"
+include "../client_utilities/interfaces/local.iol"
+
 
 init
 {
@@ -55,7 +56,7 @@ main
 	 * Fino a quando il comando inserito non è uguale a close,
 	 * accetta in input uno dei comandi: 
 	 * - help -> sarà ristampata la lista dei comandi disponibili
-	 * - comando della lista -> è inviato al client ed il cli aspetta una risposta
+	 * - comando della lista -> viene splittato, inviato al client e poi aspetta una risposta
 	 */
 	while( root.command != "close" ){
 
@@ -69,7 +70,60 @@ main
 	  	
 	  	else {
 
-			sendCommand@ToClient( root.command )( result );
+  			root.command.regex = " ";
+
+	  		split@StringUtils( root.command )( resultSplit );
+
+	  		if(resultSplit.result[0] == "list" && resultSplit.result[1] == "servers") {
+
+	  			listServers@ToClient( resultSplit )( result )
+	  		}
+
+	  		else if( resultSplit.result[0] == "list" && resultSplit.result[1] == "reg_repos" ) {
+
+	  			listRegRepos@ToClient( resultSplit )( result)
+
+	  		}
+	  		
+	  		else if ( resultSplit.result[0] == "addServer" ) {
+	  			
+	  			addServer@ToClient( resultSplit )(result)
+	  		  
+	  		}
+
+	  		else if ( resultSplit.result[0] == "removeServer" ) {
+	  			removeServer@ToClient( resultSplit )(result)
+	  		  
+	  		}
+			
+			else if ( resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos") {
+	  			listNewRepos@ToClient( resultSplit )(result)
+	  		  
+	  		}
+
+	  		else if ( resultSplit.result[0] == "list" && resultSplit.result[1] == "new_repos") {
+	  			listNewRepos@ToClient( resultSplit )(result)
+	  		  
+	  		}
+
+	  		else if ( resultSplit.result[0] == "addRepository") {
+	  			addRepos@ToClient( resultSplit )(result)
+	  		  
+	  		}
+
+			else if ( resultSplit.result[0] == "delete") {
+	  			delete@ToClient( resultSplit )(result)
+	  		  
+	  		};
+
+	  		/*
+	  		pull@ToClient( resultSplit )( result );
+
+	  		push@ToClient( resultSplit )( result );
+												*/
+
+
+			//sendCommand@ToClient( resultSplit )( result );
 
 			println@Console( result )()
 		}
