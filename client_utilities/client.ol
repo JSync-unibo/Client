@@ -57,14 +57,14 @@ main
   		 * Ritorna la lista dei server,
   		 * se non esiste ritorna una stringa di errore
   		 */
-  		[ listServers ( message )( response ) {
+  		[ listServers ( resultSplit )( response ) {
 
 	  		scope(dati) {
 
 	  			// Nel caso in cui i dati inseriti non siano corretti
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
-	  			if(#message.result == 2) {
+	  			if(#resultSplit.result == 2) {
 
 	  				// Lettura del file xml, con risultato la variabile contenente i server
 			  		readXmlFile@FileManager()(configList);
@@ -94,13 +94,13 @@ main
 	  	 * Ritorna la lista delle repositories locali,
 	  	 * se non sono presenti ritorna una stringa di avviso
 	  	 */
-		[ listRegRepos ( message )( response ) {
+		[ listRegRepos ( resultSplit )( response ) {
 
 	  		scope(dati) {
 	  			
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 				
-				if(#message.result == 2) {
+				if(#resultSplit.result == 2) {
 
 	  				printRepo.directory = "LocalRepo";
 
@@ -130,16 +130,16 @@ main
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
 	  	 * i dati corretti oppure se il server già esiste
 	  	 */
-	  	[ addServer (message)(response) {
+	  	[ addServer (resultSplit)(response) {
 	  		
 	  		scope(dati) {
 	  			
 	  			// Salta un eccezione anche se esiste già il server con lo stesso nome
 	  			install( datiNonCorretti => response = " Not correct data.\n");
-	  			install( serverDoppio => response = " "+message.result[1]+" name is already in use.\n" );
+	  			install( serverDoppio => response = " "+resultSplit.result[1]+" name is already in use.\n" );
 
 	  			//response = message.result[1] +"\n"+message.result[2]
-	  			if(#message.result == 3) {
+	  			if(#resultSplit.result == 3) {
 
 	  				// Lettura del file xml, con risultato la variabile contenente i server
 			  		readXmlFile@FileManager()(configList);
@@ -149,7 +149,7 @@ main
 					// Non avviene nessun inserimento
 					for(i = 0, i < #configList.server, i++) {
 
-						if(message.result[1] == configList.server[i].name) {
+						if(resultSplit.result[1] == configList.server[i].name) {
 							
 							throw( serverDoppio )
 						}
@@ -158,8 +158,8 @@ main
 					// Inserisco il nuovo server nel primo spazio libero
 			  		size = #configList.server;
 
-			  		configList.server[size].name = message.result[1];
-			  		configList.server[size].address = message.result[2];
+			  		configList.server[size].name = resultSplit.result[1];
+			  		configList.server[size].address = resultSplit.result[2];
 
 			  		// Scrittura del file xml per aggiungere il nuovo server
 			  		writeXmlFile@FileManager(configList)();
@@ -181,12 +181,12 @@ main
 		 * Cancella il server inserito, con un ulteriore ciclo riordina l'array di sottonodi, e si
 		 * gestiscono le eccezioni in caso il server non esista oppure di dati inseriti non correttamente
 		 */
-		[ removeServer (message)(response){
+		[ removeServer (resultSplit)(response){
 
 			scope(dati) {
 	  			
 	  			install( datiNonCorretti => response = " Not correct data.\n");
-	  			install( serverNonEsiste => response = " "+message.result[1]+" does not exist.\n" );
+	  			install( serverNonEsiste => response = " "+resultSplit.result[1]+" does not exist.\n" );
 
 	  			if(#message.result == 2) {
 
@@ -199,17 +199,16 @@ main
 			  		for(i = 0, i < #configList.server, i++) {
 
 			  			// In caso trova il server da eliminare
-			  			if(message.result[1] == configList.server[i].name){
+			  			if(resultSplit.result[1] == configList.server[i].name){
 
 			  				// Lo elimina e riordina l'array
 			  				undef(configList.server[i]);
 			  				
-			  				/*
 			  				for(j = i, j < #configList.server, j++){
 
 			  					configList.server[i] = configList.server[j]
 			  				};
-							*/
+							
 							// Setta la variabile a true, per segnalare che è stato trovato
 			  				trovato = true
 			  			}
@@ -238,7 +237,7 @@ main
 	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
 	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
 	  	*/
-	  	[ listNewRepos (message)(response){
+	  	[ listNewRepos (resultSplit)(response){
 
 	  		scope( ConnectException )
 	  		{
@@ -246,32 +245,36 @@ main
 	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n");
 
-	  			if(#message.result == 2) {
+	  			if(#resultSplit.result == 2) {
 	  				
-		  			if( #configList.server>0 ){
+		  			tmp = "";
 
-				  		for (i=0, i< #configList.server, i++) {
-				  			
-				  			// Inserito l'indirizzo per collegarsi al server
-				  			ServerConnection.location = configList.server[i].address;
+			  		for (i=0, i< #configList.server, i++) {
+			  			
+			  			// Inserito l'indirizzo per collegarsi al server
+			  			ServerConnection.location = configList.server[i].address;
 
-				  			response += " - "+configList.server[i].name +":\n";
-				  			
-				  			registro;
-				  			listRepo@ServerConnection()(responseMessage);
+			  			tmp += " - "+configList.server[i].name +":\n";
+			  			
+			  			registro;
+			  			listRepo@ServerConnection()(responseMessage);
 
-				  			response += responseMessage  + " "			
-				  		}
-				  	}
+			  			tmp += responseMessage  + " "			
+			  		};
 
-			  		else
+			  		if(tmp==""){
+
 			  			response = " There are no servers.\n"
+			  		}
+			  		else {
+			  			response = tmp
+			  		}
 
 			  	}
+			  	else {
 
-			  	else 
 			  		throw( datiNonCorretti )
-			  	
+			  	}
 	  		}
 	  	} ] { nullProcess }
 
@@ -280,7 +283,7 @@ main
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
  		 * o sull'impossibilità di creare la repository
 	  	 */
-	  	[ addRepos (message)(response){
+	  	[ addRepos (resultSplit)(response){
 
 	  		scope( ConnectException )
 	  		{
@@ -289,12 +292,12 @@ main
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 	  			install( AddError => response = responseMessage.message );
 
-	  			if(#message.result == 4) {
+	  			if(#resultSplit.result == 4) {
 	  				
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
-			  		message.serverName = message.result[1];
-			  		message.repoName = message.result[2];
-			  		message.localPath = message.result[3];
+			  		message.serverName = resultSplit.result[1];
+			  		message.repoName = resultSplit.result[2];
+			  		message.localPath = resultSplit.result[3];
 
 			  		// Richiama il registro definito all'inizio
 			  		registro;
@@ -311,7 +314,7 @@ main
 			  		else{
 
 			  			// Creo la repository locale
-			  			mkdir@File("localRepo/"+message.repoName)(success);
+			  			mkdir@File("LocalRepo/"+message.repoName)(success);
 
 			  			// Cerco tutti i file nella cartella locale da caricare
 			  			toSearch.directory = message.localPath;
@@ -335,7 +338,7 @@ main
 			  				sendFile@ServerConnection( toSend );
 
 			  				// Scrivo il singolo file nella repo locale
-			  				toSend.filename = "localRepo/"+toSend.filename;
+			  				toSend.filename = "LocalRepo/"+toSend.filename;
 			  				
 			  				writeFile@File(toSend)()
 			  			};
@@ -348,7 +351,7 @@ main
 			  			sendFile@ServerConnection( toSend );
 
 			  			// Scrittura locale del file di versione
-			  			toSend.filename = "localRepo/"+toSend.filename;
+			  			toSend.filename = "LocalRepo/"+toSend.filename;
 		  				writeFile@File(toSend)()
 
 					};
@@ -366,14 +369,14 @@ main
 	  	 * Cancellazione della repository nel server e nel client, gestendo le eccezioni in caso di server irraggiungibile
 	  	 * oppure di dati inseriti non correttamente.
 	  	 */
-	  	[ delete (message)(response){
+	  	[ delete (resultSplit)(response){
 
 			scope(dati) {
 
 	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
-	  			if(#message.result == 3) {
+	  			if(#resultSplit.result == 3) {
 
 	  				message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
