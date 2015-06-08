@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<<<<<<< HEAD
-<serverList _jolie_type="void"/>
-=======
-<configList _jolie_type="void">
+<serverList _jolie_type="void">
 <server _jolie_type="void">
-<indirizzo _jolie_type="string">s3</indirizzo>
-<nome _jolie_type="string">s2</nome>
+<address _jolie_type="string">socket://localhost:4000</address>
+<name _jolie_type="string">server1</name>
 </server>
-<server _jolie_type="void">
-<indirizzo _jolie_type="string">s3</indirizzo>
-<nome _jolie_type="string">s2</nome>
-</server>
-<server _jolie_type="void">
-<indirizzo _jolie_type="string">socket://localhost:5000</indirizzo>
-<nome _jolie_type="string">server2</nome>
-</server>
-<vuoto _jolie_type="bool">true</vuoto>
-</configList>
->>>>>>> origin/master
+</serverList>
