@@ -141,11 +141,15 @@ main
 	  			//response = message.result[1] +"\n"+message.result[2]
 	  			if(#message.result == 3) {
 
+	  				// Lettura del file xml, con risultato la variabile contenente i server
+			  		readXmlFile@FileManager()(configList);
+
 					// Controllo in tutti i server salvati se esiste già lo stesso nome
 					// Se esiste salta il fault e rompe l'intero scope
 					// Non avviene nessun inserimento
 					for(i = 0, i < #configList.server, i++) {
 
+						println@Console( configList.server[i].nome )();
 						if(message.result[1] == configList.server[i].nome) {
 							
 							throw( serverDoppio )

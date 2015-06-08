@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<serverList _jolie_type="void"/>
+<serverList _jolie_type="void">
+<server _jolie_type="void">
+<address _jolie_type="string">a1</address>
+<name _jolie_type="string">s1</name>
+</server>
+<server _jolie_type="void">
+<address _jolie_type="string">a1</address>
+<name _jolie_type="string">s1</name>
+</server>
+</serverList>
