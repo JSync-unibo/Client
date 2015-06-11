@@ -42,7 +42,7 @@ define registro
   	for(i=0, i<#configList.server, i++) {
   		
   		if( name == message.serverName ) {
-  			
+  	
   			ServerConnection.Location = address
   		  
   		}
