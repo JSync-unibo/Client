@@ -9,8 +9,6 @@
 include "../client_utilities/interfaces/localInterface.iol"
 include "file.iol"
 include "xml_utils.iol"
-include "string_utils.iol"
-
 
 // Porta che collega il file manager con il client
 inputPort FromClient {
@@ -150,7 +148,7 @@ main
 	 */
 	[visitFolder(directory)(folderList){
 
-		directory.regex = '/';
+		directory.regex = "/";
 		split@StringUtils(directory)(directoryPath);
 
 		numberPath = #directoryPath.result;
