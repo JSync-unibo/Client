@@ -343,22 +343,21 @@ main
 			  			mkdir@File("LocalRepo/"+message.repoName)(success);
 
 			  			// Cerco tutti i file nella cartella locale da caricare
-			  			toSearch.directory = message.localPath;
+			  			//toSearch.directory = message.localPath;
 			  			
-			  			list@File(toSearch)(listaFile);
+			  			//list@File(toSearch)(listaFile);
+			  			visitFolder@FileManager(message.localPath)(listaFile);
 
 			  			// Controllo tutti i file nella cartella locale
-			  			for(i=0, i<#listaFile.result, i++){
+			  			for(i=0, i<#listaFile.folder, i++){
 
 			  				// Preparo il file per la lettura
-			  				readedFile.filename = message.localPath+"/"+listaFile.result[i];
-			  				
+			  				readedFile.filename = message.localPath+"/"+listaFile.folder[i];
 			  				readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
 			  				readFile@File(readedFile)(toSend.content);
-			  				
-			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
+			  				toSend.filename = message.repoName+"/"+listaFile.folder[i];
 
 			  				// Invio il singolo file per la scrittura sul server
 			  				sendFile@ServerConnection( toSend );

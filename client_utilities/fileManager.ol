@@ -9,6 +9,7 @@
 include "../client_utilities/interfaces/localInterface.iol"
 include "file.iol"
 include "xml_utils.iol"
+include "string_utils.iol"
 
 
 // Porta che collega il file manager con il client
@@ -147,12 +148,15 @@ main
 	 * Visita ricorsivamente le cartelle locali del client, passando
 	 * la cartella iniziale del client e ritornando la stampa di tutte le sottocartelle
 	 */
-	[visitFolder(command)(folderList){
+	[visitFolder(directory)(folderList){
 
-		directory = command;
+		directory.regex = '/';
+		split@StringUtils(directory)(directoryPath);
+
+		numberPath = #directoryPath.result;
 
 		// Nome della cartella iniziale "LocalRepo"
-		radice.directory.name = command;
+		radice.directory.name = directoryPath.result[numberPath];
 
 		// Viene segnata con true, perchè già è stata visitata
 		radice.directory.mark = true;
