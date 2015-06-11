@@ -404,6 +404,82 @@ main
 
 	  	}] { undef( configList ) }
 
+
+	  	[ push (resultSplit)(response) {
+
+	  		scope(dati) {
+
+	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n" );
+
+	  			if(#resultSplit.result == 3) {
+
+	  				message.serverName = resultSplit.result[1];
+			  		message.repoName = resultSplit.result[2];
+
+			  		// Si richiama il registro per prelevare i dati del server
+			  		registro;
+	  				
+	  				// Invio dei dati al server, aspettando un messaggio di risposta	
+	  				push@ServerConnection(message)(responseMessage);	
+
+	  				// Se si è verificato un errore, viene stampato il messaggio relativo
+	  				if(responseMessage.error) {
+
+			  			response = responseMessage.message
+			  		}
+
+			  		else{
+
+			  			// Creo la repository locale
+			  			//mkdir@File("LocalRepo/"+message.repoName)(success);
+
+			  			// Cerco tutti i file nella cartella locale da caricare
+			  			toSearch.directory = "LocalRepo/"+message.repoName;
+			  			
+			  			list@File(toSearch)(listaFile);
+
+			  			println@Console( listaFile.result )();
+			  			// Controllo tutti i file nella cartella locale
+			  			for(i=0, i<#listaFile.result, i++){
+
+			  				// Preparo il file per la lettura
+			  				readedFile.filename = message.repoName+ "/"+listaFile.result[i];
+			  				
+			  				readedFile.format ="binary";
+
+			  				// Preparo il file per la scrittura
+			  				readFile@File(readedFile)(toSend.content);
+			  				
+			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
+
+			  				// Invio il singolo file per la scrittura sul server
+			  				sendFile@ServerConnection( toSend )
+
+			  				// Scrivo il singolo file nella repo locale
+			  				//toSend.filename = "LocalRepo/"+toSend.filename;
+			  				
+			  				//writeFile@File(toSend)()
+			  			}
+			  			
+			  			//creazione file di versione locale
+			  			//toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
+			  			//toSend.content = "0.1";
+
+			  			//writeFile@File(toSend)()
+					};
+
+					response = responseMessage.message
+				}
+
+	  			else 
+			  		throw( datiNonCorretti )
+	  		}
+
+
+
+	  	}] { undef( configList )}
+
 	  	// Messaggio di avviso di comando scritto non correttamente
 	  	/*
 	  	else{

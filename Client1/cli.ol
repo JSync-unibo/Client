@@ -118,13 +118,18 @@ main
 			else if ( resultSplit.result[0] == "delete") {
 	  			delete@ToClient( resultSplit )(result)
 	  		  
+	  		}
+
+	  		// Scrive l'ultima versione di una repo locale su quella del server
+	  		else if( resultSplit.result[0] == "push") {
+
+	  			push@ToClient( resultSplit )( result )
 	  		};
 
-	  		/*
-	  		pull@ToClient( resultSplit )( result );
+	  		/*pull@ToClient( resultSplit )( result );*/
 
-	  		push@ToClient( resultSplit )( result );
-												*/
+	  		
+												
 
 			println@Console( result )()
 		}
