@@ -44,13 +44,8 @@ define registro
   	for(i=0, i<#configList.server, i++) {
   		
   		if( name == message.serverName ) {
-<<<<<<< HEAD
-  			
+
   			ServerConnection.location = address
-=======
-  	
-  			ServerConnection.Location = address
->>>>>>> origin/master
   		  
   		}
   	} 
