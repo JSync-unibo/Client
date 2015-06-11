@@ -102,7 +102,26 @@ main
 	  			
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 				
-				if(#resultSplit.result == 2) {
+	  			if(#resultSplit.result == 2) {
+
+	  				printRepo.directory = "LocalRepo";
+
+	  				list@File(printRepo)(repo);
+
+	  				if( #repo.result>0 ){
+
+						for(i = 0, i < #repo.result, i++){
+							
+							response += " " + repo.result[i] +"\n"
+						
+						}
+					}
+					
+					else
+			  			response = " There are no local repositories.\n"
+			  	}
+
+				/*if(#resultSplit.result == 2) {
 
 					// Si richiama l'operazione del File manager per visitare tutte le cartelle in LocalRepo
 					visitFolder@FileManager("LocalRepo")(folderList);
@@ -122,7 +141,7 @@ main
 						}
 					}
 
-			  	}
+			  	}*/
 			  	else {
 					
 					throw(datiNonCorretti)
@@ -444,20 +463,23 @@ main
 			  			
 			  			list@File(toSearch)(listaFile);
 
-			  			println@Console( listaFile.result )();
 			  			// Controllo tutti i file nella cartella locale
-			  			for(i=0, i<#listaFile.result, i++){
+			  			for(i = 0, i< #listaFile.result, i++){
 
+			  				
 			  				// Preparo il file per la lettura
-			  				readedFile.filename = message.repoName+ "/"+listaFile.result[i];
+			  				readedFile.filename = message.repoName+"/"+listaFile.result[i];
+			  				
+			  				println@Console( readedFile.filename)();
 			  				
 			  				readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
 			  				readFile@File(readedFile)(toSend.content);
-			  				
-			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
 
+			  							  				
+			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
+			  				
 			  				// Invio il singolo file per la scrittura sul server
 			  				sendFile@ServerConnection( toSend )
 
