@@ -36,6 +36,8 @@ define registro
 	
   	ServerConnection.protocol = "sodep";
 
+  	readXmlFile@FileManager()(configList);
+
   	name -> configList.server[i].name;
   	address -> configList.server[i].address;
 
@@ -43,7 +45,7 @@ define registro
   		
   		if( name == message.serverName ) {
   			
-  			ServerConnection.Location = address
+  			ServerConnection.location = address
   		  
   		}
   	} 
@@ -188,7 +190,7 @@ main
 	  			install( datiNonCorretti => response = " Not correct data.\n");
 	  			install( serverNonEsiste => response = " "+resultSplit.result[1]+" does not exist.\n" );
 
-	  			if(#message.result == 2) {
+	  			if(#resultSplit.result == 2) {
 
 	  				// Lettura del file xml, che ritorna la lista dei server
 					readXmlFile@FileManager()(configList);
@@ -342,18 +344,12 @@ main
 			  				
 			  				writeFile@File(toSend)()
 			  			};
-
-			  			// Preparazione del file di versione
-			  			toSend.filename = message.repoName+"/vers.txt";
+			  			
+			  			//creazione file di versione locale
+			  			toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
 			  			toSend.content = "0.1";
 
-			  			// Invio file
-			  			sendFile@ServerConnection( toSend );
-
-			  			// Scrittura locale del file di versione
-			  			toSend.filename = "LocalRepo/"+toSend.filename;
-		  				writeFile@File(toSend)()
-
+			  			writeFile@File(toSend)()
 					};
 
 					response = responseMessage.message
@@ -362,7 +358,7 @@ main
 				else
 					throw( datiNonCorretti )
 	  		}
-	  	} ] { nullProcess }
+	  	} ] { undef( configList ) }
 
 
 	  	/*
@@ -406,7 +402,7 @@ main
 			  		throw( datiNonCorretti )
 	  		}
 
-	  	}] { nullProcess }
+	  	}] { undef( configList ) }
 
 	  	// Messaggio di avviso di comando scritto non correttamente
 	  	/*
