@@ -17,21 +17,35 @@ define visita
 
 	for(j = 0, j < #subDir.result, j++) {
 
+		//salva il percorso della cartella
 		cartelle.sottocartelle[i].nome = directory + "/" + subDir.result[j];
 
-		tmp += subDir.result[j] + "  ";
+		newRoot.directory = cartelle.sottocartelle[i].nome;
+
+		//viene controllato se la cartella ha delle sottocartelle. Se non ha sottocartelle
+		//viene salvato tutto il percorso per arrivare in quella cartella
+		list@File( newRoot )( last );
+
+		if(#last.result == 0)  {
+
+			stampa.cartelle[#stampa.cartelle] = cartelle.sottocartelle[i].nome
+
+		};
 
 		i++
     };
 
 	i = 1;
 
+	//finchè una sottocartella è già stata visitata, si passa alla successiva
 	while( cartelle.sottocartelle[i].mark == true && i < #cartelle.sottocartelle) {
 
 		i++
 
 	};
 
+	//se non si è arrivati alla fine dell'array cartelle, l'attributo mark della cartella viene
+	//settato a true, e si richiama il metodo visita
 	if( is_defined( cartelle.sottocartelle[i].nome )) {
 
 		cartelle.sottocartelle[i].mark = true;
@@ -44,10 +58,14 @@ define visita
 
 	} 
 
+	//se si è arrivati alla fine dell'array vengono stampati i percorsi finali
 	else {
 
-		println@Console( tmp )()
-
+		for(k = 0, k < #stampa.cartelle, k++) {
+			
+			println@Console( stampa.cartelle[k] )()
+		}
+		
 	}
 
 }

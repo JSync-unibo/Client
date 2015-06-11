@@ -104,23 +104,27 @@ main
 				
 				if(#resultSplit.result == 2) {
 
-	  				printRepo.directory = "LocalRepo";
+					// Si richiama l'operazione del File manager per visitare tutte le cartelle in LocalRepo
+					visitFolder@FileManager("LocalRepo")(folderList);
 
-	  				list@File(printRepo)(repo);
+					// Se non ritorna alcuna cartella viene stampato un messaggio di avviso
+					if(#folderList.folder == 0) {
 
-	  				if( #repo.result>0 ){
+						response = " There aren't folders. \n"
+					}
 
-						for(i = 0, i < #repo.result, i++){
-							
-							response += " " + repo.result[i] +"\n"
-						
+					// Altrimenti si stampano tutte le cartelle e sottocartelle
+					else {
+
+						for(i = 0, i< #folderList, i++) {
+
+							response = folderList.folder
 						}
 					}
-					
-					else
-			  			response = " There are no local repositories.\n"
+
 			  	}
 			  	else {
+					
 					throw(datiNonCorretti)
 				}
 			}
@@ -259,6 +263,7 @@ main
 			  			tmp += " - "+configList.server[i].name +":\n";
 			  			
 			  			registro;
+
 			  			listRepo@ServerConnection()(responseMessage);
 
 			  			tmp += responseMessage  + " "			

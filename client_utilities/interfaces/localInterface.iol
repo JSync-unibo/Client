@@ -36,13 +36,21 @@ type xmlFileFormat: void {
     }
 }
 
+
+// Tipo che stampa il percorso delle cartelle visitate
+type stampa: void {
+
+    .folder*: string
+}
+
 // Interfaccia fra il client ed il file manager
 interface FileManager {
 
     RequestResponse: 
 
         readXmlFile(void)(xmlFileFormat),
-        writeXmlFile(xmlFileFormat)(void)
+        writeXmlFile(xmlFileFormat)(void),
+        visitFolder(string)(stampa)
 }
 
 // Porta che collega il client con il cli, attraverso l'embedding
