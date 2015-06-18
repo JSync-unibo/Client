@@ -506,6 +506,11 @@ main
 
 	  	}] { undef( configList )}
 
+	  	[ error( resultSplit )( response ) {
+
+	  		response = " Not a recognized command. \n"
+
+	  	}] { nullProcess }
 	  	// Messaggio di avviso di comando scritto non correttamente
 	  	/*
 	  	else{

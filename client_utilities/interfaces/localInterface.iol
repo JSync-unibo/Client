@@ -21,7 +21,8 @@ interface CliInterface {
         addRepos( SplitResult )( string ),
         pull( SplitResult )( string ),
         push( SplitResult )( string ),
-        delete( SplitResult )( string )
+        delete( SplitResult )( string ),
+        error( SplitResult )( string )
 
 }
 

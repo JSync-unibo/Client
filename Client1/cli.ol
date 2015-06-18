@@ -128,7 +128,7 @@ main
 
 	  		else {
 
-	  			println@Console( " Command not valid " )()
+	  			error@ToClient( resultSplit )( result )
 	  		};
 
 	  		/*pull@ToClient( resultSplit )( result );*/
