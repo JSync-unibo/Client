@@ -124,6 +124,11 @@ main
 	  		else if( resultSplit.result[0] == "push") {
 
 	  			push@ToClient( resultSplit )( result )
+	  		}
+
+	  		else {
+
+	  			println@Console( " Command not valid " )()
 	  		};
 
 	  		/*pull@ToClient( resultSplit )( result );*/
