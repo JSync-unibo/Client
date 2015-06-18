@@ -42,7 +42,11 @@ define visita
 
 		if(#last.result == 0)  {
 
-			stampa.cartelle[#stampa.cartelle] = cartelle.sottocartelle[i].nome
+			stampa.cartelle[#stampa.cartelle].absolute = cartelle.sottocartelle[i].nome;
+
+			// La dimensione della variabile viene incrementata e per salvare i due path nella
+			// stessa posizione, si decrementa di uno 
+			stampa.cartelle[#stampa.cartelle-1].relative = subDir.result[j]
 
 		};
 
@@ -77,7 +81,8 @@ define visita
 
 		for(k = 0, k < #stampa.cartelle, k++) {
 			
-			folderList.folder += stampa.cartelle[k]+ "\n"
+			folderList.folder[k].absolute = stampa.cartelle[k].absolute;
+			folderList.folder[k].relative = stampa.cartelle[k].relative
 		}
 		
 	}

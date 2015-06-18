@@ -41,7 +41,11 @@ type xmlFileFormat: void {
 // Tipo che stampa il percorso delle cartelle visitate
 type fileStructureFormat: void {
 
-    .folder*: string
+    .folder*: void {
+
+        .absolute : string
+        .relative : string
+    }
 }
 
 // Interfaccia fra il client ed il file manager

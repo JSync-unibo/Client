@@ -351,21 +351,24 @@ main
 			  			// Controllo tutti i file nella cartella locale
 			  			for(i=0, i<#listaFile.folder, i++){
 
-			  				// Preparo il file per la lettura
-			  				readedFile.filename = message.localPath+"/"+listaFile.folder[i];
+			  				readedFile.filename = listaFile.folder[i].absolute;
+
 			  				readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
-			  				readFile@File(readedFile)(toSend.content);
-			  				toSend.filename = message.repoName+"/"+listaFile.folder[i];
+			  				readFile@File( readedFile )(toSend.content);
 
+			  				toSend.filename = listaFile.folder[i].relative;
+			  				
 			  				// Invio il singolo file per la scrittura sul server
+			  				// perchè funzioni la copia bisogna commentare la riga
 			  				sendFile@ServerConnection( toSend );
 
 			  				// Scrivo il singolo file nella repo locale
-			  				toSend.filename = "LocalRepo/"+toSend.filename;
+			  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
 			  				
 			  				writeFile@File(toSend)()
+			  				
 			  			};
 			  			
 			  			//creazione file di versione locale
