@@ -45,7 +45,7 @@ interface ToServerInterface {
         
         addRepository(ToServerType)(ResponseMessage),
         push(FileRequestType)(ResponseMessage),
-        pull(ToServerType)(ResponseMessage),
+        pull(string)(FileRequestType),
         delete(ToServerType)(ResponseMessage)
 
     OneWay: sendFile( FileRequestType )

@@ -560,6 +560,7 @@ main
 	  				message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 
+			  		readFile;
 			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
 	  				
@@ -697,7 +698,37 @@ main
 	  	}] { undef( configList )}
 
 
-	  	
+	  	[ pull(resultSplit)(response) {
+
+	  		scope(dati) {
+
+	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( datiNonCorretti => response = " Not correct data.\n" );
+
+	  			if(#resultSplit.result == 3) {
+
+	  				message.serverName = resultSplit.result[1];
+			  		message.repoName = resultSplit.result[2];
+
+			  		readFile;
+			  		// Si richiama il registro per prelevare i dati del server
+			  		registro;
+
+			  		while(responseMessage.message == null) {
+
+			  			pull@ServerConnection(message.repoName)(responseMessage)
+
+			  		};
+
+			  		response = "Success"
+			  	}
+
+			  	else
+			  		throw( datiNonCorretti )
+			}
+
+
+	  	}]{ undef(configList) }
 
 
 
