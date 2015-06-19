@@ -20,7 +20,7 @@ type ToServerType: void{
 
 type FileRequestType: void {
   .filename: string
-  .content: raw
+  .content?: raw
   .folder?: string
 }
 

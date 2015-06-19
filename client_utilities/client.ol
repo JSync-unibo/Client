@@ -622,20 +622,19 @@ main
 			  			// Controllo tutti i file nella cartella locale
 			  			for(i=0, i<#folderList.folder, i++){
 
-			  				//readedFile.filename = folderList.folder[i].absolute;
+			  				readedFile.filename = folderList.folder[i].absolute;
 			  				
-			  				//readedFile.format ="binary";
+			  				readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
-			  				//readFile@File( readedFile )(toSend.content);
+			  				readFile@File( readedFile )(toSend.content);
 
 			  				toSend.filename = folderList.folder[i].relative;
 			  				//aggiunta del parametro folder
 			  				toSend.folder = message.repoName;
 
-			  				if(toSend.filename = "vers.txt") {
+			  				if(toSend.filename == "vers.txt") {
 
-			  					println@Console( toSend.content )();
 			  					// Invio dei dati al server, aspettando un messaggio di risposta	
 	  							push@ServerConnection(toSend)(responseMessage);	
 
