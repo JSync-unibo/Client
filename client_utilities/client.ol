@@ -120,47 +120,45 @@ define visita
 
 define readFile
 {
+	scope( fileXml )
+	{
+		undef(configList);
+		undef(file);
+	  	// Se non esiste il file xml setta la variabile come vuota
+		install( FileNotFound => configList.vuoto = true  );
 
-  		scope( fileXml )
-		{
-			undef(configList);
-  			undef(file);
-		  	// Se non esiste il file xml setta la variabile come vuota
-			install( FileNotFound => configList.vuoto = true  );
+		// Paramentri per la lettura del file
+	  	file.filename = "config.xml";
+		file.format = "binary";
 
-			// Paramentri per la lettura del file
-		  	file.filename = "config.xml";
-			file.format = "binary";
+		// Lettura file xml di configurazione
+		readFile@File(file)(configFile);
 
-			// Lettura file xml di configurazione
-			readFile@File(file)(configFile);
-
-			// Salva il file di configurazione nella variabile configList
-			xmlToValue@XmlUtils(configFile)(configList)
-			
+		// Salva il file di configurazione nella variabile configList
+		xmlToValue@XmlUtils(configFile)(configList)
 		
-		}
+	}
  }
   
  define writeFile		
  {
    		
-   		
-  		stringXml.rootNodeName = "configList";
-		stringXml.root << configList;
-		stringXml.indent=true;
+	stringXml.rootNodeName = "configList";
+	stringXml.root << configList;
+	
+	//stringXml.indent = true;
 
-		// Trasforma la variabile in una stringa in formato xml
-		valueToXml@XmlUtils(stringXml)(fileXml);
+	// Trasforma la variabile in una stringa in formato xml
+	valueToXml@XmlUtils(stringXml)(fileXml);
 
-	    // Paramentri della scrittura file
-		file.content = fileXml;
-	  	file.filename = "config.xml";
+    // Paramentri della scrittura file
+	file.content = fileXml;
+  	file.filename = "config.xml";
 
-		// Crea il file xml partendo dalla stringa nello stesso formato 
-		writeFile@File(file)();
-		undef( configList );
-		undef(file)
+	// Crea il file xml partendo dalla stringa nello stesso formato 
+	writeFile@File(file)();
+	undef( configList );
+	undef(file)
 		
  }
 
