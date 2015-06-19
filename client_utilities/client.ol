@@ -359,6 +359,8 @@ main
 			  				readFile@File( readedFile )(toSend.content);
 
 			  				toSend.filename = listaFile.folder[i].relative;
+			  				//aggiunta del parametro folder
+			  				toSend.folder = message.repoName;
 			  				
 			  				// Invio il singolo file per la scrittura sul server
 			  				// perchè funzioni la copia bisogna commentare la riga
@@ -366,7 +368,10 @@ main
 
 			  				// Scrivo il singolo file nella repo locale
 			  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
-			  				
+
+			  				//rimozione paramentro folder per il writeFile
+			  				undef( toSend.folder );
+
 			  				writeFile@File(toSend)()
 			  				
 			  			};
