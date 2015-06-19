@@ -34,9 +34,7 @@ inputPort FromCli {
 define registro
 {
 	
-  	ServerConnection.protocol = "sodep";
-
-  	readXmlFile@FileManager()(configList);
+  	ServerConnection.protocol = "sodep"; 
 
   	name -> configList.server[i].name;
   	address -> configList.server[i].address;
@@ -50,6 +48,158 @@ define registro
   		}
   	} 
 }
+
+// Metodo visita per stampare tutte le cartelle locali del client
+define visita
+{
+	 
+    root.directory = directory;
+
+
+	list@File(root)(subDir);
+
+	for(j = 0, j < #subDir.result, j++) {
+
+		// Salva il percorso della cartella
+		cartelle.sottocartelle[i].nome = directory + "/" + subDir.result[j];
+
+		newRoot.directory = cartelle.sottocartelle[i].nome;
+
+		// Viene controllato se la cartella ha delle sottocartelle. Se non ha sottocartelle
+		// Viene salvato tutto il percorso per arrivare in quella cartella
+		list@File( newRoot )( last );
+
+		if(#last.result == 0)  {
+
+			stampa.cartelle[#stampa.cartelle].absolute = cartelle.sottocartelle[i].nome;
+
+			// La dimensione della variabile viene incrementata e per salvare i due path nella
+			// stessa posizione, si decrementa di uno 
+			stampa.cartelle[#stampa.cartelle-1].relative = subDir.result[j]
+
+		};
+
+		i++
+    };
+
+	i = 1;
+
+	// Finchè una sottocartella è già stata visitata, si passa alla successiva
+	while( cartelle.sottocartelle[i].mark == true && i < #cartelle.sottocartelle) {
+
+		i++
+
+	};
+
+	// Se non si è arrivati alla fine dell'array cartelle, l'attributo mark della cartella viene
+	// Settato a true, e si richiama il metodo visita
+	if( is_defined( cartelle.sottocartelle[i].nome )) {
+
+		cartelle.sottocartelle[i].mark = true;
+
+		directory = cartelle.sottocartelle[i].nome;
+
+		i = #cartelle.sottocartelle;
+
+		visita
+
+	} 
+
+	// Se si è arrivati alla fine dell'array vengono stampati i percorsi finali
+	else {
+
+		for(k = 0, k < #stampa.cartelle, k++) {
+			
+			folderList.folder[k].absolute = stampa.cartelle[k].absolute;
+			folderList.folder[k].relative = stampa.cartelle[k].relative
+		}
+		
+	}
+
+}
+
+define readFile
+{
+
+  		scope( fileXml )
+		{
+			undef(configList);
+  			undef(file);
+		  	// Se non esiste il file xml setta la variabile come vuota
+			install( FileNotFound => configList.vuoto = true  );
+
+			// Paramentri per la lettura del file
+		  	file.filename = "config.xml";
+			file.format = "binary";
+
+			// Lettura file xml di configurazione
+			readFile@File(file)(configFile);
+
+			// Salva il file di configurazione nella variabile configList
+			xmlToValue@XmlUtils(configFile)(configList)
+			
+		
+		}
+ }
+  
+ define writeFile		
+ {
+   		
+   		
+  		stringXml.rootNodeName = "configList";
+		stringXml.root << configList;
+		stringXml.indent=true;
+
+		// Trasforma la variabile in una stringa in formato xml
+		valueToXml@XmlUtils(stringXml)(fileXml);
+
+	    // Paramentri della scrittura file
+		file.content = fileXml;
+	  	file.filename = "config.xml";
+
+		// Crea il file xml partendo dalla stringa nello stesso formato 
+		writeFile@File(file)();
+		undef( configList );
+		undef(file)
+		
+ }
+
+ 	/*
+	 * Visita ricorsivamente le cartelle locali del client, passando
+	 * la cartella iniziale del client e ritornando la stampa di tutte le sottocartelle
+	 
+define visitFolder
+	{
+
+		directory.regex = "/";
+		split@StringUtils(directory)(directoryPath);
+
+		numberPath = #directoryPath.result;
+
+		// Nome della cartella iniziale "LocalRepo"
+		radice.directory.name = directoryPath.result[numberPath];
+
+		// Viene segnata con true, perchè già è stata visitata
+		radice.directory.mark = true;
+
+		i = 1; 
+
+		// Richiamo del metodo (ricorsivo)
+		visita
+  		
+  	}*/
+  	
+init
+{
+	// Legge il file xml
+  	readFile;
+
+  	// Se non esiste allora lo scrive
+	if(!configList)
+
+		writeFile
+}
+
 
 execution{ concurrent }
 
@@ -69,7 +219,7 @@ main
 	  			if(#resultSplit.result == 2) {
 
 	  				// Lettura del file xml, con risultato la variabile contenente i server
-			  		readXmlFile@FileManager()(configList);
+			  		readFile;
 
 
 					if( #configList.server>0 ){
@@ -167,7 +317,7 @@ main
 	  			if(#resultSplit.result == 3) {
 
 	  				// Lettura del file xml, con risultato la variabile contenente i server
-			  		readXmlFile@FileManager()(configList);
+			  		readFile;
 
 					// Controllo in tutti i server salvati se esiste già lo stesso nome
 					// Se esiste salta il fault e rompe l'intero scope
@@ -187,7 +337,7 @@ main
 			  		configList.server[size].address = resultSplit.result[2];
 
 			  		// Scrittura del file xml per aggiungere il nuovo server
-			  		writeXmlFile@FileManager(configList)();
+			  		writeFile;
 
 					response= " Success, server added.\n"
 				}
@@ -216,7 +366,7 @@ main
 	  			if(#resultSplit.result == 2) {
 
 	  				// Lettura del file xml, che ritorna la lista dei server
-					readXmlFile@FileManager()(configList);
+					readFile;
 			
 					// Setta la variabile di server trovato a false
 	  				trovato = false;
@@ -242,7 +392,7 @@ main
 	  				// Se è stato trovato scrive nuovamente il file, con il server rimosso
 	  				if(trovato){
 	  					
-	  					writeXmlFile@FileManager(configList)();
+	  					writeFile;
 
 	  					response = " Success, removed server.\n"
 	  				}
@@ -273,6 +423,7 @@ main
 	  			if(#resultSplit.result == 2) {
 	  				
 		  			tmp = "";
+		  			readFile;
 
 			  		for (i=0, i< #configList.server, i++) {
 			  			
@@ -325,6 +476,7 @@ main
 			  		message.repoName = resultSplit.result[2];
 			  		message.localPath = resultSplit.result[3];
 
+			  		readFile;
 			  		// Richiama il registro definito all'inizio
 			  		registro;
 
@@ -342,23 +494,23 @@ main
 			  			// Creo la repository locale
 			  			mkdir@File("LocalRepo/"+message.repoName)(success);
 
-			  			// Cerco tutti i file nella cartella locale da caricare
-			  			//toSearch.directory = message.localPath;
-			  			
-			  			//list@File(toSearch)(listaFile);
-			  			visitFolder@FileManager(message.localPath)(listaFile);
+			  			directory = message.localPath;
+
+			  			i = 1;
+
+			  			visita;
 
 			  			// Controllo tutti i file nella cartella locale
-			  			for(i=0, i<#listaFile.folder, i++){
+			  			for(i=0, i<#folderList.folder, i++){
 
-			  				readedFile.filename = listaFile.folder[i].absolute;
+			  				readedFile.filename = folderList.folder[i].absolute;
 
 			  				readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
 			  				readFile@File( readedFile )(toSend.content);
 
-			  				toSend.filename = listaFile.folder[i].relative;
+			  				toSend.filename = folderList.folder[i].relative;
 			  				//aggiunta del parametro folder
 			  				toSend.folder = message.repoName;
 			  				
@@ -378,7 +530,7 @@ main
 			  			
 			  			//creazione file di versione locale
 			  			toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
-			  			toSend.content = "0.1";
+			  			toSend.content = 0;
 
 			  			writeFile@File(toSend)()
 					};
@@ -448,58 +600,91 @@ main
 	  				message.serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 
+			  		readFile;
 			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
 	  				
-	  				// Invio dei dati al server, aspettando un messaggio di risposta	
-	  				push@ServerConnection(message)(responseMessage);	
-
+	  				
 	  				// Se si è verificato un errore, viene stampato il messaggio relativo
-	  				if(responseMessage.error) {
+	  				/*if(responseMessage.error) {
 
 			  			response = responseMessage.message
 			  		}
 
-			  		else{
+			  		else{*/
+			  			directory = "LocalRepo/"+message.repoName;
 
-			  			visitFolder@FileManager("LocalRepo/"+message.repoName)(listaFile);
+			  			i = 1;
 
-			  			println@Console(listaFile.folder[0].absolute)();
+			  			visita;
+			  			//visitFolder@FileManager("LocalRepo/"+message.repoName)(listaFile);
+
 			  			// Controllo tutti i file nella cartella locale
-			  			for(i=0, i<#listaFile.folder, i++){
+			  			for(i=0, i<#folderList.folder, i++){
 
-			  				readedFile.filename = listaFile.folder[i].absolute;
+			  				//readedFile.filename = folderList.folder[i].absolute;
 			  				
-			  				readedFile.format ="binary";
+			  				//readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
-			  				readFile@File( readedFile )(toSend.content);
+			  				//readFile@File( readedFile )(toSend.content);
 
-			  				toSend.filename = listaFile.folder[i].relative;
+			  				toSend.filename = folderList.folder[i].relative;
 			  				//aggiunta del parametro folder
 			  				toSend.folder = message.repoName;
+
+			  				if(toSend.filename = "vers.txt") {
+
+			  					println@Console( toSend.content )();
+			  					// Invio dei dati al server, aspettando un messaggio di risposta	
+	  							push@ServerConnection(toSend)(responseMessage);	
+
+	  							if(responseMessage.error) {
+
+	  								response = responseMessage.message
+	  							}
+
+	  							else {
+
+	  								// Controllo tutti i file nella cartella locale
+						  			for(i=0, i<#folderList.folder, i++){
+
+						  				readedFile.filename = folderList.folder[i].absolute;
+
+						  				readedFile.format ="binary";
+
+						  				// Preparo il file per la scrittura
+						  				readFile@File( readedFile )(toSend.content);
+
+						  				toSend.filename = folderList.folder[i].relative;
+						  				//aggiunta del parametro folder
+						  				toSend.folder = message.repoName;
+						  				
+						  				// Invio il singolo file per la scrittura sul server
+						  				// perchè funzioni la copia bisogna commentare la riga
+						  				sendFile@ServerConnection( toSend );
+
+						  				// Scrivo il singolo file nella repo locale
+						  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
+
+						  				//rimozione paramentro folder per il writeFile
+						  				undef( toSend.folder );
+
+						  				writeFile@File(toSend)()
 			  				
-			  				// Invio il singolo file per la scrittura sul server
-			  				// perchè funzioni la copia bisogna commentare la riga
-			  				sendFile@ServerConnection( toSend );
+			  						}
 
-			  				// Scrivo il singolo file nella repo locale
-			  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
-
-			  				//rimozione paramentro folder per il writeFile
-			  				undef( toSend.folder );
-
-			  				writeFile@File(toSend)()
-			  				
+	  							}
+			  				}
 			  				
 			  			};
 			  			
 			  			//creazione file di versione locale
-			  			toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
-			  			toSend.content = "0.1";
+			  			//toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
+			  			//toSend.content = "0.1";
 
-			  			writeFile@File(toSend)()
-					};
+			  			//writeFile@File(toSend)()
+					//};
 
 					response = responseMessage.message
 				}
@@ -511,6 +696,10 @@ main
 
 
 	  	}] { undef( configList )}
+
+
+	  	
+
 
 
 	  	[ error( resultSplit )( response ) {

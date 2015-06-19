@@ -126,15 +126,16 @@ main
 	  			push@ToClient( resultSplit )( result )
 	  		}
 
+	  		// Legge l'ultima versione della repo sul server, aggiornando la propria 
+	  		else if( resultSplit.result[0] == "pull") {
+
+	  			pull@ToClient( resultSplit )( result )
+	  		}
+
 	  		else {
 
 	  			error@ToClient( resultSplit )( result )
 	  		};
-
-	  		/*pull@ToClient( resultSplit )( result );*/
-
-	  		
-												
 
 			println@Console( result )()
 		}

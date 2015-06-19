@@ -48,16 +48,6 @@ type fileStructureFormat: void {
     }
 }
 
-// Interfaccia fra il client ed il file manager
-interface FileManager {
-
-    RequestResponse: 
-
-        readXmlFile(void)(xmlFileFormat),
-        writeXmlFile(xmlFileFormat)(void),
-        visitFolder(string)(fileStructureFormat)
-}
-
 // Porta che collega il client con il cli, attraverso l'embedding
 outputPort ToClient{
     
@@ -68,12 +58,3 @@ embedded {
     Jolie: "../client_utilities/client.ol" in ToClient
 }
 
-// Porta che collega il client con il file manager da cui legge/scrive il file xml, sempre con l'embedding
-outputPort FileManager{
-    
-    Interfaces: FileManager
-}
-
-embedded {
-    Jolie: "../client_utilities/fileManager.ol" in FileManager
-}
