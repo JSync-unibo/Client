@@ -65,4 +65,6 @@ Abbiamo implementato la funzione di `push` ...
 
 ### Altra sezione su una feature che si vuole discutere
 
-...
+File manager: inizialmente volevamo implementarlo come un servizio a parte, che gestiva la lettura e scrittura del file xml, e la visita ricorsiva delle cartelle; così da alleggerire il client. Ma sfortunatamente abbiamo rilevato un eccessivo consumo di Cpu, quindi non abbiamo potuto continuare con questa idea ed abbiamo dovuto spostare questo servizio all'interno del Client.
+
+Add Repository / Push: abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè la lettura del file accetta un percorso assoluto, mentre la scrittura del file accetta un percorso relativo.
