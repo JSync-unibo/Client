@@ -462,45 +462,43 @@ main
 
 			  		else{
 
-			  			// Creo la repository locale
-			  			//mkdir@File("LocalRepo/"+message.repoName)(success);
+			  			visitFolder@FileManager("LocalRepo/"+message.repoName)(listaFile);
 
-			  			// Cerco tutti i file nella cartella locale da caricare
-			  			toSearch.directory = "LocalRepo/"+message.repoName;
-			  			
-			  			list@File(toSearch)(listaFile);
-
+			  			println@Console(listaFile.folder[0].absolute)();
 			  			// Controllo tutti i file nella cartella locale
-			  			for(i = 0, i< #listaFile.result, i++){
+			  			for(i=0, i<#listaFile.folder, i++){
 
-			  				
-			  				// Preparo il file per la lettura
-			  				readedFile.filename = message.repoName+"/"+listaFile.result[i];
-			  				
-			  				println@Console( readedFile.filename)();
+			  				readedFile.filename = listaFile.folder[i].absolute;
 			  				
 			  				readedFile.format ="binary";
 
 			  				// Preparo il file per la scrittura
-			  				readFile@File(readedFile)(toSend.content);
+			  				readFile@File( readedFile )(toSend.content);
 
-			  							  				
-			  				toSend.filename = message.repoName+"/"+listaFile.result[i];
+			  				toSend.filename = listaFile.folder[i].relative;
+			  				//aggiunta del parametro folder
+			  				toSend.folder = message.repoName;
 			  				
 			  				// Invio il singolo file per la scrittura sul server
-			  				sendFile@ServerConnection( toSend )
+			  				// perchè funzioni la copia bisogna commentare la riga
+			  				sendFile@ServerConnection( toSend );
 
 			  				// Scrivo il singolo file nella repo locale
-			  				//toSend.filename = "LocalRepo/"+toSend.filename;
+			  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
+
+			  				//rimozione paramentro folder per il writeFile
+			  				undef( toSend.folder );
+
+			  				writeFile@File(toSend)()
 			  				
-			  				//writeFile@File(toSend)()
-			  			}
+			  				
+			  			};
 			  			
 			  			//creazione file di versione locale
-			  			//toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
-			  			//toSend.content = "0.1";
+			  			toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
+			  			toSend.content = "0.1";
 
-			  			//writeFile@File(toSend)()
+			  			writeFile@File(toSend)()
 					};
 
 					response = responseMessage.message
@@ -513,6 +511,7 @@ main
 
 
 	  	}] { undef( configList )}
+
 
 	  	[ error( resultSplit )( response ) {
 
