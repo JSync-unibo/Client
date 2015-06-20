@@ -649,10 +649,6 @@ main
 			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
 
-			  		abDirectory = message.repoName;
-
-			  		initializeVisita;
-
 			  		readedFile.filename = "LocalRepo/"+ message.repoName + "/vers.txt";
 
 					readedFile.format ="binary";
@@ -674,8 +670,14 @@ main
 
 	  				else {
 
+	  					abDirectory = "LocalRepo/"+ message.repoName;
+
+			  			initializeVisita;
+
+			  			println@Console( folderStructure.file[0] )();
+
 	  					// Controllo tutti i file nella cartella locale
-						for(i=0, i<#folderList.file, i++){
+						for(i=0, i<#folderStructure.file, i++){
 
 						  	readedFile.filename = folderStructure.file[i].absolute;
 
