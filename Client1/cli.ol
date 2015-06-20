@@ -61,14 +61,14 @@ main
 	 * - comando della lista -> viene splittato, inviato al client e poi aspetta una risposta
 	 */
 
-	//root.command = "addRepository server1 repo1 C:\\Users\\Gianmarco\\Desktop\\cartella";
-	root.command = "pull server1 repo1";
+	root.command = "addRepository server1 Repo1 C:\\Users\\Gianmarco\\Desktop\\GianmarcoSpinaci";
+	//root.command = "pull server1 repo1";
 
 	root.command.regex = " ";
 	split@StringUtils( root.command )( resultSplit );
 
-	//addRepos@ToClient( resultSplit )(result);
-	pull@ToClient( resultSplit )( result );
+	addRepos@ToClient( resultSplit )(result);
+	//pull@ToClient( resultSplit )( result );
 
 	println@Console( result )()
 
