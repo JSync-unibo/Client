@@ -648,80 +648,72 @@ main
 			  		readFile;
 			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
-	  				
-	  				
-	  				// Se si è verificato un errore, viene stampato il messaggio relativo
-	  				/*if(responseMessage.error) {
 
-			  			response = responseMessage.message
-			  		}
+			  		abDirectory = message.repoName;
 
-			  		else{*/
-			  			directory = "LocalRepo/"+message.repoName;
+			  		initializeVisita;
+			  		//visitFolder@FileManager("LocalRepo/"+message.repoName)(listaFile);
 
-			  			i = 1;
+			  		// Controllo tutti i file nella cartella locale
+			  		for(i=0, i<#folderStructure.file, i++){
 
-			  			visita;
-			  			//visitFolder@FileManager("LocalRepo/"+message.repoName)(listaFile);
-
-			  			// Controllo tutti i file nella cartella locale
-			  			for(i=0, i<#folderList.folder, i++){
-
-			  				readedFile.filename = folderList.folder[i].absolute;
+			  			readedFile.filename = folderStructure.file[i].absolute;
 			  				
-			  				readedFile.format ="binary";
+			  			readedFile.format ="binary";
 
-			  				// Preparo il file per la scrittura
-			  				readFile@File( readedFile )(toSend.content);
+			  			// Preparo il file per la scrittura
+			  			readFile@File( readedFile )(toSend.content);
 
-			  				toSend.filename = folderList.folder[i].relative;
-			  				//aggiunta del parametro folder
-			  				toSend.folder = message.repoName;
+			  			toSend.filename = message.repoName + folderStructure.file[i].relative;
 
-			  				if(toSend.filename == "vers.txt") {
+			  			println@Console( toSend.filename )();
+			  			//aggiunta del parametro folder
+			  			//toSend.folder = message.repoName;
 
-			  					// Invio dei dati al server, aspettando un messaggio di risposta	
-	  							push@ServerConnection(toSend)(responseMessage);	
+			  			if(toSend.filename == message.repoName + folderStructure.file[i].relative + "/vers.txt") {
 
-	  							if(responseMessage.error) {
+			  				// Invio dei dati al server, aspettando un messaggio di risposta	
+	  						push@ServerConnection(toSend)(responseMessage);	
 
-	  								response = responseMessage.message
-	  							}
+	  						if(responseMessage.error) {
 
-	  							else {
+	  							response = responseMessage.message
+	  						}
 
-	  								// Controllo tutti i file nella cartella locale
-						  			for(i=0, i<#folderList.folder, i++){
+	  						else {
 
-						  				readedFile.filename = folderList.folder[i].absolute;
+	  							// Controllo tutti i file nella cartella locale
+						  		for(i=0, i<#folderList.folder, i++){
 
-						  				readedFile.format ="binary";
+						  			readedFile.filename = folderStructure.file[i].absolute;
 
-						  				// Preparo il file per la scrittura
-						  				readFile@File( readedFile )(toSend.content);
+						  			readedFile.format ="binary";
 
-						  				toSend.filename = folderList.folder[i].relative;
-						  				//aggiunta del parametro folder
-						  				toSend.folder = message.repoName;
+						  			// Preparo il file per la scrittura
+						  			readFile@File( readedFile )(toSend.content);
+
+						  			toSend.filename = message.repoName + folderStructure.file[i].relative;
+						  			//aggiunta del parametro folder
+						  			//toSend.folder = message.repoName;
 						  				
-						  				// Invio il singolo file per la scrittura sul server
-						  				// perchè funzioni la copia bisogna commentare la riga
-						  				sendFile@ServerConnection( toSend );
+						  			// Invio il singolo file per la scrittura sul server
+						  			// perchè funzioni la copia bisogna commentare la riga
+						  			sendFile@ServerConnection( toSend );
 
-						  				// Scrivo il singolo file nella repo locale
-						  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
+						  			// Scrivo il singolo file nella repo locale
+						  			toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
 
-						  				//rimozione paramentro folder per il writeFile
-						  				undef( toSend.folder );
+						  			//rimozione paramentro folder per il writeFile
+						  			//undef( toSend.folder );
 
-						  				writeFile@File(toSend)()
+						  			writeFile@File(toSend)()
 			  				
-			  						}
+			  					}
 
-	  							}
-			  				}
+	  						}
+			  			}
 			  				
-			  			};
+			  		};
 			  			
 			  			//creazione file di versione locale
 			  			//toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
