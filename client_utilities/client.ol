@@ -125,9 +125,9 @@ define initializeVisita{
 
 			if( resultSplit.result[j] == rlDirectory ){
 
-				while( j<#resultSplit.result ){
+				while( j<#resultSplit.result-1 ){
 
-					folderStructure.file[i].relative += "/" + resultSplit.result[j];
+					folderStructure.file[i].relative += "/" + resultSplit.result[j+1];
 
 					j++
 				}
