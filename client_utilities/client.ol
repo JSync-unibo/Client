@@ -510,7 +510,6 @@ main
 	  				serverName = resultSplit.result[1];
 	  				message.repoName = resultSplit.result[2];
 
-
 	  				readFile;
 			  		registro;
 
@@ -523,48 +522,22 @@ main
 	  				//richiedo il contenuto di ogni file
 	  				for(i=0, i<#responseMessage.folderStructure.file, i++){
 
-	  					requestFile@ServerConnection(requestedFileName)(fromServerFile);
+	  					requestFile@ServerConnection(requestedFileName)(toSend);
 
 	  					//cambia il file name
-	  					with( fromServerFile.filename ){
+	  					with( toSend.filename ){
 
 	  						.replacement = "localRepo";
   							.regex = "serverRepo";
 
-  							replaceAll@StringUtils(fromServerFile.filename)(fromServerFile.filename);
+  							replaceAll@StringUtils(toSend.filename)(toSend.filename);
 
   							undef( .replacement );
   							undef( .regex )
 	  					};
 
-	  					//scrittura del file locale
-	  					scope( FileNotFoundException )
-						{
-							//se manca una cartella nel percorso
-						  	install( IOException => 
 
-						  		//splitta tutto il percorso
-						  		toSplit = fromServerFile.filename;
-						  		toSplit.regex = "/";
-
-						  		split@StringUtils(toSplit)(splitResult);
-
-						  		//per ogni cartella nel percorso
-						  		//tranne per il file
-						  		for( i=0, i<#splitResult.result-1, i++)
-						  		{
-						  			//la crea se non esiste
-						  			dir += splitResult.result[i] +"/";
-						  			mkdir@File(dir)()
-						  		};
-
-						  		//infine scrive il file
-						  		writeFile@File(fromServerFile)()
-						  	);
-
-					  		// Prova a scrivere il file
-					  		writeFile@File(fromServerFile)()
-					  	}
+	  					writeFilePath
 	  				}
 			  	}
 
