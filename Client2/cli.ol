@@ -72,6 +72,7 @@ main
 	//pull@ToClient( resultSplit )( result );
 
 	println@Console( result )()
+
 	*/
 	
 
@@ -160,5 +161,4 @@ main
 			println@Console( result )()
 		}
 	}
-	
 }

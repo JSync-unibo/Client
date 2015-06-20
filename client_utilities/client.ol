@@ -540,7 +540,7 @@ main
 	  					writeFilePath
 	  				};
 
-	  				response = "Success."
+	  				response = responseMessage.message
 			  	}
 
 			  	else
