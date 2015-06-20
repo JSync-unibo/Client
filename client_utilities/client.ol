@@ -538,7 +538,9 @@ main
 
 
 	  					writeFilePath
-	  				}
+	  				};
+
+	  				response = "Success."
 			  	}
 
 			  	else
