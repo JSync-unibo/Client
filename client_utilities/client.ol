@@ -16,6 +16,8 @@ include "xml_utils.iol"
 include "file.iol"
 include "console.iol"
 
+include "interfaces/utilities.ol"
+
 // Porta che collega il client con il cli attraverso l'embedding
 inputPort FromCli {
 
@@ -23,163 +25,6 @@ inputPort FromCli {
   	Interfaces: CliInterface 
 }
 
-
-/* 
- * Setta la location in base al nome ed indirizzo del server.
- * Per ogni server presente nella lista, se il nome è uguale
- * a quello scritto in input, allora setta la location del
- * server tramite il suo indirizzo preso dalla lista
- *
- */
-define registro
-{
-	
-  	ServerConnection.protocol = "sodep"; 
-
-  	name -> configList.server[i].name;
-  	address -> configList.server[i].address;
-
-  	for(i=0, i<#configList.server, i++) {
-  		
-  		if( name == serverName ) {
-
-  			ServerConnection.location = address
-  		}
-  	} 
-}
-
-define visita
-{
-	 
-    root.directory = abDirectory;
-
-	list@File(root)(subDir);
-
-	for(j = 0, j < #subDir.result, j++) {
-
-		// Salva il percorso assoluto e relativo
-		cartelle.sottocartelle[i].abNome = abDirectory + "/" + subDir.result[j];
-
-		newRoot.directory = cartelle.sottocartelle[i].abNome;
-
-		// Viene controllato se la cartella ha delle sottocartelle. Se non ha sottocartelle
-		// Viene salvato tutto il percorso per arrivare in quella cartella
-		list@File( newRoot )( last );
-
-		if(#last.result == 0)  {
-
-			len = #folderStructure.file;
-
-			folderStructure.file[len].absolute = cartelle.sottocartelle[i].abNome
-		};
-
-		i++
-    };
-
-	i = 1;
-
-	// Finchè una sottocartella è già stata visitata, si passa alla successiva
-	while( cartelle.sottocartelle[i].mark == true && i < #cartelle.sottocartelle) {
-
-		i++
-	};
-
-	// Se non si è arrivati alla fine dell'array cartelle, l'attributo mark della cartella viene
-	// Settato a true, e si richiama il metodo visita
-	if( is_defined( cartelle.sottocartelle[i].abNome )) {
-
-		cartelle.sottocartelle[i].mark = true;
-
-		abDirectory = cartelle.sottocartelle[i].abNome;
-
-		i = #cartelle.sottocartelle;
-
-		visita
-	}
-}
-
-define initializeVisita{
-
-	//trovo la cartella iniziale del percorso relativo
-	abDirectory.regex = "/";
-
-	split@StringUtils(abDirectory)(resultSplit);
-
-	rlDirectory = resultSplit.result[#resultSplit.result-1];
-
-	undef( abDirectory.regex );
-
-	//predispongo la visita
-	i = 1;
-	visita;
-
-	// get relative path
-	for(i=0, i<#folderStructure.file, i++){
-
-		folderStructure.file[i].absolute.regex = "/";
-
-		split@StringUtils(folderStructure.file[i].absolute)(resultSplit);
-
-		for(j=0, j<#resultSplit.result, j++){
-
-			if( resultSplit.result[j] == rlDirectory ){
-
-				while( j<#resultSplit.result ){
-
-					folderStructure.file[i].relative += "/" + resultSplit.result[j];
-
-					j++
-				}
-			}
-		};
-
-		undef( folderStructure.file[i].absolute.regex )
-	}
-}
-
-define readFile
-{
-	scope( fileXml )
-	{
-		undef(configList);
-		undef(file);
-	  	// Se non esiste il file xml setta la variabile come vuota
-		install( FileNotFound => configList.vuoto = true  );
-
-		// Paramentri per la lettura del file
-	  	file.filename = "config.xml";
-		file.format = "binary";
-
-		// Lettura file xml di configurazione
-		readFile@File(file)(configFile);
-
-		// Salva il file di configurazione nella variabile configList
-		xmlToValue@XmlUtils(configFile)(configList)
-		
-	}
- }
-  
- define writeFile		
- {
-   		
-	stringXml.rootNodeName = "configList";
-	stringXml.root << configList;
-	
-	//stringXml.indent = true;
-
-	// Trasforma la variabile in una stringa in formato xml
-	valueToXml@XmlUtils(stringXml)(fileXml);
-
-    // Paramentri della scrittura file
-	file.content = fileXml;
-  	file.filename = "config.xml";
-
-	// Crea il file xml partendo dalla stringa nello stesso formato 
-	writeFile@File(file)();
-	undef( configList );
-	undef(file)
-		
- }
 
 execution{ concurrent }
 
@@ -384,7 +229,6 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
-
 	  	} ] { nullProcess }
 
 
@@ -445,7 +289,7 @@ main
 	  		scope( ConnectException )
 	  		{
 
-	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			//install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 	  			install( AddError => response = responseMessage.message );
 
@@ -475,54 +319,28 @@ main
 
 			  			initializeVisita;
 
-			  			valueToPrettyString@StringUtils(folderStructure)(response);
-
+			  			//valueToPrettyString@StringUtils(folderStructure)(response)
+			  			
+			  			currentFile -> folderStructure.file[i];
+			  			
 			  			for(i=0, i<#folderStructure.file, i++){
 
 			  				//mi preparo per leggere il file
-			  				readedFile.filename = folderStructure.file[i].absolute;
+			  				readedFile.filename = currentFile.absolute;
 			  				//readedFile.format = "binary";
 			  				readFile@File( readedFile )(toSend.content);
 
 			  				//il nome del file è formato dal nome della repository create + il percorso relativo del file
-			  				toSend.filename = message.repoName + folderStructure.file[i].relative;
+			  				toSend.filename = message.repoName + currentFile.relative;
 
 			  				//invio il file 
 			  				sendFile@ServerConnection( toSend );
 
 			  				//riscrivo il file in modo da poter essere scritto in locale
 
-			  				toSend.filename = "localFolder/" + message.repoName + folderStructure.file[i].relative;
-			  				
+			  				toSend.filename = "localRepo/" + toSend.filename;
 
-		  					//scrittura del file locale
-		  					scope( FileNotFoundException )
-							{
-								//se manca una cartella nel percorso
-							  	install( IOException => 
-
-							  		//splitta tutto il percorso
-							  		toSplit = toSend.filename;
-							  		toSplit.regex = "/";
-
-							  		split@StringUtils(toSplit)(splitResult);
-
-							  		//per ogni cartella nel percorso
-							  		//tranne per il file
-							  		for( i=0, i<#splitResult.result-1, i++)
-							  		{
-							  			//la crea se non esiste
-							  			dir += splitResult.result[i] +"/";
-							  			mkdir@File(dir)()
-							  		};
-
-							  		//infine scrive il file
-							  		writeFile@File(toSend)()
-							  	);
-
-						  		// Prova a scrivere il file
-						  		writeFile@File(toSend)()
-						  	}
+			  				writeFilePath
 			  			}
 					};
 
@@ -576,7 +394,6 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
-
 	  	}] { undef( configList ) }
 
 

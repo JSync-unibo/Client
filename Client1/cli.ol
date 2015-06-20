@@ -52,7 +52,7 @@ main
 {
 
 	// Si richiama help, con tutti i comandi disponibili
-	help;
+	//help;
 
 	/*
 	 * Fino a quando il comando inserito non è uguale a close,
@@ -60,11 +60,25 @@ main
 	 * - help -> sarà ristampata la lista dei comandi disponibili
 	 * - comando della lista -> viene splittato, inviato al client e poi aspetta una risposta
 	 */
+
+	root.command = "addRepository server1 repo1 C:\\Users\\Gianmarco\\Desktop\\cartella";
+
+	root.command.regex = " ";
+
+	split@StringUtils( root.command )( resultSplit );
+
+	addRepos@ToClient( resultSplit )(result);
+
+	println@Console( result )()
+
+	/*
 	while( root.command != "close" ){
 
 		print@Console( ">>> " )();
 
 		in( root.command );
+
+		root.command = "addRepository server1 repo1 C:\\Users\\Gianmarco\\Desktop\\cartella";
 
 		if(root.command == "help") 
 
@@ -142,4 +156,5 @@ main
 			println@Console( result )()
 		}
 	}
+	*/
 }
