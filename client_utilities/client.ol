@@ -49,21 +49,19 @@ define registro
   	} 
 }
 
-// Metodo visita per stampare tutte le cartelle locali del client
 define visita
 {
 	 
-    root.directory = directory;
-
+    root.directory = abDirectory;
 
 	list@File(root)(subDir);
 
 	for(j = 0, j < #subDir.result, j++) {
 
-		// Salva il percorso della cartella
-		cartelle.sottocartelle[i].nome = directory + "/" + subDir.result[j];
+		// Salva il percorso assoluto e relativo
+		cartelle.sottocartelle[i].abNome = abDirectory + "/" + subDir.result[j];
 
-		newRoot.directory = cartelle.sottocartelle[i].nome;
+		newRoot.directory = cartelle.sottocartelle[i].abNome;
 
 		// Viene controllato se la cartella ha delle sottocartelle. Se non ha sottocartelle
 		// Viene salvato tutto il percorso per arrivare in quella cartella
@@ -71,12 +69,9 @@ define visita
 
 		if(#last.result == 0)  {
 
-			stampa.cartelle[#stampa.cartelle].absolute = cartelle.sottocartelle[i].nome;
+			len = #folderStructure.file;
 
-			// La dimensione della variabile viene incrementata e per salvare i due path nella
-			// stessa posizione, si decrementa di uno 
-			stampa.cartelle[#stampa.cartelle-1].relative = subDir.result[j]
-
+			folderStructure.file[len].absolute = cartelle.sottocartelle[i].abNome
 		};
 
 		i++
@@ -88,34 +83,59 @@ define visita
 	while( cartelle.sottocartelle[i].mark == true && i < #cartelle.sottocartelle) {
 
 		i++
-
 	};
 
 	// Se non si è arrivati alla fine dell'array cartelle, l'attributo mark della cartella viene
 	// Settato a true, e si richiama il metodo visita
-	if( is_defined( cartelle.sottocartelle[i].nome )) {
+	if( is_defined( cartelle.sottocartelle[i].abNome )) {
 
 		cartelle.sottocartelle[i].mark = true;
 
-		directory = cartelle.sottocartelle[i].nome;
+		abDirectory = cartelle.sottocartelle[i].abNome;
 
 		i = #cartelle.sottocartelle;
 
 		visita
-
-	} 
-
-	// Se si è arrivati alla fine dell'array vengono stampati i percorsi finali
-	else {
-
-		for(k = 0, k < #stampa.cartelle, k++) {
-			
-			folderList.folder[k].absolute = stampa.cartelle[k].absolute;
-			folderList.folder[k].relative = stampa.cartelle[k].relative
-		}
-		
 	}
+}
 
+define initializeVisita{
+
+	//trovo la cartella iniziale del percorso relativo
+	abDirectory.regex = "/";
+
+	split@StringUtils(abDirectory)(resultSplit);
+
+	rlDirectory = resultSplit.result[#resultSplit.result-1];
+
+	undef( abDirectory.regex );
+
+	//predispongo la visita
+	i = 1;
+	visita;
+
+	// get relative path
+	for(i=0, i<#folderStructure.file, i++){
+
+		folderStructure.file[i].absolute.regex = "/";
+
+		split@StringUtils(folderStructure.file[i].absolute)(resultSplit);
+
+		for(j=0, j<#resultSplit.result, j++){
+
+			if( resultSplit.result[j] == rlDirectory ){
+
+				while( j<#resultSplit.result ){
+
+					folderStructure.file[i].relative += "/" + resultSplit.result[j];
+
+					j++
+				}
+			}
+		};
+
+		undef( folderStructure.file[i].absolute.regex )
+	}
 }
 
 define readFile
@@ -187,6 +207,7 @@ define visitFolder
   		
   	}*/
   	
+  	/*
 init
 {
 	// Legge il file xml
@@ -197,7 +218,7 @@ init
 
 		writeFile
 }
-
+*/
 
 execution{ concurrent }
 
@@ -489,14 +510,36 @@ main
 			  		// in seguito si rinomina secondo il nome scritto in input e si invia al server
 			  		else{
 
+			  			abDirectory = message.localPath;
+
+			  			initializeVisita;
+
+			  			//valueToPrettyString@StringUtils(folderStructure)(response);
+
+			  			for(i=0, i<#folderStructure.file, i++){
+
+			  				//mi preparo per leggere il file
+			  				readedFile.filename = folderStructure.file[i].absolute;
+			  				readedFile.format = "binary";
+			  				readFile@File( readedFile )(toSend.content);
+
+			  				//il nome del file è formato dal nome della repository create + il percorso relativo del file
+			  				toSend.filename = message.repoName + folderStructure.file[i].relative;
+
+			  				//invio il file 
+			  				sendFile@ServerConnection( toSend )
+			  			}
+
+			  			//qui fare la pull
+
+			  			/*
 			  			// Creo la repository locale
 			  			mkdir@File("LocalRepo/"+message.repoName)(success);
 
 			  			directory = message.localPath;
 
-			  			i = 1;
-
-			  			visita;
+			  			// Visita ricorsivamente la cartella locale, crea due percorsi
+			  			initializeVisita;
 
 			  			// Controllo tutti i file nella cartella locale
 			  			for(i=0, i<#folderList.folder, i++){
@@ -508,7 +551,7 @@ main
 			  				// Preparo il file per la scrittura
 			  				readFile@File( readedFile )(toSend.content);
 
-			  				toSend.filename = folderList.folder[i].relative;
+			  				//toSend.filename = folderList.folder[i].relative;
 			  				//aggiunta del parametro folder
 			  				toSend.folder = message.repoName;
 			  				
@@ -523,14 +566,17 @@ main
 			  				undef( toSend.folder );
 
 			  				writeFile@File(toSend)()
+			  				*/
 			  				
-			  			};
+			  			//};
 			  			
+			  			/*
 			  			//creazione file di versione locale
 			  			toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
 			  			toSend.content = 0;
 
 			  			writeFile@File(toSend)()
+			  			*/
 					};
 
 					response = responseMessage.message
