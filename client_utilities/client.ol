@@ -41,10 +41,9 @@ define registro
 
   	for(i=0, i<#configList.server, i++) {
   		
-  		if( name == message.serverName ) {
+  		if( name == serverName ) {
 
   			ServerConnection.location = address
-  		  
   		}
   	} 
 }
@@ -125,9 +124,9 @@ define initializeVisita{
 
 			if( resultSplit.result[j] == rlDirectory ){
 
-				while( j<#resultSplit.result-1 ){
+				while( j<#resultSplit.result ){
 
-					folderStructure.file[i].relative += "/" + resultSplit.result[j+1];
+					folderStructure.file[i].relative += "/" + resultSplit.result[j];
 
 					j++
 				}
@@ -181,44 +180,6 @@ define readFile
 	undef(file)
 		
  }
-
- 	/*
-	 * Visita ricorsivamente le cartelle locali del client, passando
-	 * la cartella iniziale del client e ritornando la stampa di tutte le sottocartelle
-	 
-define visitFolder
-	{
-
-		directory.regex = "/";
-		split@StringUtils(directory)(directoryPath);
-
-		numberPath = #directoryPath.result;
-
-		// Nome della cartella iniziale "LocalRepo"
-		radice.directory.name = directoryPath.result[numberPath];
-
-		// Viene segnata con true, perchè già è stata visitata
-		radice.directory.mark = true;
-
-		i = 1; 
-
-		// Richiamo del metodo (ricorsivo)
-		visita
-  		
-  	}*/
-  	
-  	/*
-init
-{
-	// Legge il file xml
-  	readFile;
-
-  	// Se non esiste allora lo scrive
-	if(!configList)
-
-		writeFile
-}
-*/
 
 execution{ concurrent }
 
@@ -491,7 +452,7 @@ main
 	  			if(#resultSplit.result == 4) {
 	  				
 		  			// Splitta il comando per: nome del server, nome della repository e nome della cartella locale
-			  		message.serverName = resultSplit.result[1];
+			  		serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 			  		message.localPath = resultSplit.result[3];
 
@@ -514,69 +475,55 @@ main
 
 			  			initializeVisita;
 
-			  			//valueToPrettyString@StringUtils(folderStructure)(response);
+			  			valueToPrettyString@StringUtils(folderStructure)(response);
 
 			  			for(i=0, i<#folderStructure.file, i++){
 
 			  				//mi preparo per leggere il file
 			  				readedFile.filename = folderStructure.file[i].absolute;
-			  				readedFile.format = "binary";
+			  				//readedFile.format = "binary";
 			  				readFile@File( readedFile )(toSend.content);
 
 			  				//il nome del file è formato dal nome della repository create + il percorso relativo del file
 			  				toSend.filename = message.repoName + folderStructure.file[i].relative;
 
 			  				//invio il file 
-			  				sendFile@ServerConnection( toSend )
-			  			}
-
-			  			//qui fare la pull
-
-			  			/*
-			  			// Creo la repository locale
-			  			mkdir@File("LocalRepo/"+message.repoName)(success);
-
-			  			directory = message.localPath;
-
-			  			// Visita ricorsivamente la cartella locale, crea due percorsi
-			  			initializeVisita;
-
-			  			// Controllo tutti i file nella cartella locale
-			  			for(i=0, i<#folderList.folder, i++){
-
-			  				readedFile.filename = folderList.folder[i].absolute;
-
-			  				readedFile.format ="binary";
-
-			  				// Preparo il file per la scrittura
-			  				readFile@File( readedFile )(toSend.content);
-
-			  				//toSend.filename = folderList.folder[i].relative;
-			  				//aggiunta del parametro folder
-			  				toSend.folder = message.repoName;
-			  				
-			  				// Invio il singolo file per la scrittura sul server
-			  				// perchè funzioni la copia bisogna commentare la riga
 			  				sendFile@ServerConnection( toSend );
 
-			  				// Scrivo il singolo file nella repo locale
-			  				toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
+			  				//riscrivo il file in modo da poter essere scritto in locale
 
-			  				//rimozione paramentro folder per il writeFile
-			  				undef( toSend.folder );
-
-			  				writeFile@File(toSend)()
-			  				*/
+			  				toSend.filename = "localFolder/" + message.repoName + folderStructure.file[i].relative;
 			  				
-			  			//};
-			  			
-			  			/*
-			  			//creazione file di versione locale
-			  			toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
-			  			toSend.content = 0;
 
-			  			writeFile@File(toSend)()
-			  			*/
+		  					//scrittura del file locale
+		  					scope( FileNotFoundException )
+							{
+								//se manca una cartella nel percorso
+							  	install( IOException => 
+
+							  		//splitta tutto il percorso
+							  		toSplit = toSend.filename;
+							  		toSplit.regex = "/";
+
+							  		split@StringUtils(toSplit)(splitResult);
+
+							  		//per ogni cartella nel percorso
+							  		//tranne per il file
+							  		for( i=0, i<#splitResult.result-1, i++)
+							  		{
+							  			//la crea se non esiste
+							  			dir += splitResult.result[i] +"/";
+							  			mkdir@File(dir)()
+							  		};
+
+							  		//infine scrive il file
+							  		writeFile@File(toSend)()
+							  	);
+
+						  		// Prova a scrivere il file
+						  		writeFile@File(toSend)()
+						  	}
+			  			}
 					};
 
 					response = responseMessage.message
@@ -601,7 +548,7 @@ main
 
 	  			if(#resultSplit.result == 3) {
 
-	  				message.serverName = resultSplit.result[1];
+	  				serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 
 			  		readFile;
@@ -642,7 +589,7 @@ main
 
 	  			if(#resultSplit.result == 3) {
 
-	  				message.serverName = resultSplit.result[1];
+	  				serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 
 			  		readFile;
@@ -725,12 +672,14 @@ main
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
-
-
-
 	  	}] { undef( configList )}
 
 
+	  	/*
+	  	 * Accetta repoName, ricerca la sua struttura online
+	  	 * per ogni file che trova richiede il contenuto al server
+	  	 * ritorna il contenuto e va a sovrascrivere i file locali
+	  	 */
 	  	[ pull(resultSplit)(response) {
 
 	  		scope(dati) {
@@ -740,40 +689,80 @@ main
 
 	  			if(#resultSplit.result == 3) {
 
-	  				message.serverName = resultSplit.result[1];
-			  		message.repoName = resultSplit.result[2];
+	  				//salvo il nome della repository
+	  				serverName = resultSplit.result[1];
+	  				message.repoName = resultSplit.result[2];
 
-			  		readFile;
-			  		// Si richiama il registro per prelevare i dati del server
+
+	  				readFile;
 			  		registro;
 
-			  		while(responseMessage.message == null) {
+			  		//richiedo la totale struttura della cartella
+	  				pull@ServerConnection(message.repoName)(responseMessage);
 
-			  			pull@ServerConnection(message.repoName)(responseMessage)
+	  				// aliasing
+	  				requestedFileName -> responseMessage.folderStructure.file[i];
 
-			  		};
+	  				//richiedo il contenuto di ogni file
+	  				for(i=0, i<#responseMessage.folderStructure.file, i++){
 
-			  		response = "Success"
+	  					requestFile@ServerConnection(requestedFileName)(fromServerFile);
+
+	  					//cambia il file name
+	  					with( fromServerFile.filename ){
+
+	  						.replacement = "localRepo";
+  							.regex = "serverRepo";
+
+  							replaceAll@StringUtils(fromServerFile.filename)(fromServerFile.filename);
+
+  							undef( .replacement );
+  							undef( .regex )
+	  					};
+
+	  					//scrittura del file locale
+	  					scope( FileNotFoundException )
+						{
+							//se manca una cartella nel percorso
+						  	install( IOException => 
+
+						  		//splitta tutto il percorso
+						  		toSplit = fromServerFile.filename;
+						  		toSplit.regex = "/";
+
+						  		split@StringUtils(toSplit)(splitResult);
+
+						  		//per ogni cartella nel percorso
+						  		//tranne per il file
+						  		for( i=0, i<#splitResult.result-1, i++)
+						  		{
+						  			//la crea se non esiste
+						  			dir += splitResult.result[i] +"/";
+						  			mkdir@File(dir)()
+						  		};
+
+						  		//infine scrive il file
+						  		writeFile@File(fromServerFile)()
+						  	);
+
+					  		// Prova a scrivere il file
+					  		writeFile@File(fromServerFile)()
+					  	}
+	  				}
 			  	}
 
 			  	else
 			  		throw( datiNonCorretti )
 			}
+	  	}]{ undef(configList); undef( responseMessage ) }
 
-
-	  	}]{ undef(configList) }
-
-
-
+	  	/*
+	  	 * Errore de togliere...
+	  	 */
 	  	[ error( resultSplit )( response ) {
 
 	  		response = " Not a recognized command. \n"
 
-	  	}] { nullProcess }
-	  	// Messaggio di avviso di comando scritto non correttamente
-	  	/*
-	  	else{
-	  		response = " "+resultSplit.result[0]+" is not a recognized command. \n"
-	  	}
-  	*/
+	  	}] { undef( variableName ) }
+  	
 }

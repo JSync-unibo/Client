@@ -18,12 +18,11 @@ init
 	registerForInput@Console()()
 }
 
-
 define help
 {
   	println@Console( 
 " JSync Unibo Vers 0.3.0
- Copyright LOBESTER 2015. All right reserved.
+ Copyright LOBSTER 2015. All right reserved.
 
  Usage : [command] <parameters>
 
@@ -42,6 +41,9 @@ define help
  Repositories Command :
  - addRepository <name> <repo> <path>   Add new repository in selected server, with <path> name
  - delete <name> <repo>                 Delete a repository in selected server
+ - pull <name> <repo>                   Pull of selected repository
+
+
 " 
 )()
 }
@@ -110,8 +112,8 @@ main
 
 	  		// Aggiunge una repository in locale e sul server, partendo da un path selezionato
 	  		else if ( resultSplit.result[0] == "addRepository") {
+	  			
 	  			addRepos@ToClient( resultSplit )(result)
-	  		  
 	  		}
 
 	  		// Elimina una repository in locale e sul server

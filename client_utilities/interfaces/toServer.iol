@@ -1,10 +1,10 @@
 /*
-*
-* Author => Gruppo LOBSTER
-* Data => 04/05/2015
-* Parent => Client
-*
-*/
+ *
+ * Author => Gruppo LOBSTER
+ * Data => 04/05/2015
+ * Parent => Client
+ *
+ */
 
 /*
  * Tipo che si riferisce al comando inserito in console
@@ -13,15 +13,15 @@
  */
 type ToServerType: void{
 
-    .serverName: string
     .repoName: string
     .localPath?: string
 }
 
 type FileRequestType: void {
-  .filename: string
-  .content?: raw
-  .folder?: string
+
+    .filename: string
+    .content: string
+    .folder?: string
 }
 
 /*
@@ -31,25 +31,32 @@ type FileRequestType: void {
  */
 type ResponseMessage: void {
 
-	.error: bool
-	.message: string
+    .error: bool
+    .message?: string
+
+    .folderStructure?:void{ 
+
+        .file*:string
+    }
 }
 
 
 //Interfaccia fra il client ed il server
 interface ToServerInterface { 
 
-  	RequestResponse: 
+    RequestResponse: 
 
         listRepo(void)(string),
-        
+
         addRepository(ToServerType)(ResponseMessage),
         push(FileRequestType)(ResponseMessage),
-        pull(string)(FileRequestType),
-        delete(ToServerType)(ResponseMessage)
+        pull(string)(ResponseMessage),
+        delete(ToServerType)(ResponseMessage),
+
+        requestFile(string)(FileRequestType)
 
     OneWay: sendFile( FileRequestType )
-                    
+
 }
 
 // Porta che collega il client con il server
