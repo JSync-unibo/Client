@@ -53,11 +53,19 @@ define visita
 		// Viene salvato tutto il percorso per arrivare in quella cartella
 		list@File( newRoot )( last );
 
-		if(#last.result == 0)  {
-
+		if(#last.result == 0)  
+		{
 			len = #folderStructure.file;
 
-			folderStructure.file[len].absolute = cartelle.sottocartelle[i].abNome
+			currentFileAbsName -> cartelle.sottocartelle[i].abNome;
+
+		 	currentFileAbsName.substring = ".";
+
+		 	contains@StringUtils( currentFileAbsName )( isContained );
+
+		 	if( isContained == true ) 
+
+			 	folderStructure.file[len].absolute = currentFileAbsName
 		};
 
 		i++
@@ -189,21 +197,26 @@ define writeFile
  */
 define writeFilePath
 {
-	toSplit = toSend.filename;
-	toSplit.regex = "/";
+	scope( EmptyDirectory)
+	{
+		install( IOException => nullProcess );
 
-	split@StringUtils(toSplit)(splitResult);
+		toSplit = toSend.filename;
+		toSplit.regex = "/";
 
-	// Per ogni cartella nel percorso
-	// Tranne per il file
-	for(j=0, j<#splitResult.result-1, j++){
+		split@StringUtils(toSplit)(splitResult);
 
-		dir += splitResult.result[j] + "/";
+		// Per ogni cartella nel percorso
+		// Tranne per il file
+		for(j=0, j<#splitResult.result-1, j++){
 
-		mkdir@File(dir)()
-	};
+			dir += splitResult.result[j] + "/";
 
-	writeFile@File(toSend)();
+			mkdir@File(dir)()
+		};
 
-	undef( dir )
+		writeFile@File(toSend)();
+
+		undef( dir )
+	}
 }
