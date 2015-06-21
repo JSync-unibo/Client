@@ -22,7 +22,7 @@ define registro
   	name -> configList.server[i].name;
   	address -> configList.server[i].address;
 
-  	for(k=0, k<#configList.server, k++) {
+  	for(i = 0, i < #configList.server, i++) {
   		
   		if( name == serverName ) {
 
