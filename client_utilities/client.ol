@@ -96,86 +96,51 @@ main
 			  			response = " There are no local repositories.\n"
 			  	}
 
-				/*if(#resultSplit.result == 2) {
-
-					// Si richiama l'operazione del File manager per visitare tutte le cartelle in LocalRepo
-					visitFolder@FileManager("LocalRepo")(folderList);
-
-					// Se non ritorna alcuna cartella viene stampato un messaggio di avviso
-					if(#folderList.folder == 0) {
-
-						response = " There aren't folders. \n"
-					}
-
-					// Altrimenti si stampano tutte le cartelle e sottocartelle
-					else {
-
-						for(i = 0, i< #folderList, i++) {
-
-							response = folderList.folder
-						}
-					}
-
-			  	}*/
-			  	else {
-					
+			  	else 
 					throw(datiNonCorretti)
-				}
 			}
 
 		} ] { nullProcess }
 
-		
-	  	/* 
-	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
-	  	 * i dati corretti oppure se il server già esiste
-	  	 */
-	  	[ addServer (resultSplit)(response) {
-	  		
-	  		scope(dati) {
+		/*
+	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
+	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
+	  	*/
+	  	[ listNewRepos (resultSplit)(response){
+
+  			install( datiNonCorretti => response = " Not correct data.\n");
+
+  			if(#resultSplit.result == 2) {
+  				
+	  			readFile;
 	  			
-	  			// Salta un eccezione anche se esiste già il server con lo stesso nome
-	  			install( datiNonCorretti => response = " Not correct data.\n");
-	  			install( serverDoppio => response = " "+resultSplit.result[1]+" name is already in use.\n" );
+	  			if( #configList.server > 0){
 
-	  			//response = message.result[1] +"\n"+message.result[2]
-	  			if(#resultSplit.result == 3) {
+			  		for (i=0, i<#configList.server, i++) {
+			  			
+			  			scope( currentServer )
+			  			{
+			  				install( IOException => response += "       no reachable.\n" );
+			  			  	// Inserito l'indirizzo per collegarsi al server
+				  			ServerConnection.location = configList.server[i].address;
 
-	  				// Lettura del file xml, con risultato la variabile contenente i server
-			  		readFile;
+				  			registro;
 
-					// Controllo in tutti i server salvati se esiste già lo stesso nome
-					// Se esiste salta il fault e rompe l'intero scope
-					// Non avviene nessun inserimento
-					for(i = 0, i < #configList.server, i++) {
+				  			response += " - "+configList.server[i].name +":\n";
+				  			
+				  			listRepo@ServerConnection()(responseMessage);
 
-						if(resultSplit.result[1] == configList.server[i].name) {
-							
-							throw( serverDoppio )
-						}
-					};
+				  			response += responseMessage+"\n"
+			  			}
+			  		}
+			  	}
+			  	else
+					response = " There are no servers.\n"					
+		  	}
+		  	else 
+				throw( datiNonCorretti )
 
-					// Inserisco il nuovo server nel primo spazio libero
-			  		size = #configList.server;
-
-			  		configList.server[size].name = resultSplit.result[1];
-			  		configList.server[size].address = resultSplit.result[2];
-
-			  		// Scrittura del file xml per aggiungere il nuovo server
-			  		writeFile;
-
-					response= " Success, server added.\n"
-				}
-
-				
-				else {
-
-					throw(datiNonCorretti)
-				}				
-			}
-
-	  	}] { nullProcess }
-
+	  	} ] { nullProcess }
 
 		/*
 		 * Cancella il server inserito, con un ulteriore ciclo riordina l'array di sottonodi, e si
@@ -230,54 +195,57 @@ main
 			  		throw( datiNonCorretti )
 	  		}
 	  	} ] { nullProcess }
-
-
-	   /*
-	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
-	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
-	  	*/
-	  	[ listNewRepos (resultSplit)(response){
-
-	  		scope( ConnectException )
-	  		{
+		
+	  	/* 
+	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
+	  	 * i dati corretti oppure se il server già esiste
+	  	 */
+	  	[ addServer (resultSplit)(response) {
+	  		
+	  		scope(dati) {
 	  			
-	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			// Salta un eccezione anche se esiste già il server con lo stesso nome
 	  			install( datiNonCorretti => response = " Not correct data.\n");
+	  			install( serverDoppio => response = " "+resultSplit.result[1]+" name is already in use.\n" );
 
-	  			if(#resultSplit.result == 2) {
-	  				
-		  			tmp = "";
-		  			readFile;
+	  			//response = message.result[1] +"\n"+message.result[2]
+	  			if(#resultSplit.result == 3) {
 
-			  		for (i=0, i< #configList.server, i++) {
-			  			
-			  			// Inserito l'indirizzo per collegarsi al server
-			  			ServerConnection.location = configList.server[i].address;
+	  				// Lettura del file xml, con risultato la variabile contenente i server
+			  		readFile;
 
-			  			tmp += " - "+configList.server[i].name +":\n";
-			  			
-			  			registro;
+					// Controllo in tutti i server salvati se esiste già lo stesso nome
+					// Se esiste salta il fault e rompe l'intero scope
+					// Non avviene nessun inserimento
+					for(i = 0, i < #configList.server, i++) {
 
-			  			listRepo@ServerConnection()(responseMessage);
+						if(resultSplit.result[1] == configList.server[i].name) {
+							
+							throw( serverDoppio )
+						}
+					};
 
-			  			tmp += responseMessage  + " "			
-			  		};
+					// Inserisco il nuovo server nel primo spazio libero
+			  		size = #configList.server;
 
-			  		if(tmp==""){
+			  		configList.server[size].name = resultSplit.result[1];
+			  		configList.server[size].address = resultSplit.result[2];
 
-			  			response = " There are no servers.\n"
-			  		}
-			  		else {
-			  			response = tmp
-			  		}
+			  		// Scrittura del file xml per aggiungere il nuovo server
+			  		writeFile;
 
-			  	}
-			  	else {
+					response= " Success, server added.\n"
+				}
 
-			  		throw( datiNonCorretti )
-			  	}
-	  		}
-	  	} ] { nullProcess }
+				else 
+					throw(datiNonCorretti)
+								
+			}
+
+	  	}] { nullProcess }
+
+
+	   
 
 
 	  	/*
