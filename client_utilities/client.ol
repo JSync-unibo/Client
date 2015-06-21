@@ -106,7 +106,8 @@ main
 
 		/*
 	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
-	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
+	  	* gestendo le eccezioni di dati inseriti non correttamente oppure di mancata connessione, 
+	  	* dentro il for, per evitare che se il primo server non è connesso, salti tutta l'operazione
 	  	*/
 	  	[ listNewRepos (resultSplit)(response){
 
@@ -115,7 +116,8 @@ main
   			if(#resultSplit.result == 2) {
   				
 	  			readFile;
-	  			
+
+	  			// Se sono presenti servers
 	  			if( #configList.server > 0){
 
 			  		for (i=0, i<#configList.server, i++) {
@@ -123,6 +125,7 @@ main
 			  			scope( currentServer )
 			  			{
 			  				install( IOException  => response += "       no reachable.\n" );
+
 			  			  	// Inserito l'indirizzo per collegarsi al server
 				  			ServerConnection.location = configList.server[i].address;
 
@@ -130,6 +133,7 @@ main
 
 				  			response += " - "+configList.server[i].name +":\n";
 				  			
+				  			// Ritorna al cli la lista di tutte le repo divise per ogni server
 				  			listRepo@ServerConnection()(responseMessage);
 
 				  			response += responseMessage+"\n"
@@ -284,29 +288,32 @@ main
 			  		// in seguito si rinomina secondo il nome scritto in input e si invia al server
 			  		else{
 
-			  			// visita la cartella "localPath"
-			  			// risulato in "folderStructure"
+			  			// Visita la cartella "localPath"
 			  			abDirectory = message.localPath;
 			  			initializeVisita;
 
+			  			// Ogni file viene trasformato nella variabile currentFile
 			  			currentFile -> folderStructure.file[i];
 			  			
 			  			for(i=0, i<#folderStructure.file, i++){
 
-			  				//mi preparo per leggere il file
+			  				// Mi preparo per leggere il file
 			  				readedFile.filename = currentFile.absolute;
+
 			  				readFile@File( readedFile )(toSend.content);
 
-			  				//il nome del file è formato dal nome della repository create + il percorso relativo del file
+			  				// Il nome del file è formato dal nome della repository create + il percorso relativo del file
 			  				toSend.filename = message.repoName + currentFile.relative;
 
-			  				//invio il file 
+			  				// Invio il file al server
 			  				sendFile@ServerConnection( toSend );
 
-			  				//riscrivo il file in modo da poter essere scritto in locale
+			  				// Riscrivo il file in modo da poter essere scritto in locale
 
 			  				toSend.filename = "localRepo/" + toSend.filename;
 
+			  				// Richiamo del metodo nel servizio utilities per creare
+			  				// cartelle, nel caso non siano presenti
 			  				writeFilePath
 			  			};
 
@@ -384,6 +391,7 @@ main
 
 	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
+	  			install( FileNotFound => response = " "+ resultSplit.result[2] + " doesn't exists.\n");
 
 	  			if(#resultSplit.result == 3) {
 
@@ -501,6 +509,7 @@ main
 
 	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
+	  			install( FileNotFound => response = " "+ resultSplit.result[2] + " doesn't exists.\n");
 
 	  			if(#resultSplit.result == 3) {
 
