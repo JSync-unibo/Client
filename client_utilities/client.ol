@@ -284,19 +284,17 @@ main
 			  		// in seguito si rinomina secondo il nome scritto in input e si invia al server
 			  		else{
 
+			  			// visita la cartella "localPath"
+			  			// risulato in "folderStructure"
 			  			abDirectory = message.localPath;
-
 			  			initializeVisita;
 
-			  			//valueToPrettyString@StringUtils(folderStructure)(response)
-			  			
 			  			currentFile -> folderStructure.file[i];
 			  			
 			  			for(i=0, i<#folderStructure.file, i++){
 
 			  				//mi preparo per leggere il file
 			  				readedFile.filename = currentFile.absolute;
-			  				//readedFile.format = "binary";
 			  				readFile@File( readedFile )(toSend.content);
 
 			  				//il nome del file è formato dal nome della repository create + il percorso relativo del file
@@ -310,7 +308,14 @@ main
 			  				toSend.filename = "localRepo/" + toSend.filename;
 
 			  				writeFilePath
-			  			}
+			  			};
+
+			  			//write vers.txt
+			  			toSend.filename = "localRepo/"+message.repoName+"/vers.txt";
+			  			toSend.content = "0";
+
+			  			writeFile@File(toSend)()
+
 					};
 
 					response = responseMessage.message
@@ -384,63 +389,98 @@ main
 
 	  				// Salvo il nome della repository
 	  				serverName = resultSplit.result[1];
-			  		message.repoName = resultSplit.result[2];
+			  		repoName = resultSplit.result[2];
 
 			  		readFile;
-
-			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
 
-			  		// Percorso assoluto del file di versione
-			  		readedFile.filename = "localRepo/"+ message.repoName + "/vers.txt";
-
-					// Preparo il file per la scrittura
+			  		// leggo il file di versione
+			  		readedFile.filename = "localRepo/"+ repoName + "/vers.txt";
 					readFile@File( readedFile )( toSend.content );
 
-					// Riscrivo il percorso relativo del file di versione, 
-					// dopo aver letto il contenuto
-					toSend.filename = message.repoName + "/vers.txt";
-					
-					// Nome della repository da inviare al server
-					toSend.folder = message.repoName;
+					// preparo il percorso da spedire al server
+					with( readedFile ){
+
+						//println@Console( .filename )();
+
+					 	.filename.regex = "localRepo";
+						.filename.replacement = "serverRepo";
+
+						replaceAll@StringUtils(.filename)(toSend.filename);
+
+						undef( .filename.regex );
+						undef( .filename.replacement )
+
+						//println@Console( .filename )()
+					};
 
 			  		// Invio dei dati al server, aspettando un messaggio di risposta	
 	  				push@ServerConnection( toSend )(responseMessage);	
 
-	  				// Se si è verificato un errore, viene stampato il messaggio relativo
-	  				if(responseMessage.error) {
+	  				// Si può inviare la push
+	  				if(!responseMessage.error) {
 
-	  					response = responseMessage.message
-	  				}
-
-	  				// Altrimenti viene inizializata la visita di tutte le cartelle
-	  				else {
-
-	  					abDirectory = "localRepo/"+ message.repoName;
-
+	  					//visito la cartella
+	  					abDirectory = "localRepo/"+ repoName;
 			  			initializeVisita;
+
+			  			currentFile -> folderStructure.file[i];
 
 	  					// Controllo tutti i file nella cartella locale
 						for(i=0, i<#folderStructure.file, i++){
 
-							// Percorso assoluto delle cartelle
-						  	readedFile.filename = folderStructure.file[i].absolute;
+						  	readedFile.filename = currentFile.absolute;
 
-						  	// Preparo il file per la scrittura
-						  	readFile@File( readedFile )(toSend.content);
+						  	//valutare se contiene vers.txt nel nome
+						  	//il file di versione non è da mandare in scrittura
+						  	with( currentFile ){
+						  	  
+						  	  	.absolute.substring = "vers.txt";
+								contains@StringUtils(.absolute)(contain);
 
-						  	// Riscrivo il percorso relativo per inviarlo al server
-						  	toSend.filename = message.repoName + folderStructure.file[i].relative;
-						  				
-						  	// Invio il singolo file per la scrittura sul server			
-						  	sendFile@ServerConnection( toSend )
-			  				
-			  			};
+								undef( .absolute.substring );
 
-			  			response = responseMessage.message
+								//se non è il file di versione
+								if(!contain){
 
-	  				}
+									// Preparo il file per la scrittura
+								  	readFile@File( readedFile )(toSend.content);
 
+								  	// Riscrivo il percorso relativo per inviarlo al server
+								  	toSend.filename = repoName + .relative;
+								  				
+								  	//println@Console( " - " + toSend.filename + "\n - " +toSend.content )();
+
+								  	// Invio il singolo file per la scrittura sul server			
+								  	sendFile@ServerConnection( toSend )
+								}
+
+								// handling del file di versione
+								else{
+
+									//salvo il percorso in cui dovrei sovrascrivere il file di versione
+									local.filename = .absolute;
+
+									// cambio il percorso e pulisco la variabile
+								 	.absolute.regex = "localRepo";
+									.absolute.replacement = "serverRepo";
+
+									replaceAll@StringUtils(.absolute)(toSend.filename);
+									undef( .absolute.regex );
+									undef( .absolute.replacement );
+
+									//richiedo il file di versione 
+									requestFile@ServerConnection(toSend.filename)(toSend);
+
+									//scrivo il file di versione in locale
+									local.content = toSend.content;
+									writeFile@File(local)()
+								}
+						  	}
+			  			}
+	  				};
+
+	  				response = responseMessage.message
 				}
 
 	  			else 
