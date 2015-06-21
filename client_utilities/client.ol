@@ -122,7 +122,7 @@ main
 			  			
 			  			scope( currentServer )
 			  			{
-			  				install( IOException => response += "       no reachable.\n" );
+			  				install( IOException  => response += "       no reachable.\n" );
 			  			  	// Inserito l'indirizzo per collegarsi al server
 				  			ServerConnection.location = configList.server[i].address;
 
