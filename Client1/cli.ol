@@ -21,7 +21,7 @@ init
 define help
 {
   	println@Console( 
-" JSync Unibo Vers 0.3.0
+" JSync Unibo Vers 0.4.0
  Copyright LOBSTER 2015. All right reserved.
 
  Usage : [command] <parameters>
@@ -41,6 +41,7 @@ define help
  Repositories Command :
  - addRepository <name> <repo> <path>   Add new repository in selected server, with <path> name
  - delete <name> <repo>                 Delete a repository in selected server
+ - push <name> <repo>                   Push of selected repository
  - pull <name> <repo>                   Pull of selected repository
 
 
