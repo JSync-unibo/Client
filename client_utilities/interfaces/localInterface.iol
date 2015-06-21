@@ -1,6 +1,6 @@
 /**
 *
-* Author => Gruppo A: Valentina Tosto, Chiara Babina
+* Author => Gruppo LOBSTER
 * Data => 04/05/2015
 * Parent => Client
 *

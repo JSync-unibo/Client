@@ -1,3 +1,19 @@
+/*
+*
+* Author => Gruppo LOBSTER
+* Data => 21/06/2015
+* Parent => Client
+* 
+*/
+
+
+/* 
+ * Setta la location in base al nome ed indirizzo del server.
+ * Per ogni server presente nella lista, se il nome è uguale
+ * a quello scritto in input, allora setta la location del
+ * server tramite il suo indirizzo preso dalla lista
+ *
+ */
 define registro
 {
 	
@@ -15,6 +31,10 @@ define registro
   	} 
 }
 
+
+/* 
+ * Definizione della visita ricorsiva di tutte le cartelle
+ */
 define visita
 {
 	 
@@ -65,10 +85,14 @@ define visita
 	}
 }
 
+
+/*
+ * Inizializzazione della visita e chiamata ricorsiva
+ */ 
 define initializeVisita
 {
 
-	//trovo la cartella iniziale del percorso relativo
+	// Trovo la cartella iniziale del percorso relativo
 	abDirectory.regex = "/";
 
 	split@StringUtils(abDirectory)(resultSplit);
@@ -77,17 +101,18 @@ define initializeVisita
 
 	undef( abDirectory.regex );
 
-	//predispongo la visita
+	// Predispongo la visita
 	i = 1;
 	visita;
 
-	// get relative path
+	// Per ogni file prendo il percorso assoluto e lo splitto
 	for(i=0, i<#folderStructure.file, i++){
 
 		folderStructure.file[i].absolute.regex = "/";
 
 		split@StringUtils(folderStructure.file[i].absolute)(resultSplit);
 
+		// Per ogni elemento splittato, costruisco il suo percorso relativo
 		for(j=0, j<#resultSplit.result, j++){
 
 			if( resultSplit.result[j] == rlDirectory ){
@@ -105,12 +130,17 @@ define initializeVisita
 	}
 }
 
+
+/*
+ * Lettura del file Xml con la lista dei servers 
+ */
 define readFile
 {
 	scope( fileXml )
 	{
 		undef(configList);
 		undef(file);
+
 	  	// Se non esiste il file xml setta la variabile come vuota
 		install( FileNotFound => configList.vuoto = true  );
 
@@ -125,8 +155,12 @@ define readFile
 		xmlToValue@XmlUtils(configFile)(configList)
 		
 	}
- }
-  
+}
+
+
+/*
+ * Scrittura del file Xml per inserire la lista dei servers 
+ */  
 define writeFile		
 {
    		
@@ -148,6 +182,11 @@ define writeFile
 	undef(file)
 }
 
+
+/*
+ * Creazione delle cartelle, durante l'invio dei files,
+ * nel caso non siano presenti
+ */
 define writeFilePath
 {
 	toSplit = toSend.filename;
@@ -155,8 +194,8 @@ define writeFilePath
 
 	split@StringUtils(toSplit)(splitResult);
 
-	//per ogni cartella nel percorso
-	//tranne per il file
+	// Per ogni cartella nel percorso
+	// Tranne per il file
 	for(j=0, j<#splitResult.result-1, j++){
 
 		dir += splitResult.result[j] + "/";

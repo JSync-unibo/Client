@@ -2,11 +2,11 @@
 *
 * Author => Gruppo LOBSTER
 * Data => 04/05/2015
-* Parent => Client
-*
+* 
+* Client
 */
 
-// Importazione delle interfacce
+// Importazione delle interfacce e del servizio di utilities del client
 include "../client_utilities/interfaces/localInterface.iol"
 include "../client_utilities/interfaces/toServer.iol"
 
@@ -17,6 +17,7 @@ include "file.iol"
 include "console.iol"
 
 include "interfaces/utilities.ol"
+
 
 // Porta che collega il client con il cli attraverso l'embedding
 inputPort FromCli {
@@ -102,6 +103,7 @@ main
 
 		} ] { nullProcess }
 
+
 		/*
 	  	* Stampa la lista delle repositories(e relative sottocartelle) presenti in tutti i servers,
 	  	* gestendo le eccezioni di mancata connessione oppure di dati inseriti non correttamente
@@ -141,6 +143,7 @@ main
 				throw( datiNonCorretti )
 
 	  	} ] { nullProcess }
+
 
 		/*
 		 * Cancella il server inserito, con un ulteriore ciclo riordina l'array di sottonodi, e si
@@ -195,6 +198,7 @@ main
 			  		throw( datiNonCorretti )
 	  		}
 	  	} ] { nullProcess }
+
 		
 	  	/* 
 	  	 * Aggiunge il nuovo server, con i relativi controlli nel caso non si inseriscano
@@ -245,9 +249,6 @@ main
 	  	}] { nullProcess }
 
 
-	   
-
-
 	  	/*
  		 * Aggiunge una repository al server in questione, gestendo le eccezioni riguardo l'assenza del server 
  		 * o sull'impossibilità di creare la repository
@@ -257,7 +258,7 @@ main
 	  		scope( ConnectException )
 	  		{
 
-	  			//install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 	  			install( AddError => response = responseMessage.message );
 
@@ -365,6 +366,13 @@ main
 	  	}] { undef( configList ) }
 
 
+	  	/*
+	  	 * Invio della repo locale (aggiornata) al server, sovrascrivendo
+	  	 * quella presente online. Prima nel server si confrontano le due versioni
+	  	 * (quella locale e quella online), in seguito vengono inviati i file uno per volta.
+	  	 * Gestione delle eccezioni di mancata connessione al server o dati scritti non correttamente
+	  	 *
+	  	 */
 	  	[ push (resultSplit)(response) {
 
 	  		scope(dati) {
@@ -374,89 +382,71 @@ main
 
 	  			if(#resultSplit.result == 3) {
 
+	  				// Salvo il nome della repository
 	  				serverName = resultSplit.result[1];
 			  		message.repoName = resultSplit.result[2];
 
 			  		readFile;
+
 			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
 
-			  		readedFile.filename = "LocalRepo/"+ message.repoName + "/vers.txt";
-
-					readedFile.format ="binary";
+			  		// Percorso assoluto del file di versione
+			  		readedFile.filename = "localRepo/"+ message.repoName + "/vers.txt";
 
 					// Preparo il file per la scrittura
-					readFile@File( readedFile )(toSend.content);
+					readFile@File( readedFile )( toSend.content );
 
+					// Riscrivo il percorso relativo del file di versione, 
+					// dopo aver letto il contenuto
 					toSend.filename = message.repoName + "/vers.txt";
-
-			  		//if(toSend.filename == message.repoName + folderStructure.file[i].relative + "/vers.txt") {
+					
+					// Nome della repository da inviare al server
+					toSend.folder = message.repoName;
 
 			  		// Invio dei dati al server, aspettando un messaggio di risposta	
-	  				push@ServerConnection(toSend)(responseMessage);	
+	  				push@ServerConnection( toSend )(responseMessage);	
 
+	  				// Se si è verificato un errore, viene stampato il messaggio relativo
 	  				if(responseMessage.error) {
 
 	  					response = responseMessage.message
 	  				}
 
+	  				// Altrimenti viene inizializata la visita di tutte le cartelle
 	  				else {
 
-	  					abDirectory = "LocalRepo/"+ message.repoName;
+	  					abDirectory = "localRepo/"+ message.repoName;
 
 			  			initializeVisita;
-
-			  			println@Console( folderStructure.file[0] )();
 
 	  					// Controllo tutti i file nella cartella locale
 						for(i=0, i<#folderStructure.file, i++){
 
+							// Percorso assoluto delle cartelle
 						  	readedFile.filename = folderStructure.file[i].absolute;
-
-						  	readedFile.format ="binary";
 
 						  	// Preparo il file per la scrittura
 						  	readFile@File( readedFile )(toSend.content);
 
+						  	// Riscrivo il percorso relativo per inviarlo al server
 						  	toSend.filename = message.repoName + folderStructure.file[i].relative;
-
-						  	println@Console( toSend.filename )();
-						  	//aggiunta del parametro folder
-						  	//toSend.folder = message.repoName;
 						  				
-						  	// Invio il singolo file per la scrittura sul server
-						  	// perchè funzioni la copia bisogna commentare la riga
+						  	// Invio il singolo file per la scrittura sul server			
 						  	sendFile@ServerConnection( toSend )
-
-						  	// Scrivo il singolo file nella repo locale
-						  	//toSend.filename = "LocalRepo/"+message.repoName+"/"+toSend.filename;
-
-						  	//rimozione paramentro folder per il writeFile
-						  	//undef( toSend.folder );
-
-						  	//writeFile@File(toSend)()
 			  				
 			  			};
 
 			  			response = responseMessage.message
 
 	  				}
-			  			//}
-	
-			  			
-			  			//creazione file di versione locale
-			  			//toSend.filename = "LocalRepo/"+message.repoName+"/vers.txt";
-			  			//toSend.content = "0.1";
 
-			  			//writeFile@File(toSend)()
-					//};
-
-					
 				}
 
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
+
 	  	}] { undef( configList )}
 
 
@@ -474,37 +464,41 @@ main
 
 	  			if(#resultSplit.result == 3) {
 
-	  				//salvo il nome della repository
+	  				// Salvo il nome della repository
 	  				serverName = resultSplit.result[1];
 	  				message.repoName = resultSplit.result[2];
 
 	  				readFile;
+
 			  		registro;
 
-			  		//richiedo la totale struttura della cartella
+			  		// Richiedo la totale struttura della cartella
 	  				pull@ServerConnection(message.repoName)(responseMessage);
 
-	  				// aliasing
+	  				// Aliasing
 	  				requestedFileName -> responseMessage.folderStructure.file[i];
 
-	  				//richiedo il contenuto di ogni file
+	  				// Richiedo il contenuto di ogni file
 	  				for(i=0, i<#responseMessage.folderStructure.file, i++){
 
+	  					// Ricevo i file uno per volta dal server
 	  					requestFile@ServerConnection(requestedFileName)(toSend);
 
-	  					//cambia il file name
+	  					// Cambio il nome della repo globale, con tutte le cartelle, da serverRepo a localRepo
 	  					with( toSend.filename ){
 
 	  						.replacement = "localRepo";
   							.regex = "serverRepo";
 
+  							// Sostituzione del nome della repo globale per tutti i percorsi dei files
   							replaceAll@StringUtils(toSend.filename)(toSend.filename);
 
   							undef( .replacement );
   							undef( .regex )
 	  					};
 
-
+	  					// Richiamo della scrittura delle cartelle
+	  					// nel caso non siano presenti
 	  					writeFilePath
 	  				};
 
@@ -514,7 +508,13 @@ main
 			  	else
 			  		throw( datiNonCorretti )
 			}
-	  	}]{ undef(configList); undef( responseMessage ) }
+
+	  	}] { 
+
+	  		undef(configList); 
+	  		undef( responseMessage ) 
+
+	  		}
 
 	  	/*
 	  	 * Errore de togliere...
