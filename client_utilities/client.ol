@@ -80,7 +80,7 @@ main
 				
 	  			if(#resultSplit.result == 2) {
 
-	  				printRepo.directory = "LocalRepo";
+	  				printRepo.directory = "localRepo";
 
 	  				list@File(printRepo)(repo);
 
