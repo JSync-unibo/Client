@@ -19,10 +19,10 @@ define registro
 	
   	ServerConnection.protocol = "sodep"; 
 
-  	name -> configList.server[i].name;
-  	address -> configList.server[i].address;
+  	name -> configList.server[k].name;
+  	address -> configList.server[k].address;
 
-  	for(i = 0, i < #configList.server, i++) {
+  	for(k = 0, k < #configList.server, k++) {
   		
   		if( name == serverName ) {
 
