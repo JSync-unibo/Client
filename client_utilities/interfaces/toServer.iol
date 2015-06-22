@@ -61,5 +61,6 @@ interface ToServerInterface {
 
 // Porta che collega il client con il server
 outputPort ServerConnection {
+    Protocol: sodep
     Interfaces: ToServerInterface
 }

@@ -16,9 +16,6 @@
  */
 define registro
 {
-	
-  	ServerConnection.protocol = "sodep"; 
-
   	name -> configList.server[k].name;
   	address -> configList.server[k].address;
 

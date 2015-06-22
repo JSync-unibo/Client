@@ -47,8 +47,7 @@ main
 	  				// Lettura del file xml, con risultato la variabile contenente i server
 			  		readFile;
 
-
-					if( #configList.server>0 ){
+					if( is_defined( configList.server ) ){
 
 						// Crea l'output
 				  		for(i = 0, i < #configList.server, i++) {
@@ -84,12 +83,11 @@ main
 
 	  				list@File(printRepo)(repo);
 
-	  				if( #repo.result>0 ){
+	  				if( is_defined( repo.result ) ){
 
 						for(i = 0, i < #repo.result, i++){
 							
 							response += " " + repo.result[i] +"\n"
-						
 						}
 					}
 					
@@ -118,22 +116,25 @@ main
 	  			readFile;
 
 	  			// Se sono presenti servers
-	  			if( #configList.server > 0){
+	  			if( is_defined( configList.server ) ) {
 
 			  		for (i=0, i<#configList.server, i++) {
 			  			
 			  			scope( currentServer )
 			  			{
+			  				//quando il client prova a connettersi al currentServer
+			  				//può saltare l'eccezione nel caso in cui non ci sia nessun server in ascolto 
+			  				//sulla stessa location
 			  				install( IOException  => response += "       no reachable.\n" );
 
 			  			  	// Inserito l'indirizzo per collegarsi al server
 				  			ServerConnection.location = configList.server[i].address;
 
-				  			registro;
-
-				  			response += " - "+configList.server[i].name +":\n";
+				  			//formatta l'output
+				  			response += "\n - "+configList.server[i].name +":\n";
 				  			
 				  			// Ritorna al cli la lista di tutte le repo divise per ogni server
+				  			// Può sollevare IOException
 				  			listRepo@ServerConnection()(responseMessage);
 
 				  			response += responseMessage+"\n"
@@ -156,7 +157,11 @@ main
 		[ removeServer (resultSplit)(response){
 
 			scope(dati) {
-	  			
+
+				//done fault, chiude l'operazione
+				//viene chiamato quando è trovato un server
+	  			install( done => nullProcess );
+
 	  			install( datiNonCorretti => response = " Not correct data.\n");
 	  			install( serverNonEsiste => response = " "+resultSplit.result[1]+" does not exist.\n" );
 
@@ -164,40 +169,31 @@ main
 
 	  				// Lettura del file xml, che ritorna la lista dei server
 					readFile;
-			
-					// Setta la variabile di server trovato a false
-	  				trovato = false;
+					
+	  				scope( foundServer )
+	  				{
+	  					install( foundServer => response = " Success, removed server.\n"; throw( done ) );
 
-			  		for(i = 0, i < #configList.server, i++) {
+	  				  	for(i = 0, i < #configList.server, i++) {
 
-			  			// In caso trova il server da eliminare
-			  			if(resultSplit.result[1] == configList.server[i].name){
+				  			// In caso trova il server da eliminare
+				  			if(resultSplit.result[1] == configList.server[i].name){
 
-			  				// Lo elimina e riordina l'array
-			  				undef(configList.server[i]);
-			  				
-			  				for(j = i, j < #configList.server, j++){
+				  				// Elimina il server selezionato
+				  				undef(configList.server[i]);
+				  				
+				  				writeFile;
 
-			  					configList.server[i] = configList.server[j]
-			  				};
-							
-							// Setta la variabile a true, per segnalare che è stato trovato
-			  				trovato = true
-			  			}
+				  				//se trova il server chiama il fault che chiude tutta l'operazione
+				  				throw( foundServer )
+			  				}
+	  					}
 	  				};
 
-	  				// Se è stato trovato scrive nuovamente il file, con il server rimosso
-	  				if(trovato){
-	  					
-	  					writeFile;
-
-	  					response = " Success, removed server.\n"
-	  				}
-	  				
-	  				else
-	  					throw(serverNonEsiste)
-
+	  				//nel caso in cui il server non esista
+	  				throw(serverNonEsiste)
 	  			}
+
 	  			else 
 			  		throw( datiNonCorretti )
 	  		}
