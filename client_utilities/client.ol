@@ -398,93 +398,109 @@ main
 			  		readFile;
 			  		registro;
 
-			  		// leggo il file di versione
-			  		readedFile.filename = "localRepo/"+ repoName + "/vers.txt";
-					readFile@File( readedFile )( toSend.content );
+			  		globalVar.count1 = "writerCount";
+			  		globalVar.count2= "readerCount";
+			  		globalVar.operation = "pull";
 
-					// preparo il percorso da spedire al server
-					with( readedFile ){
 
-						//println@Console( .filename )();
+			  		increaseCountPush@ServerConnection(globalVar)(responseMessage);
 
-					 	.filename.regex = "localRepo";
-						.filename.replacement = "serverRepo";
+			  		if(responseMessage.error) {
 
-						replaceAll@StringUtils(.filename)(toSend.filename);
+			  			response = responseMessage.message
+			  		}
 
-						undef( .filename.regex );
-						undef( .filename.replacement )
+			  		else {
 
-						//println@Console( .filename )()
-					};
+				  		// leggo il file di versione
+				  		readedFile.filename = "localRepo/"+ repoName + "/vers.txt";
+						readFile@File( readedFile )( toSend.content );
 
-			  		// Invio dei dati al server, aspettando un messaggio di risposta	
-	  				push@ServerConnection( toSend )(responseMessage);	
+						// preparo il percorso da spedire al server
+						with( readedFile ){
 
-	  				// Si può inviare la push
-	  				if(!responseMessage.error) {
+							//println@Console( .filename )();
 
-	  					//visito la cartella
-	  					abDirectory = "localRepo/"+ repoName;
-			  			initializeVisita;
+						 	.filename.regex = "localRepo";
+							.filename.replacement = "serverRepo";
 
-			  			currentFile -> folderStructure.file[i];
+							replaceAll@StringUtils(.filename)(toSend.filename);
 
-	  					// Controllo tutti i file nella cartella locale
-						for(i=0, i<#folderStructure.file, i++){
+							undef( .filename.regex );
+							undef( .filename.replacement )
 
-						  	readedFile.filename = currentFile.absolute;
+							//println@Console( .filename )()
+						};
 
-						  	//valutare se contiene vers.txt nel nome
-						  	//il file di versione non è da mandare in scrittura
-						  	with( currentFile ){
-						  	  
-						  	  	.absolute.substring = "vers.txt";
-								contains@StringUtils(.absolute)(contain);
+				  		// Invio dei dati al server, aspettando un messaggio di risposta	
+		  				push@ServerConnection( toSend )(responseMessage);	
 
-								undef( .absolute.substring );
+		  				// Si può inviare la push
+		  				if(!responseMessage.error) {
 
-								//se non è il file di versione
-								if(!contain){
+		  					//visito la cartella
+		  					abDirectory = "localRepo/"+ repoName;
+				  			initializeVisita;
 
-									// Preparo il file per la scrittura
-								  	readFile@File( readedFile )(toSend.content);
+				  			currentFile -> folderStructure.file[i];
 
-								  	// Riscrivo il percorso relativo per inviarlo al server
-								  	toSend.filename = repoName + .relative;
-								  				
-								  	//println@Console( " - " + toSend.filename + "\n - " +toSend.content )();
+		  					// Controllo tutti i file nella cartella locale
+							for(i=0, i<#folderStructure.file, i++){
 
-								  	// Invio il singolo file per la scrittura sul server			
-								  	sendFile@ServerConnection( toSend )
-								}
+							  	readedFile.filename = currentFile.absolute;
 
-								// handling del file di versione
-								else{
+							  	//valutare se contiene vers.txt nel nome
+							  	//il file di versione non è da mandare in scrittura
+							  	with( currentFile ){
+							  	  
+							  	  	.absolute.substring = "vers.txt";
+									contains@StringUtils(.absolute)(contain);
 
-									//salvo il percorso in cui dovrei sovrascrivere il file di versione
-									local.filename = .absolute;
+									undef( .absolute.substring );
 
-									// cambio il percorso e pulisco la variabile
-								 	.absolute.regex = "localRepo";
-									.absolute.replacement = "serverRepo";
+									//se non è il file di versione
+									if(!contain){
 
-									replaceAll@StringUtils(.absolute)(toSend.filename);
-									undef( .absolute.regex );
-									undef( .absolute.replacement );
+										// Preparo il file per la scrittura
+									  	readFile@File( readedFile )(toSend.content);
 
-									//richiedo il file di versione 
-									requestFile@ServerConnection(toSend.filename)(toSend);
+									  	// Riscrivo il percorso relativo per inviarlo al server
+									  	toSend.filename = repoName + .relative;
+									  				
+									  	//println@Console( " - " + toSend.filename + "\n - " +toSend.content )();
 
-									//scrivo il file di versione in locale
-									local.content = toSend.content;
-									writeFile@File(local)()
-								}
-						  	}
-			  			}
-	  				};
+									  	// Invio il singolo file per la scrittura sul server			
+									  	sendFile@ServerConnection( toSend )
+									}
 
-	  				response = responseMessage.message
+									// handling del file di versione
+									else{
+
+										//salvo il percorso in cui dovrei sovrascrivere il file di versione
+										local.filename = .absolute;
+
+										// cambio il percorso e pulisco la variabile
+									 	.absolute.regex = "localRepo";
+										.absolute.replacement = "serverRepo";
+
+										replaceAll@StringUtils(.absolute)(toSend.filename);
+										undef( .absolute.regex );
+										undef( .absolute.replacement );
+
+										//richiedo il file di versione 
+										requestFile@ServerConnection(toSend.filename)(toSend);
+
+										//scrivo il file di versione in locale
+										local.content = toSend.content;
+										writeFile@File(local)()
+									}
+							  	}
+				  			}
+		  				};
+
+		  				decreaseCountPush@ServerConnection("writerCount");
+		  				response = responseMessage.message
+		  			}
 				}
 
 	  			else 
@@ -517,37 +533,53 @@ main
 
 			  		registro;
 
-			  		// Richiedo la totale struttura della cartella
-	  				pull@ServerConnection(message.repoName)(responseMessage);
+			  		globalVar.count1 = "readerCount";
+			  		globalVar.count2= "writerCount";
+			  		globalVar.operation = "push";
 
-	  				// Aliasing
-	  				requestedFileName -> responseMessage.folderStructure.file[i];
 
-	  				// Richiedo il contenuto di ogni file
-	  				for(i=0, i<#responseMessage.folderStructure.file, i++){
+			  		increaseCountPull@ServerConnection(globalVar)(responseMessage);
 
-	  					// Ricevo i file uno per volta dal server
-	  					requestFile@ServerConnection(requestedFileName)(toSend);
+			  		if(responseMessage.error) {
 
-	  					// Cambio il nome della repo globale, con tutte le cartelle, da serverRepo a localRepo
-	  					with( toSend.filename ){
+			  			response = responseMessage.message
+			  		}
 
-	  						.replacement = "localRepo";
-  							.regex = "serverRepo";
+			  		else {
+				  		// Richiedo la totale struttura della cartella
+		  				pull@ServerConnection(message.repoName)(responseMessage);
 
-  							// Sostituzione del nome della repo globale per tutti i percorsi dei files
-  							replaceAll@StringUtils(toSend.filename)(toSend.filename);
+		  				// Aliasing
+		  				requestedFileName -> responseMessage.folderStructure.file[i];
 
-  							undef( .replacement );
-  							undef( .regex )
-	  					};
+		  				// Richiedo il contenuto di ogni file
+		  				for(i=0, i<#responseMessage.folderStructure.file, i++){
 
-	  					// Richiamo della scrittura delle cartelle
-	  					// nel caso non siano presenti
-	  					writeFilePath
-	  				};
+		  					// Ricevo i file uno per volta dal server
+		  					requestFile@ServerConnection(requestedFileName)(toSend);
 
-	  				response = responseMessage.message
+		  					// Cambio il nome della repo globale, con tutte le cartelle, da serverRepo a localRepo
+		  					with( toSend.filename ){
+
+		  						.replacement = "localRepo";
+	  							.regex = "serverRepo";
+
+	  							// Sostituzione del nome della repo globale per tutti i percorsi dei files
+	  							replaceAll@StringUtils(toSend.filename)(toSend.filename);
+
+	  							undef( .replacement );
+	  							undef( .regex )
+		  					};
+
+		  					// Richiamo della scrittura delle cartelle
+		  					// nel caso non siano presenti
+		  					writeFilePath
+		  				};
+
+		  				decreaseCountPull@ServerConnection("readerCount");
+
+		  				response = responseMessage.message
+		  			}
 			  	}
 
 			  	else
