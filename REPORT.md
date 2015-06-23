@@ -14,21 +14,74 @@ Componenti:
 Questo progetto tratta di una sincronizzazione di files tra clients e servers, implementando le funzionalità che può avere un client per comunicare con il server.
 L'utente può interagire con il client attraverso un'interfaccia, la CLI, che riceve i comandi in input. Il client poi, a seconda del comando ricevuto, esegue un'operazione gestendo le varie eccezioni che possono sollevarsi. Alcuni comandi sono in locale, e non richiedono l'intervento del server, mentre altri hanno bisogno del collegamento con il server scelto. 
 Esiste un client unico, mentre esistono più cli e più server, per evitare ridondanza di codice. 
-Abbiamo implementato un help per avere a disposizione i comandi possibili che l'utente può domandare al client. 
+Inoltre abbiamo implementato un help per avere a disposizione i comandi possibili che l'utente può domandare al client. 
 In seguito spiegheremo nel dettaglio tutte le funzionalità del nostro progetto.
-
-
 
 
 ## Consegna
 
-Il progetto deve essere avviato lanciando la cli ed i server a disposizione. Successivamente si scrive il comando in input che si vuole richiedere al client e si aspetta il responso.
+Il progetto deve essere avviato lanciando la/le cli ed i server a disposizione. Successivamente si scrive il comando in input che si vuole richiedere al client e si aspetta la risposta
 
 ### Demo
 
-Le istruzioni per eseguire una demo di esecuzione. La demo deve contenere almeno 2 Clients ed un Server. Il Server parte, uno dei due Clients (Client1) aggiunge il Server, crea un repository (Repo) e invia (push) il contenuto locale del repository (file, vuoto). Il secondo Client (Client2) aggiunge il Server, richiede i files contenuti in Repo (pull), aggiunge un nuovo file (new_file, vuoto) e aggiorna il Server (push).
+Le istruzioni per eseguire una demo di esecuzione, con almeno due Clients ed un Server, sono:
+
+1) Lanciare il servizio “server.ol” nella cartella Server1 (o di altri Servers).
+
+2) Avviare i Clients, entrando nella cartella Client1 (facendo partire il servizio “cli.ol”) e seguire la stessa procedura per gli altri Clients.
+
+3) Da una delle due cli eseguire il comando “addServer” indicando il nome del server e l’indirizzo, ad esempio:
+ 
+       “addServer server1 socket://localhost:4000”
+       
+In questo modo nel file config.xml saranno aggiunte le informazioni del Server.
+
+4) In seguito si può eseguire il comando “list servers”, per visualizzare il Server appena registrato.
 
 
+
+5) Aggiungere una repository nuova da un percorso presente sul computer, inserendo il nome del Server, della repo da creare sia nel Client che nel Server e del percorso locale, come in questo esempio:
+
+      “addRepository server1 repo1 C:/Users/Prova1”
+       
+(naturalmente questo è un percorso preso da Windows)
+Oltre alla repo con tutti i files, ne sarà creato anche uno di versione sia nella repo locale che in quella online.
+
+6) Per visualizzare la lista delle repositories locali si inserisce il comando: “list reg_repos”, mentre per quelle sul Server:
+“list new_repos”
+
+7) Intanto il secondo Client aggiunge il Server alla lista e in seguito esegue una pull per scaricare la repository presente sul Server, che era stata caricata in precedenza ed attendere circa 10 secondi, prima che l’operazione sia completata.
+Ad esempio si scrive il comando: 
+
+      “pull server1 repo1”
+
+8) Il secondo Client può aggiungere un nuovo file alla repo1
+(manualmente), così da poter eseguire una push ed aggiornare il Server e la relativa versione, un esempio del comando da scrivere è:
+
+      “push server1 repo1”
+
+9) Il primo Client aggiunge un nuovo file alla repo1, ma se prova ad eseguire una push, un messaggio negherà l’operazione, perché è necessario aggiornare la propria versione e fare la pull.
+
+ 10) Quindi il primo Client aggiorna la propria repo, facendo una
+     pull, e successivamente può ri-aggiungere il nuovo file e fare    
+     la push.
+
+ 11) Si può testare la concorrenza fra i due Clients, provando a far 
+     eseguire una pull dal Client1 e contemporaneamente (nell’arco    
+     dei 10 secondi di tempo) una push dal Client2, che sarà 
+     bloccata.
+
+ 12) Infine per cancellare la repo1 sia dal Server che dal Client1,   
+     si esegue il comando: 
+
+			     “delete server1 repo1”
+
+In questo modo la repository non sarà più presente né sul Server né sul Client1, però è ancora disponibile sul Client2.
+
+13)  Dopo aver eseguito tutti i comandi, si può cancellare il Server   
+     con il comando “removeServer” seguito dal nome del Server da   
+     eliminare.
+       
 
 ## Implementazione
 
