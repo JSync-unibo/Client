@@ -42,8 +42,7 @@ type ResponseMessage: void {
 
 type GlobalVar: void {
 
-    .count1: string 
-    .count2: string
+    .id: int
     .operation: string
 }
 
@@ -57,16 +56,14 @@ interface ToServerInterface {
 
         addRepository(ToServerType)(ResponseMessage),
         push(FileRequestType)(ResponseMessage),
-        increaseCountPull(GlobalVar)(ResponseMessage),
-         increaseCountPush(GlobalVar)(ResponseMessage),
+        increaseCount(GlobalVar)(ResponseMessage),
         pull(string)(ResponseMessage),
         delete(ToServerType)(ResponseMessage),
 
         requestFile(string)(FileRequestType)
 
     OneWay: sendFile( FileRequestType ),
-            decreaseCountPull(string),
-            decreaseCountPush(string)
+            decreaseCount(int)
 
 }
 

@@ -273,6 +273,19 @@ main
 			  		// Richiama il registro definito all'inizio
 			  		registro;
 
+			  		repositoryName = message.repoName;
+			  		repositoryName.substring = ".";
+
+			  		contains@StringUtils( repositoryName )( containsDot );
+
+			  		// Se nel nome della repository è contenuto un . viene catturata l'eccezione addError
+			  		// e inviato un messaggio di errore per carattere non permesso
+			  		if( containsDot ) {
+
+			  			responseMessage.message = " Character '.' not allowed for repository name";
+			  			throw( AddError )
+			  		};
+
 			  		// Invia tutto al server, il quale ritorna un errore (se presente) 
 			  		// ed un messaggio che descrive l'errore
 			  		addRepository@ServerConnection(message)(responseMessage);
@@ -398,12 +411,15 @@ main
 			  		readFile;
 			  		registro;
 
-			  		globalVar.count1 = "writerCount";
-			  		globalVar.count2= "readerCount";
+			  		// Settate le variabili per l'operazione di increase
+			  		// Il paramentro id serve come riferimento nelle variabili globali del server
+			  		// per indicare, in questo caso, gli scrittori
+			  		globalVar.id = 0;
 			  		globalVar.operation = "pull";
 
+			  		// Richiesta per l'accesso in sezione critica
+			  		increaseCount@ServerConnection(globalVar)(responseMessage);
 
-			  		increaseCountPush@ServerConnection(globalVar)(responseMessage);
 
 			  		if(responseMessage.error) {
 
@@ -429,7 +445,6 @@ main
 							undef( .filename.regex );
 							undef( .filename.replacement )
 
-							//println@Console( .filename )()
 						};
 
 				  		// Invio dei dati al server, aspettando un messaggio di risposta	
@@ -496,9 +511,14 @@ main
 									}
 							  	}
 				  			}
+		  				} 
+
+		  				else {
+
+		  					decreaseCount@ServerConnection(globalVar.id)
 		  				};
 
-		  				decreaseCountPush@ServerConnection("writerCount");
+		  				decreaseCount@ServerConnection(globalVar.id);
 		  				response = responseMessage.message
 		  			}
 				}
@@ -533,12 +553,14 @@ main
 
 			  		registro;
 
-			  		globalVar.count1 = "readerCount";
-			  		globalVar.count2= "writerCount";
+			  		// Settate le variabili per l'operazione di increase
+			  		// Il paramentro id serve come riferimento nelle variabili globali del server
+			  		// per indicare, in questo caso, i lettori
+			  		globalVar.id = 1;
 			  		globalVar.operation = "push";
 
-
-			  		increaseCountPull@ServerConnection(globalVar)(responseMessage);
+			  		// Request response per l'accesso alla sezione critica
+			  		increaseCount@ServerConnection(globalVar)(responseMessage);
 
 			  		if(responseMessage.error) {
 
@@ -576,7 +598,7 @@ main
 		  					writeFilePath
 		  				};
 
-		  				decreaseCountPull@ServerConnection("readerCount");
+		  				decreaseCount@ServerConnection(globalVar.id);
 
 		  				response = responseMessage.message
 		  			}
