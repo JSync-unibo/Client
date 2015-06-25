@@ -269,6 +269,19 @@ main
 			  		message.repoName = resultSplit.result[2];
 			  		message.localPath = resultSplit.result[3];
 
+			  		repositoryName = message.repoName;
+			  		repositoryName.substring = ".";
+
+			  		contains@StringUtils( repositoryName )( containsDot );
+
+			  		// Se nel nome della repository è contenuto un . viene catturata l'eccezione addError
+			  		// e inviato un messaggio di errore per carattere non permesso
+			  		if( containsDot ) {
+
+			  			responseMessage.message = " Character '.' not allowed for repository name";
+			  			throw( AddError )
+			  		};
+
 			  		readFile;
 			  		// Richiama il registro definito all'inizio
 			  		registro;
@@ -398,12 +411,15 @@ main
 			  		readFile;
 			  		registro;
 
-			  		globalVar.count1 = "writerCount";
-			  		globalVar.count2= "readerCount";
+			  		// Settate le variabili per l'operazione di increase
+			  		// Il paramentro id serve come riferimento nelle variabili globali del server
+			  		// per indicare, in questo caso, gli scrittori
+			  		globalVar.id = 0;
 			  		globalVar.operation = "pull";
 
+			  		// Richiesta per l'accesso in sezione critica
+			  		increaseCount@ServerConnection(globalVar)(responseMessage);
 
-			  		increaseCountPush@ServerConnection(globalVar)(responseMessage);
 
 			  		if(responseMessage.error) {
 
@@ -498,7 +514,7 @@ main
 				  			}
 		  				};
 
-		  				decreaseCountPush@ServerConnection("writerCount");
+		  				decreaseCount@ServerConnection(globalVar.id);
 		  				response = responseMessage.message
 		  			}
 				}
@@ -533,12 +549,15 @@ main
 
 			  		registro;
 
-			  		globalVar.count1 = "readerCount";
-			  		globalVar.count2= "writerCount";
+			  		// Settate le variabili per l'operazione di increase
+			  		// Il paramentro id serve come riferimento nelle variabili globali del server
+			  		// per indicare, in questo caso, i lettori
+			  		globalVar.id = 1;
 			  		globalVar.operation = "push";
 
+			  		// Richiesta per l'accesso in sezione critica
+			  		increaseCount@ServerConnection(globalVar)(responseMessage);
 
-			  		increaseCountPull@ServerConnection(globalVar)(responseMessage);
 
 			  		if(responseMessage.error) {
 
@@ -576,7 +595,7 @@ main
 		  					writeFilePath
 		  				};
 
-		  				decreaseCountPull@ServerConnection("readerCount");
+		  				decreaseCount@ServerConnection(globalVar.id);
 
 		  				response = responseMessage.message
 		  			}
