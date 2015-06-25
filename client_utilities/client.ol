@@ -350,20 +350,22 @@ main
 			  		// Si richiama il registro per prelevare i dati del server
 			  		registro;
 	  				
-	  				//rimuovo la repo locale
-			  		deleteDir@File("LocalRepo/"+message.repoName)(deleted);
-
 	  				// Invio dei dati al server, aspettando un messaggio di risposta	
-	  				delete@ServerConnection(message)(responseMessage);
+	  				delete@ServerConnection(message)(responseMessage);	
 
-	  				// 
-	  				if(deleted == responseMessage.error) 
+	  				// Se si è verificato un errore, viene stampato il messaggio relativo
+	  				if(responseMessage.error) {
 
 			  			response = responseMessage.message
-			  		
-			  		else
-			  			response = " Success, removed only local repository.\n"
+			  		}
 
+			  		// Altrimenti viene richiamato il metodo per eliminare la cartella locale
+			  		else {
+
+			  			deleteDir@File("LocalRepo/"+message.repoName)(deleted);
+
+			  			response = responseMessage.message
+			  		}
 	  			}
 
 	  			else 
