@@ -58,7 +58,7 @@ interface ToServerInterface {
         addRepository(ToServerType)(ResponseMessage),
         push(FileRequestType)(ResponseMessage),
         increaseCountPull(GlobalVar)(ResponseMessage),
-         increaseCountPush(GlobalVar)(ResponseMessage),
+        increaseCountPush(GlobalVar)(ResponseMessage),
         pull(string)(ResponseMessage),
         delete(ToServerType)(ResponseMessage),
 
