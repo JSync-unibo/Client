@@ -10,8 +10,8 @@
 * - registro ( assegnare location al Server)
 * - lettura e scrittura del file xml
 * - creazione delle cartelle per contenere i files trasferiti da Client a Server
-* - inizializzazione della visita delle cartelle
 * - visita ricorsiva delle cartelle
+* - inizializzazione della visita delle cartelle
 */
 
 
@@ -35,6 +35,7 @@ define registro
   		}
   	} 
 }
+
 
 /*
  * Lettura del file xml che contiene la lista dei Servers 
@@ -88,6 +89,7 @@ define writeFile
 	undef( file )
 }
 
+
 /*
  * Creazione delle cartelle, durante l'invio dei files,
  * nel caso non siano presenti
@@ -118,49 +120,6 @@ define writeFilePath
 	}
 }
 
-/*
- * Inizializzazione della visita e chiamata ricorsiva
- */ 
-define initializeVisita
-{
-
-	// Trovo la cartella iniziale del percorso relativo
-	abDirectory.regex = "/";
-
-	split@StringUtils( abDirectory )( resultSplit );
-
-	rlDirectory = resultSplit.result[#resultSplit.result-1];
-
-	undef( abDirectory.regex );
-
-	// Predispongo la visita
-	i = 1;
-	visita;
-
-	// Per ogni file prendo il percorso assoluto e lo splitto
-	for(i=0, i<#folderStructure.file, i++){
-
-		folderStructure.file[i].absolute.regex = "/";
-
-		split@StringUtils( folderStructure.file[i].absolute )( resultSplit );
-
-		// Per ogni elemento splittato, costruisco il suo percorso relativo
-		for(j=0, j<#resultSplit.result, j++){
-
-			if( resultSplit.result[j] == rlDirectory ){
-
-				while( j<#resultSplit.result-1 ){
-
-					folderStructure.file[i].relative += "/" + resultSplit.result[j+1];
-
-					j++
-				}
-			}
-		};
-
-		undef( folderStructure.file[i].absolute.regex )
-	}
-}
 
 /* 
  * Definizione della visita ricorsiva di tutte le cartelle
@@ -222,6 +181,52 @@ define visita
 		visita
 	}
 }
+
+
+/*
+ * Inizializzazione della visita e chiamata ricorsiva
+ */ 
+define initializeVisita
+{
+
+	// Trovo la cartella iniziale del percorso relativo
+	abDirectory.regex = "/";
+
+	split@StringUtils( abDirectory )( resultSplit );
+
+	rlDirectory = resultSplit.result[#resultSplit.result-1];
+
+	undef( abDirectory.regex );
+
+	// Predispongo la visita
+	i = 1;
+	visita;
+
+	// Per ogni file prendo il percorso assoluto e lo splitto
+	for(i=0, i<#folderStructure.file, i++){
+
+		folderStructure.file[i].absolute.regex = "/";
+
+		split@StringUtils( folderStructure.file[i].absolute )( resultSplit );
+
+		// Per ogni elemento splittato, costruisco il suo percorso relativo
+		for(j=0, j<#resultSplit.result, j++){
+
+			if( resultSplit.result[j] == rlDirectory ){
+
+				while( j<#resultSplit.result-1 ){
+
+					folderStructure.file[i].relative += "/" + resultSplit.result[j+1];
+
+					j++
+				}
+			}
+		};
+
+		undef( folderStructure.file[i].absolute.regex )
+	}
+}
+
 
 
 
