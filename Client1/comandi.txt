@@ -1,1 +1,0 @@
-addRepository server1 Repo1 C:/Users/Gianmarco/Desktop/toLoad
