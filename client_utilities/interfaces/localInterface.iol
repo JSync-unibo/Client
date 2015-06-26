@@ -1,10 +1,11 @@
-/**
+/*
 *
 * Author => Gruppo LOBSTER
-* Data => 04/05/2015
-* Parent => Client
+* Data => 26/06/2015
+* 
+* Parent => Cli
 *
-**/
+*/
 
 include "string_utils.iol"
 
@@ -55,6 +56,6 @@ outputPort ToClient{
 }
 
 embedded {
-    Jolie: "../client_utilities/client.ol" in ToClient
+    Jolie: "../client_utilities/clientUtilities.ol" in ToClient
 }
 
