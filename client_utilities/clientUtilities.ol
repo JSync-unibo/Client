@@ -602,13 +602,6 @@ main
 									}
 							  	}
 				  			}
-		  				} 
-
-		  				else {
-
-		  					// Se il file di versione locale è minore di quella sul Server
-		  					// si decrementa il numero di writers
-		  					decreaseCount@ServerConnection( globalVar.id )
 		  				};
 
 		  				// Dopo aver finito la push, si decrementa il numero di writers
@@ -656,7 +649,7 @@ main
 
 
 	  				serverName = resultSplit.result[1];
-			  		repoName = resultSplit.result[2];
+			  		message.repoName = resultSplit.result[2];
 
 			  		// Lettura del file xml (richiamata dal servizio clientDefine), 
 	  				// con risultato la variabile contenente i Servers
@@ -722,7 +715,7 @@ main
 		  				decreaseCount@ServerConnection( globalVar.id );
 
 		  				response = responseMessage.message
-		  			}
+		  			}		  			
 			  	}
 
 			  	else
