@@ -266,12 +266,15 @@ main
 			  			  	// Inserito l'indirizzo per collegarsi al Server corrente
 				  			ServerConnection.location = configList.server[i].address;
 
+				  			// Formatta l'output
+				  			response += "\n - "+configList.server[i].name +":\n";
+
 				  			// Operazione con il Server, aspettando la lista di tutte le sue repositories.
 				  			// Può sollevare IOException
 				  			listRepo@ServerConnection()( responseMessage );
 
 				  			// Si crea l'output con l'elenco dei nomi dei Servers e le relative repositories
-				  			response += "\n - " + configList.server[i].name + ":\n" + responseMessage + "\n"
+				  			response += responseMessage+"\n"
 			  			}
 			  		}
 			  	}
@@ -408,7 +411,8 @@ main
 
 			scope( dati ) {
 
-	  			// Sollevata se il Server selezionato non è raggiungibile
+	  			// Sollevata in due casi: se la cartella locale viene rimossa (ma non è presente sul Server)
+	  			// e se la cartella locale non esiste ed il Server non è in ascolto
 	  			install( IOException => 
 
 	  				if(deleted)
@@ -420,8 +424,6 @@ main
 	  					response = " Connection error, the selected server not exist or is no reachable.\n" 
 
 	  			);
-
-	  			//response = " Connection error, the selected server not exist or is no reachable.\n" );
 
 	  			// Nel caso in cui i dati inseriti non siano corretti
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
@@ -439,6 +441,7 @@ main
 			  		// (richiamato dal servizio clientDefine)
 			  		registro;
 	  				
+	  				// Eliminazione della cartella locale, se presente
 			  		deleteDir@File( "LocalRepo/" + message.repoName )( deleted );
 
 	  				// Invio dei dati al Server, per eliminare la repository su di esso
@@ -446,9 +449,10 @@ main
 	  				delete@ServerConnection( message )( responseMessage );	
 
 	  				// Se non ci sono errori di cancellazione nel Server
-	  				// Se la cartella locale è stata eliminata
+	  				// e se la cartella locale è stata eliminata
 	  				if(!responseMessage.error && deleted) 
 
+	  					// Stampa del messaggio di cancellazione avvenuta su entrambi
 			  			response = responseMessage.message
 			  		
 
@@ -458,9 +462,10 @@ main
 
 			  			response = " Success, removed only local repository.\n"
 			  		
-			  		// Nel caso in cui ci sia errore
+			  		// Nel caso in cui la cartella non sia presente nè sul Client nè sul Server
 			  		else if(responseMessage.error)
-			  		
+			  			
+			  			// Stampa del messaggio di cartella inesistente
 			  			response = responseMessage.message
 			  		
 	  			}
@@ -518,7 +523,7 @@ main
 			  		// da eseguire, prima di effettuare la push
 			  		globalVar.id = 0;
 
-			  		globalVar.operation = "pull";
+			  		globalVar.operation = "Pull";
 
 			  		// Richiesta per l'accesso in sezione critica, inviando le variabili appena descritte
 			  		increaseCount@ServerConnection( globalVar )( responseMessage );
@@ -685,7 +690,7 @@ main
 			  		// da eseguire, prima di effettuare la pull
 			  		globalVar.id = 1;
 
-			  		globalVar.operation = "push";
+			  		globalVar.operation = "Push";
 
 			  		// Richiesta per l'accesso in sezione critica, inviando le variabili appena descritte
 			  		increaseCount@ServerConnection( globalVar )( responseMessage );
