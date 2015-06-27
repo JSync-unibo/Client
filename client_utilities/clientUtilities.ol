@@ -409,7 +409,19 @@ main
 			scope( dati ) {
 
 	  			// Sollevata se il Server selezionato non è raggiungibile
-	  			install( IOException => response = " Connection error, the selected server not exist or is no reachable.\n" );
+	  			install( IOException => 
+
+	  				if(deleted)
+
+	  					response = " Success, removed only local repository.\n"
+
+	  				else
+
+	  					response = " Connection error, the selected server not exist or is no reachable.\n" 
+
+	  			);
+
+	  			//response = " Connection error, the selected server not exist or is no reachable.\n" );
 
 	  			// Nel caso in cui i dati inseriti non siano corretti
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
@@ -427,23 +439,30 @@ main
 			  		// (richiamato dal servizio clientDefine)
 			  		registro;
 	  				
+			  		deleteDir@File( "LocalRepo/" + message.repoName )( deleted );
+
 	  				// Invio dei dati al Server, per eliminare la repository su di esso
 	  				// ed aspetta un messaggio di risposta	
 	  				delete@ServerConnection( message )( responseMessage );	
 
-	  				// Se si è verificato un errore, viene stampato il messaggio relativo
-	  				if(responseMessage.error) {
+	  				// Se non ci sono errori di cancellazione nel Server
+	  				// Se la cartella locale è stata eliminata
+	  				if(!responseMessage.error && deleted) 
 
 			  			response = responseMessage.message
-			  		}
+			  		
 
-			  		// Altrimenti viene richiamato il metodo per eliminare la repository sul Client
-			  		else {
+			  		// Se ci sono errori nell'eliminazione della cartella sul Server
+			  		// ma la cartella locale è stata cancellata
+			  		else if(responseMessage.error && deleted)
 
-			  			deleteDir@File( "LocalRepo/" + message.repoName )( deleted );
-
+			  			response = " Success, removed only local repository.\n"
+			  		
+			  		// Nel caso in cui ci sia errore
+			  		else if(responseMessage.error)
+			  		
 			  			response = responseMessage.message
-			  		}
+			  		
 	  			}
 
 	  			else 
