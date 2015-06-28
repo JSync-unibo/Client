@@ -1,4 +1,4 @@
-# JSync - Esame di Laboratorio Sistemi Operativi A.A. 2014-2015
+﻿# JSync - Esame di Laboratorio Sistemi Operativi A.A. 2014-2015
 >*Build software better, together.*
 
 
@@ -211,18 +211,33 @@ Client:
 
 	2) Si invia la richiesta di eliminazione della repo al Server ed in
 	   caso di cancellazione avvenuta oppure se la repo già era stata 
-cancellata in precedenza, eseguiamo la stessa operazione per il Client, con il comando deleteDir di file.iol, eliminando l’intera cartella che era stata inserita in input.
+      cancellata in precedenza, eseguiamo la stessa operazione per il Client, 
+      con il comando "deleteDir" di file.iol, eliminando l’intera cartella che era stata inserita in input.
 
 Server:
 
 	1) Riceve il messaggio dal Client della repository da eliminare,
 	   scorre la lista di tutte quelle presenti in “serverRepo” e se il 
-   nome corrisponde a quello ricevuto, elimina la cartella e 
-   ritorna il messaggio di operazione effettuata.
+      nome corrisponde a quello ricevuto, elimina la cartella e 
+      ritorna il messaggio di operazione effettuata.
 
 ### PUSH
 
+Comando per inviare l'aggiornamento di una repository locale sul Server, controllando i files di versione di entrambi.
 
+Client:
+
+   1) Si legge il file xml e si richiama il metodo registro, così da prelevare
+      l'indirizzo del Server nel quale inviare la push.
+
+   2) Si invia la richiesta di incremento della variabile globale dei writers.
+
+   3) Se la variabile è stata incrementata, si procede alla spedizione del file di versione,
+      per controllare se è maggiore o uguale di quella sul Server (solo in tal caso si può eseguire la push)
+
+   4) Successivamente si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica
+      la repository globale da "localRepo" a "serverRepo" e si possono inviare sul Server, sovrascrivendoli
+      su quelli già presenti o creandoli se non esistono
 
 
 
@@ -256,11 +271,14 @@ PULL – PULL:
 Due (o più) readers invece sono permessi, quindi non abbiamo inserito nessun controllo, poiché tutti possono scaricare contemporaneamente il contenuto dello stesso Server.
 
 
-### PROBLEMI RISCONTRATI & SOLUZIONI ADOTTATE
+## Problemi riscontrati & soluzioni adottate
 
-**File manager**: 
-Inizialemente, per non appesantire il Client e per sfruttare nel migliore dei modi i servizi di Jolie, volevamo implementare un servizio a parte chiamato **fileManager.ol**. Questo servizio, collegato al **clientUtilities.ol** attraverso l’embedding, serviva per gestire la lettura e scrittura del file xml e per la visita ricorsiva delle cartelle. Alla fine però non è stato possiblie mettere in atto questa idea perchè abbiamo riscontrato dei problemi. Lavorando su sistemi operativi diversi abbiamo notato che su macchina Linux venivano fuori degli errori sui thread e il programma si arrestava. Invece su macchina Windows sembrava non esserci nessun errore. Abbiamo provato a fare le prove da lei consigliate, disinstallare OpenJDK e installare la versione ufficiale di Java cioè quella di Oracle, ma il problema non si è risolto. Non riuscendo a capire il perchè su macchina Linux il programma generava quelli errori, abbiamo cercato di capire se su macchina Windows andasse veramente tutto bene. Dopo tante prove abbiamo riscontrato il problema anche su Windows, abbiamo notato che il consumo della CPU era notevole, appena si laciava il programma la CPU arriva al 100% e dopo qualche secondo il consumo di abbassava per poi ritornare in pochi secondi al 100%. Allora a quel punto abbiamo deciso di inserire nel **clientUtilities.ol** i servizi che venivano svolti dal **fileManager.ol**. Cosi facendo il programma gira bene su entrambi i sistemi e in più il consumo della CPU si è ridotto.
+### FILE MANAGER
+<p style="text-align:justify;font-size:12px">
+Inizialmente, per non appesantire il Client e per sfruttare nel migliore dei modi i servizi di Jolie, volevamo implementare un servizio a parte chiamato <b>fileManager.ol</b>.<br> Questo servizio, collegato al <b>clientUtilities.ol</b> attraverso l’embedding, serviva per gestire la lettura e scrittura del file xml e per la visita ricorsiva delle cartelle.<br> Alla fine però non è stato possibile mettere in atto questa idea perchè abbiamo riscontrato dei problemi. Lavorando su sistemi operativi diversi abbiamo notato che su macchina Linux si incorreva su errori riguardanti i threads e il programma si arrestava. Invece su macchina Windows sembrava non esserci alcun errore, abbiamo provato a fare le prove da lei consigliate, disinstallare OpenJDK e installare la versione ufficiale di Java, cioè quella di Oracle, ma il problema non si è risolto.<br> Non riuscendo a capire il perchè su macchina Linux il programma generasse questi errori, abbiamo cercato di capire se su macchina Windows andasse veramente tutto bene. Dopo tante prove abbiamo riscontrato il problema anche su di esso, notando che l'utilizzo della CPU era notevole; infatti appena lanciato il programma, l'utilizzo della CPU arrivava al 100%, dopo qualche secondo il consumo si abbassava, per poi ritornare in pochi secondi al 100%.<br> Allora a quel punto abbiamo deciso di creare il servizio <b>clientDefine.ol</b>, contenente tutti i define del <b>clientUtilities.ol</b>, importandolo in esso,  con la sola differenza di implementarlo senza embedding. In tal modo il programma gira perfettamente su entrambi i sistemi operativi, con un ridotto utilizzo della Cpu.
+</p>
 
-**Add Repository / Pull** (gestione cartelle): 
-Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, perché inizialmente non sapevamo come far visitare tutte le sotto-cartelle della cartella principale e non solo i files contenuti all’interno. Poi abbiamo deciso di implementare una visita ricorsiva di tutte le cartelle interne, gestendo anche la differenza tra la lettura del file, che accetta un percorso assoluto, e la scrittura, che accetta un percorso relativo. Inoltre se sono presenti cartelle vuote nella directory locale che si vuole aggiungere nel Client e Server, abbiamo deciso di non farle aggiungere, mentre nella Pull torna un messaggio di repository vuota, se nel Server è stato cancellato il contenuto di quella repo.
-
+### ADD REPOSITORY / PULL (gestione delle cartelle)
+<p style="text-align:justify;font-size:12px">
+Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè non sapevamo come far visitare tutte le sotto-cartelle della cartella principale e non solo i files contenuti all’interno.<br> In seguito abbiamo deciso di implementare una visita ricorsiva di tutte le sotto-cartelle, gestendo anche la differenza tra la lettura del file, che accetta un percorso assoluto, e la scrittura, che accetta un percorso relativo.<br> Inoltre nell'Add repository, se sono presenti cartelle vuote nella directory locale che si desidera aggiungere nel Client e nel Server, abbiamo deciso di non farle aggiungere, mentre nella Pull ritorna un messaggio di repository vuota, se nel Server è stato cancellato il contenuto della repository in questione.
+</p>
