@@ -1,0 +1,21 @@
+		+---Server
+			|
+			+---Server_utilities 
+			|	|
+			|	+---interface
+			|	|	|
+			|	|	+---fromClient.iol
+			|	|	
+			|	|	
+			|	|
+			|	+---serverDefine.ol
+			|	
+			|	
+			|
+			+---Server[n]
+				|
+				+---serverRepo
+				|	|
+				|	+---repo[n]
+				|
+				+---server.ol
