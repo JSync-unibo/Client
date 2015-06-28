@@ -95,6 +95,33 @@ eliminare.
 
 ### Struttura del Progetto
 
+####Client
+
++---Client
+   |
+   +---Client_utilities 
+   |  |
+   |  +---interfaces
+   |  |  |
+   |  |  +---localInterface.iol
+   |  |  |
+   |  |  \---toServer.iol
+   |  |
+   |  +---clientDefine.ol
+   |  |
+   |  +---clientUtilities.ol  
+   |
+   +---Client[n]
+      |
+      +---localRepo
+      |  |
+      |  +---repo[n]
+      |
+      +---config.xml
+      |
+      +---cli.ol
+
+
 Il progetto è diviso in più Cli, Servers ed un Client che fa da tramite.<br>
 Il Client è collegato alla Cli attraverso l'embedding, così da essere connessi localmente, senza aver bisogno di un indirizzo. Per gestire la trasmissione dei messaggi fra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server. 
 Inoltre utilizziamo un servizio che includiamo nel Client per gestire diversi metodi, come la lettura e scrittura del file xml, ma anche la visita e creazione di cartelle, che ritroviamo anche in un servizio incluso nel Server.

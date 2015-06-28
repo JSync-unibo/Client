@@ -1,0 +1,23 @@
++---Client
+	|
+	+---Client_utilities 
+	|	|
+	|	+---interfaces
+	|	|	|
+	|	|	+---localInterface.iol
+	|	|	|
+	|	|	\---toServer.iol
+	|	|
+	|	+---clientDefine.ol
+	|	|
+	|	+---clientUtilities.ol	
+	|
+	+---Client[n]
+		|
+		+---localRepo
+		|	|
+		|	+---repo[n]
+		|
+		+---config.xml
+		|
+		+---cli.ol
