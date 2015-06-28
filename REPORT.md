@@ -97,30 +97,8 @@ eliminare.
 
 ####Client
 
-+---Client
-   |
-   +---Client_utilities 
-   |  |
-   |  +---interfaces
-   |  |  |
-   |  |  +---localInterface.iol
-   |  |  |
-   |  |  \---toServer.iol
-   |  |
-   |  +---clientDefine.ol
-   |  |
-   |  +---clientUtilities.ol  
-   |
-   +---Client[n]
-      |
-      +---localRepo
-      |  |
-      |  +---repo[n]
-      |
-      +---config.xml
-      |
-      +---cli.ol
-
+![GitHub Logo](client_structure.png)
+Format: ![Alt Text](url)
 
 Il progetto è diviso in più Cli, Servers ed un Client che fa da tramite.<br>
 Il Client è collegato alla Cli attraverso l'embedding, così da essere connessi localmente, senza aver bisogno di un indirizzo. Per gestire la trasmissione dei messaggi fra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server. 
