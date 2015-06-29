@@ -29,67 +29,75 @@ Successivamente si scrive un comando in input sulla <b>UI</b>, il quale sarà in
 
 ### Demo
 
-Le istruzioni per eseguire una demo di esecuzione, con almeno due Clients ed un Server, sono:
+Questa demo esplicativa è in riferimento alla cartella Demo.zip, contenuta nella root del progetto.
+Di seguito la struttura
 
-1) Lanciare il servizio “server.ol” nella cartella Server1 (o di altri Servers).
-
-2) Avviare i Clients, entrando nella cartella Client1 (facendo partire il servizio “cli.ol”) e seguire la stessa procedura per gli altri Clients.
-
-3) Da una delle due cli eseguire il comando “addServer” indicando il nome del server e l’indirizzo, ad esempio:
- 
-“addServer server1 socket://localhost:4000”
-
-In questo modo nel file config.xml saranno aggiunte le informazioni del Server.
-
-4) In seguito si può eseguire il comando “list servers”, per visualizzare il Server appena registrato.
+   Client side   |   Server side
+-------------------| -------------
+_WebDesign  | 4000_localhost
+_Desert0.1     | 5000_localhost
 
 
+Esistono già 3 Repositories salvate sui server
 
-5) Aggiungere una repository nuova da un percorso presente sul computer, inserendo il nome del Server, della repo da creare sia nel Client che nel Server e del percorso locale, come in questo esempio:
+- 4000_localhost
+      - Design_Assets
+      - List_Desert
+- 5000_localhost
+     - SerieA_player
 
-“addRepository server1 repo1 C:/Users/Prova1”
-        
-(naturalmente questo è un percorso preso da Windows)
-Oltre alla repo con tutti i files, ne sarà creato anche uno di versione sia nella repo locale che in quella online.
+Elenco di comandi di esplicazione di JSync-Lobster
 
-6) Per visualizzare la lista delle repositories locali si inserisce il comando “list reg_repos”, mentre per quelle sul Server
-“list new_repos”
+1. Lanciare entrambi i Servers e Clients
 
-7) Intanto il secondo Client aggiunge il Server alla lista e in seguito esegue una pull per scaricare la repository presente sul Server, che era stata caricata in precedenza ed attendere circa 10 secondi, prima che l’operazione sia completata.
-Ad esempio si scrive il comando: 
+2. In entrambi i Clients sono presenti già alcuni Server registrati
+```java
+list servers    // ritorna la lista dei Servers registrati (contenuti nel file config.xml)
+```
 
-			“pull server1 repo1”
+3. Dal Client <b>_Desert0.1</b> eseguire il comando
+ ```java
+addServer 5000_localhost socket://localhost:5000    //aggiunge un ulteriore Server registrato
+```
+A questo punto il Client <b>_Desert0.1</b> avrà entrambi i Servers registrati
 
-8) Il secondo Client può aggiungere un nuovo file alla repo1
-(manualmente), così da poter eseguire una push ed aggiornare il Server e la relativa versione, un esempio del comando da scrivere è:
+4. Si possono visualizzare le Repositories registrate localmente con il comando
+ ```java
+list reg_repos
+```
+oppure tutte le Repositories disponibili sui server registrati tramite il comando
+ ```java
+list new_repos
+```
 
-				“push server1 repo1”
+5. Eseguire l'operazione Pull della Repository <b>SerieA_Player</b>
+ ```java
+pull 5000_localhost SerieA_Player
+```
 
-9) Il primo Client aggiunge un nuovo file alla repo1, ma se prova ad eseguire una push, un messaggio negherà l’operazione, perché è necessario aggiornare la propria versione e fare la pull.
+6. <b>_Desert0.1</b> a questo punto può modificare la Repository ed effetture una Push
+```java
+push 5000_localhost SerieA_Player
+```
 
-10) Quindi il primo Client aggiorna la propria repo, facendo una
-pull, e successivamente può ri-aggiungere il nuovo file e fare    
-la push.
+7. A questo punto <b>_WebDesign</b> può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
+```java
+pull 5000_localhost SerieA_Player
+```
+e notificare che la versione è stata effettivamente incrementata, con l'aggiunta degli ulteriori file modificati.
 
-11) Si può testare la concorrenza fra i due Clients, provando a far 
-eseguire una pull dal Client1 e contemporaneamente (nell’arco    
-dei 10 secondi di tempo) una push dal Client2, che sarà 
-bloccata.
+8. Prove sulla gestione della concorrenza si possono eseguire semplicemente con il comando 
+```java
+push 5000_localhost SerieA_Player
+```
+in entrambi i client
 
-12) Infine per cancellare la repo1 sia dal Server che dal Client1,   
-si esegue il comando: 
+Ulteriormente si possono eseguire comandi di eliminazione Server e Repository
+```java
+removeServer 4000_localhost
 
-				“delete server1 repo1”
-
-In questo modo la repository non sarà più presente né sul Server né sul Client1, però è ancora disponibile sul Client2.
-
-13) Dopo aver eseguito tutti i comandi, si può cancellare il Server   
-con il comando “removeServer” seguito dal nome del Server da   
-eliminare.
-        
-
-
-
+delete 5000_localhost SerieA_Player
+```
 
 
 ## Implementazione
