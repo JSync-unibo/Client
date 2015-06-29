@@ -163,22 +163,15 @@ Questo è il primo comando che ha bisogno dell’intervento del Server.
 
 Questo comando serve per far stampare tutte le repositories dei Server registrati.
 
-Client:
+<b>Client</b>:
 	
-1) Inizialmente, se la lista dei Servers nel file xml non è vuota    
-   si collega ad ognuno di essi, e cattura un'eccezione nel caso in 
-   cui uno o più Servers non siano in ascolto nella location 
-   selezionata (Server non raggiungibile).
+1. Inizialmente, se la lista dei Servers nel file xml non è vuota si collega ad ognuno di essi, e cattura             un'eccezione nel caso in cui uno o più Servers non siano in ascolto nella location selezionata (Server non         raggiungibile).
 
-2) In seguito invia la richiesta delle repositories disponibili sui   
-   Servers accesi, per poi stamparne l’elenco. 
+2. In seguito invia la richiesta delle repositories disponibili sui Servers accesi, per poi stamparne l’elenco. 
 
-Server:
+<b>Server</b>:
 
-   1) Riceve la richiesta dal Client di inviargli tutti i nomi delle 
-      repositories presenti nella directory “serverRepo”. Richiama il 
-      metodo listFile di file.iol per ottenere l’elenco, se sono 
-      disponibili repo, e poi inviarlo al Client.
+   1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo listFile di file.iol per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
 
 
 ### DELETE
