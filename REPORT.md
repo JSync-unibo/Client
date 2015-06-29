@@ -110,23 +110,21 @@ Il comando viene prima splittato nella Cli, così da essere inviata ogni stringa
 Di seguito elenchiamo i comandi, descrivendoli nello specifico e tenendo presente che in ogni comando abbiamo inserito uno scope per gestire diverse eccezioni che si presentano, tra le quali l’inserimento di dati non corretti, la connessione assente con il Server ed un file non trovato.
 Inoltre il procedimento è eseguito se i risultati splittati nella Cli corrispondono alla lunghezza richiesta del comando (es: list(1) servers(2) -> il risultato dello split deve essere di dimensione 2).
 
-### LIST SERVERS
-
+### List Servers
 Una volta controllato che i dati inseriti in input siano giusti, procediamo con la lettura del file xml (richiamato dal servizio “utilities.ol”) e se sono presenti Servers nella lista, per ognuno di essi vengono stampate le relative informazioni (nome ed indirizzo), altrimenti un messaggio di avviso che non sono presenti Servers registrati.
 
-### LIST REG_REPOS
+### List reg_repos
 
 In questo comando per la lettura delle repositories locali, inizialmente poniamo come directory “localRepo”, che è il nome della cartella che abbiamo creato in ogni Cli con tutte le varie repo, poi cerchiamo ogni repository richiamando l’operazione List del servizio file.iol ed infine le stampiamo tutte, se sono presenti, altrimenti sarà visualizzato un messaggio di avviso.
 
-### ADD SERVER
+### Add Server
 
 Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome del Server esiste già (confrontando il nome scritto in input con quelli nella lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo writeFile, presente sempre nel servizio “utilities.ol”.
 
-### REMOVE SERVER
-
+### Remove Server
 Dopo la consueta lettura del file xml, inseriamo un ulteriore scope, che in caso di Server trovato (e rimosso) solleva l’eccezione di operazione avvenuta con successo. Se il nome inserito in input corrisponde ad uno di quelli registrati nella lista, allora si elimina (con il comando undef)e si richiama la scrittura del file xml per apportare le modifiche effettuate. 
 
-### ADD REPOSITORY
+### Add Repository
 
 Questo è il primo comando che ha bisogno dell’intervento del Server.
 
@@ -159,13 +157,13 @@ Questo è il primo comando che ha bisogno dell’intervento del Server.
 
 
 
-### LIST NEW_REPOS
+### List new_repos
 
 Questo comando serve per far stampare tutte le repositories dei Server registrati.
 
 <b>Client</b>:
 	
-1. Inizialmente, se la lista dei Servers nel file xml non è vuota si collega ad ognuno di essi, e cattura             un'eccezione nel caso in cui uno o più Servers non siano in ascolto nella location selezionata (Server non         raggiungibile).
+1. Se la lista dei Servers nel file xml non è vuota si collega ad ognuno di essi, e cattura             un'eccezione nel caso in cui uno o più Servers non siano in ascolto nella location selezionata (Server non         raggiungibile).
 
 2. In seguito invia la richiesta delle repositories disponibili sui Servers accesi, per poi stamparne l’elenco. 
 
@@ -174,7 +172,7 @@ Questo comando serve per far stampare tutte le repositories dei Server registrat
 1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo listFile di file.iol per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
 
 
-### DELETE
+### Delete
 
 Comando per eliminare una repository sia sul Server sia sul Client.
 
@@ -188,7 +186,7 @@ Comando per eliminare una repository sia sul Server sia sul Client.
 
 1. Riceve il messaggio dal Client della repository da eliminare, scorre la lista di tutte quelle presenti in          “serverRepo” e se il nome corrisponde a quello ricevuto, elimina la cartella e ritorna il messaggio di             operazione effettuata.
 
-### PUSH
+### Push
 
 Comando per inviare l'aggiornamento di una repository locale sul Server, controllando i files di versione di entrambi.
 
@@ -220,7 +218,7 @@ Comando per inviare l'aggiornamento di una repository locale sul Server, control
 
 5. Infine decrementa la variabile globale dei writers, inclusa in un "synchronized".
 
-### PULL
+### Pull
 
 Comando per scaricare una repository specifica dal Server e sovrascriverla alla propria locale oppure crearla se non è presente.
 
@@ -251,35 +249,35 @@ Comando per scaricare una repository specifica dal Server e sovrascriverla alla 
 4. Infine decrementa la variabile globale dei readers, inclusa in un "synchronized".
 
 
-### GESTIONE READER-WRITER
-
-Questa è stata una scelta abbastanza discussa, avevamo diverse alternative valide: l’uso dei semafori di Jolie, oppure dei controlli tramite il file di versione, o ancora l’utilizzo di una coda o un’esecuzione sequenziale (ovviamente scartata a priori), merging dei file (GitHub style).
+### Gestione reader-writer
+<p style="text-align:justify;font-size:12px">
+Per la gestione della concorrenza tra readers e writers abbiamo avuto diverse alternative valide: l’uso dei semafori nella libreria di Jolie; gestione dei controlli tramite il file di versione; l’utilizzo di una coda o un merging dei file (GitHub style).<br>
 Alla fine abbiamo optato per due implementazioni diverse:
 
-PUSH – PUSH: 
-Piu' push sono gestite tramite il controllo di versione, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. 
+<b>Push-push</b>
+Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. 
 (Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1, che dovrà effettuare una pull, andando a cancellare tutte le sue modifiche locali)
 Bisogna tenere presente che invece due push di due repositories diverse sono permesse, perché una non va ad interferire con l’altra.
 
-PUSH – PULL / PULL – PUSH:
-Per questo tipo di gestione invece abbiamo utilizzato dei contatori (reader e writer) globali nel Server, che saranno condivise da tutti i Clients e possono verificarsi due casi:
+<b> Push-pull / pull-push</b>
+Per questo tipo di gestione invece abbiamo utilizzato dei <u>contatori</u> (reader e writer) globali nel Server, che saranno condivise da tutti i Clients e possono verificarsi due casi:
 
 - Il Client1 esegue una push, il writerCount sarà incrementato e se contemporaneamente il Client2 vuole eseguire una pull, controlla se il writerCount è uguale a 1, in questo caso sarà bloccato con un messaggio di avviso e solo in seguito, quando la push sarà completata, allora potrà richiamare la pull.
 
 - Il Client1 esegue una pull, il readerCount sarà incrementato e se il Client2 vuole eseguire una push dovrà controllare se il readerCount sia maggiore o uguale a 1, nel caso i readers siano più di uno, il Client2 dovrà aspettare più del dovuto (problema di starvation). Solo quando readerCount sarà uguale a 0, allora potrà effettuare la push.
 
-PULL – PULL:
-Due (o più) readers invece sono permessi, quindi non abbiamo inserito nessun controllo, poiché tutti possono scaricare contemporaneamente il contenuto dello stesso Server.
-
+<b> Pull-pull</b>
+Due (o più) readers invece sono permessi, quindi non abbiamo inserito <u>nessun controllo</u>, poiché tutti possono scaricare contemporaneamente il contenuto dello stesso Server.
+</p>
 
 ## Problemi riscontrati & soluzioni adottate
 
-### FILE MANAGER
+### File manager
 <p style="text-align:justify;font-size:12px">
 Inizialmente, per non appesantire il Client e per sfruttare nel migliore dei modi i servizi di Jolie, volevamo implementare un servizio a parte chiamato <b>fileManager.ol</b>.<br> Questo servizio, collegato al <b>clientUtilities.ol</b> attraverso l’embedding, serviva per gestire la lettura e scrittura del file xml e per la visita ricorsiva delle cartelle.<br> Alla fine però non è stato possibile mettere in atto questa idea perchè abbiamo riscontrato dei problemi. Lavorando su sistemi operativi diversi abbiamo notato che su macchina Linux si incorreva su errori riguardanti i threads e il programma si arrestava. Invece su macchina Windows sembrava non esserci alcun errore, abbiamo provato a fare le prove da lei consigliate, disinstallare OpenJDK e installare la versione ufficiale di Java, cioè quella di Oracle, ma il problema non si è risolto.<br> Non riuscendo a capire il perchè su macchina Linux il programma generasse questi errori, abbiamo cercato di capire se su macchina Windows andasse veramente tutto bene. Dopo tante prove abbiamo riscontrato il problema anche su di esso, notando che l'utilizzo della CPU era notevole; infatti appena lanciato il programma, l'utilizzo della CPU arrivava al 100%, dopo qualche secondo il consumo si abbassava, per poi ritornare in pochi secondi al 100%.<br> Allora a quel punto abbiamo deciso di creare il servizio <b>clientDefine.ol</b>, contenente tutti i define del <b>clientUtilities.ol</b>, importandolo in esso,  con la sola differenza di implementarlo senza embedding. In tal modo il programma gira perfettamente su entrambi i sistemi operativi, con un ridotto utilizzo della Cpu.
 </p>
 
-### ADD REPOSITORY / PULL (gestione delle cartelle)
+### Add Repository / Pull (gestione delle cartelle)
 <p style="text-align:justify;font-size:12px">
 Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè non sapevamo come far visitare tutte le sotto-cartelle della cartella principale e non solo i files contenuti all’interno.<br> In seguito abbiamo deciso di implementare una visita ricorsiva di tutte le sotto-cartelle, gestendo anche la differenza tra la lettura del file, che accetta un percorso assoluto, e la scrittura, che accetta un percorso relativo.<br> Inoltre nell'Add repository, se sono presenti cartelle vuote nella directory locale che si desidera aggiungere nel Client e nel Server, abbiamo deciso di non farle aggiungere, mentre nella Pull ritorna un messaggio di repository vuota, se nel Server è stato cancellato il contenuto della repository in questione.
 </p>
