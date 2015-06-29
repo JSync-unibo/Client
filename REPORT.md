@@ -104,7 +104,7 @@ eliminare.
 
 ![Server structure](img_report/server_structure.png)
 
-Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra gli utenti e i Servers. <br>
+Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra i Clients e i Servers. <br>
 Il Cli è collegato con il clientUtilities attraverso l'embedding, per permettere la comunicazione senza aver bisogno di un indirizzo.<br>Per gestire la trasmissione dei messaggi tra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server.<br>
 Inoltre utilizziamo dei servizi chiamati <b>"clientDefine.ol"</b> (dalla parte del Client) e <b>"serverDefine.ol"</b> (dalla parte del Server) per gestire diversi metodi, tra i quali la lettura e la scrittura del file xml, il registro dei Servers, la visita ricorsiva di una repository, la creazione di cartelle e l'operazione modulo per l'incremento dei readers / writers. <br>
 In particolare, dopo aver inserito un comando in console, esso è splittato nella Cli, per analizzare ogni singola stringa e differenziare le varie funzionalità; successivamente si invia il comando nel clientUtilities, eseguendo la input choice relativa.<br>
@@ -114,40 +114,41 @@ Di seguito elenchiamo i comandi, descrivendoli nello specifico:
 * <b>NB (2)</b>: L'esecuzione del procedimento è eseguito solo se i risultati splittati nella Cli corrispondono alla lunghezza richiesta del comando (es: list(1) servers(2) -> il risultato dello split deve essere di dimensione 2).
 
 ### List Servers
-Una volta controllato che i dati inseriti in input siano giusti, procediamo con la lettura del file xml (richiamato dal servizio “utilities.ol”) e se sono presenti Servers nella lista, per ognuno di essi vengono stampate le relative informazioni (nome ed indirizzo), altrimenti un messaggio di avviso che non sono presenti Servers registrati.
+Inizialmente si controlla che i dati siano inseriti correttamente, in seguito si procede alla lettura del file xml (richiamato dal servizio <b>clientDefine</b>): se la lista dei Servers non è vuota, per ognuno di essi si stampano le relative informazioni (nome ed indirizzo), altrimenti sarà visualizzato un messaggio di avviso che non sono presenti Servers registrati.
 
 ### List reg_repos
 
-In questo comando per la lettura delle repositories locali, inizialmente poniamo come directory “localRepo”, che è il nome della cartella che abbiamo creato in ogni Cli con tutte le varie repo, poi cerchiamo ogni repository richiamando l’operazione List del servizio file.iol ed infine le stampiamo tutte, se sono presenti, altrimenti sarà visualizzato un messaggio di avviso.
+Finalizzato alla lettura delle repositories locali, all' inizio si pone come repository principale, che contiene le cartelle create, il nome “localRepo”, e si ricerca ogni repository contenuta richiamando l’operazione <u>list</u> del servizio <b>"file.iol"</b> ed infine si stampano tutte, se sono presenti, altrimenti sarà visualizzato un messaggio di avviso.
 
 ### Add Server
 
-Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome del Server esiste già (confrontando il nome scritto in input con quelli nella lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo writeFile, presente sempre nel servizio “utilities.ol”.
+Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome del Server esiste già (confrontando il nome scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>
 
 ### Remove Server
-Dopo la consueta lettura del file xml, inseriamo un ulteriore scope, che in caso di Server trovato (e rimosso) solleva l’eccezione di operazione avvenuta con successo. Se il nome inserito in input corrisponde ad uno di quelli registrati nella lista, allora si elimina (con il comando undef)e si richiama la scrittura del file xml per apportare le modifiche effettuate. 
+
+Dopo la consueta lettura del file xml, si inserisce un ulteriore costrutto <u>scope</u>, che in caso di Server trovato (e rimosso) solleva l’eccezione di operazione avvenuta con successo.<br> Se il nome inserito in input corrisponde ad uno di quelli registrati sulla lista, allora si elimina (con il comando <u>undef</u>) e si richiama la scrittura del file xml per apportare le modifiche effettuate.
 
 ### Add Repository
 
-Questo è il primo comando che ha bisogno dell’intervento del Server.
+Comando per il quale è necessario l’intervento del Server, poichè si aggiunge una repository sia sul Client che sul Server.
 
 <b>Client</b>: 
 
-1. Riceve dalla Cli il nome del Server a cui si deve connettere, e si effettua il Binding, attraverso il richiamo     del metodo registro (in “utilities.ol”), scorrendo la lista dei Servers per individuare l’indirizzo del Server a    cui collegarsi ed aggiungerlo alla porta di comunicazione.
+1. Riceve dalla Cli il nome del Server a cui si deve connettere, e si effettua il <u>binding</u>, attraverso il richiamo    del metodo registro (nel servizio <b>clientDefine</b>), scorrendo la lista dei Servers per individuare l’indirizzo del Server a cui collegarsi ed aggiungerlo alla porta di comunicazione.
 
-2. Poi con l’operazione AddRepository si connette con il Server per effettuare un controllo e se il messaggio che     gli ritorna è positivo, allora prosegue analizzando il percorso della directory locale inserito in input, per      aggiungerlo sia nel Client che nel Server.
+2. Con l’operazione <u>addRepository</u> si controlla sul Server se il nome della repository da inserire è già esistente e se il messaggio che ritorna è positivo, allora prosegue analizzando il percorso della directory locale inserito in input, per   aggiungerlo sia sul Client che sul Server.
 
-3. Richiamiamo la visita delle cartelle (in “utilities.ol”) e per ogni file trovato si legge il suo percorso          assoluto (readFile) per ottenere così il contenuto del file, in seguito viene inviato al Server il suo percorso    relativo, provvedendo ad inserirlo nella repository appena creata.
+3. Si richiama la visita delle cartelle (nel servizio <b>clientDefine</b>) e per ogni file trovato si legge il suo percorso          assoluto (<u>readFile</u>) per ottenere così il contenuto del file; in seguito si invia al Server il suo percorso    relativo, provvedendo ad inserirlo nella repository appena creata.
 
-4. Successivamente richiamiamo il metodo writeFilePath (in “utilities.ol”) per creare la cartella “localRepo” ed      inserire tutti i file della directory locale nella repository specificata in input.
+4. Successivamente si richiama il metodo writeFilePath (sel servizio <b>clientDefine</b>) per creare la cartella “localRepo” ed      inserire tutti i files della directory locale nella repository specificata in input, che sarà contenuta in "localRepo".
 
-5. Infine nella repository appena creata, si inserisce un file .txt di versione, che sarà incrementato ogni volta     che si esegue una push.
+5. Infine nella repository appena creata, si inserisce un file.txt di versione, incrementato ogni volta     che si esegue una push.
 
 <b>Server</b>:
 
-1. Riceve dal Client il nome della repository da cercare nella propria cartella, se esiste allora ritorna un          messaggio di errore, altrimenti crea la cartella “serverRepo”, se non è già presente, che contiene tutte le        cartelle del Server, e poi viene creato il file di versione, il quale sarà aggiornato ogni volta che riceve una    push.
+1. Riceve dal Client il nome della repository da cercare nella propria cartella globale, se esiste allora ritorna un          messaggio di errore, altrimenti crea la cartella “serverRepo”, se non è già presente, con le        repositories del Server create in precedenza, e poi viene creato il file di versione, aggiornato ogni volta che riceve una    push.
 
-2. In seguito con un’altra operazione riceve il percorso relativo di ogni singolo file, ricavato dal Client           attraverso la visita della directory locale, e lo splitta, per creare la cartella a cui appartiene il file, ed     infine scriverlo con il comando writeFile.
+2. Con un' ulteriore operazione riceve il percorso relativo di ogni singolo file, ricavato dal Client           attraverso la visita della directory locale, il quale si splitta, per creare la cartella a cui appartiene il file, ed     infine scriverlo con il comando <u>writeFile</u>.
 
 
 
@@ -172,7 +173,7 @@ Questo comando serve per far stampare tutte le repositories dei Server registrat
 
 <b>Server</b>:
 
-1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo listFile di file.iol per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
+1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo <u>listFile/u> di <b>file.iol</b> per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
 
 
 ### Delete
@@ -181,13 +182,13 @@ Comando per eliminare una repository sia sul Server sia sul Client.
 
 <b>Client</b>:
 
-1. Si legge il file xml e si richiama il metodo registro, per avere le informazioni necessarie per collegarsi con     il Server nel quale eliminare la repository.
+1. Si legge il file xml e si richiama il metodo registro (nel servizio <b>clientDefine</b>, per ricavare le informazioni necessarie a comunicare con     il Server nel quale eliminare la repository.
 
-2. Si invia la richiesta di eliminazione della repo al Server ed in caso di cancellazione avvenuta oppure se la       repo già era stata cancellata in precedenza, eseguiamo la stessa operazione per il Client, con il comando          "deleteDir" di file.iol, eliminando l’intera cartella che era stata inserita in input.
+2. Si invia la richiesta di eliminazione della repository al Server ed in caso di cancellazione avvenuta (oppure se la       repository già era stata cancellata in precedenza), si esegue la stessa operazione nel Client, con il comando          <u>deleteDir</u> di <b>"file.iol"</b>, eliminando l’intera cartella richiesta in input.
 
 <b>Server</b>:
 
-1. Riceve il messaggio dal Client della repository da eliminare, scorre la lista di tutte quelle presenti in          “serverRepo” e se il nome corrisponde a quello ricevuto, elimina la cartella e ritorna il messaggio di             operazione effettuata.
+1. Riceve il messaggio dal Client con il nome della repository da eliminare, scorre la lista di tutte quelle presenti in          “serverRepo” e se il nome corrisponde a quello ricevuto, elimina la cartella e ritorna il messaggio di             operazione effettuata.
 
 ### Push
 
@@ -201,7 +202,7 @@ Comando per inviare l'aggiornamento di una repository locale sul Server, control
 
 3. Se la variabile è stata incrementata, si procede alla spedizione del file di versione, per controllare se è        maggiore o uguale di quello sul Server (solo in tal caso si può eseguire la push).
 
-4. Successivamente si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica la       repository globale da "localRepo" a "serverRepo" e si inviano uno alla volta sul Server, sovrascrivendoli
+4. Si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica la       repository globale da "localRepo" a "serverRepo" e si inviano uno alla volta sul Server, sovrascrivendoli
    su quelli già presenti o creandoli se non esistono.
 
 5. Mentre il file di versione è gestito attraverso una richiesta di esso al Server, così da sovrascriverlo a 
@@ -211,15 +212,15 @@ Comando per inviare l'aggiornamento di una repository locale sul Server, control
 
 <b>Server</b>:
 
-1. Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un "synchronized" per        renderla atomica) sono nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere     eseguita. 
+1. Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un costrutto <u>synchronized</u> per        renderla atomica) sono nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere     eseguita. 
 
-2. Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla se è           maggiore o uguale del suo, in tal caso incrementa la sua versione, all'interno di un "synchronized" per renderla    atomica, e ritorna un messaggio di successo al Client.
+2. Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla se è           maggiore o uguale del suo, in tal caso incrementa la sua versione, all'interno di un costrutto <u>synchronized</u> per renderla    atomica, e ritorna un messaggio di successo al Client.
 
 3. Riceve uno alla volta i files dal Client, per sovrascriverli ai suoi o crearli se non sono presenti.
 
 4. Riceve la richiesta dal Client di inviargli il file di versione incrementato.
 
-5. Infine decrementa la variabile globale dei writers, inclusa in un "synchronized".
+5. Infine decrementa la variabile globale dei writers, inclusa in un costrutto <u>synchronized</u>.
 
 ### Pull
 
@@ -243,13 +244,13 @@ Comando per scaricare una repository specifica dal Server e sovrascriverla alla 
 
 <b>Server</b>:
 
-1. Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un "synchronized" per        renderla atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere     eseguita.
+1. Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un costrutto <u>synchronized</u> per        renderla atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere     eseguita.
 
 2. Se la variabile dei readers è stata incrementata, riceve il nome della repository da inviare; se esiste ritorna    un messaggio di successo insieme alla struttura delle cartelle contenute nella propria repository.
 
 3. Riceve una alla volta la richiesta di un file da inviare, contenuto nella repository in questione, e lo spedisce    al Client.
 
-4. Infine decrementa la variabile globale dei readers, inclusa in un "synchronized".
+4. Infine decrementa la variabile globale dei readers, inclusa in un costrutto <u>synchronized</u>.
 
 
 ## Gestione reader-writer
@@ -259,7 +260,7 @@ Alla fine abbiamo optato per due implementazioni diverse:
 
 * <b>Push-push</b><br>
 Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. <br>
-Poichè la scrittura del file di versione è una sezione critica, abbiamo deciso di utilizzare un synchronized per racchiudere questa parte, in modo tale che l'istruzione venga eseguita in maniera atomica. <br>
+Poichè la scrittura del file di versione è una sezione critica, abbiamo deciso di utilizzare un costrutto <u>synchronized</u> per racchiudere questa parte, in modo tale che l'istruzione venga eseguita in maniera atomica. <br>
 (Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1, che dovrà effettuare una pull, andando a cancellare tutte le sue modifiche locali).<br>
 Bisogna tenere presente che invece due push di due repositories diverse sono permesse, perché una non va ad interferire con l’altra.<br>
 
@@ -284,7 +285,7 @@ Due (o più) readers invece sono permessi, quindi non abbiamo inserito <u>nessun
 
 ## Define utilizzati
 
-Nei servizi <b>"clientDefine.ol"</b> e <b>"serverDefine.ol"</b> abbiamo incluso dei define, richiamati frequentemente nei diversi comandi:
+Nei servizi <b>clientDefine.ol</b> e <b>serverDefine.ol</b> abbiamo incluso dei define, richiamati frequentemente nei diversi comandi:
 
 ####Registro - clientDefine
 Utilizzato per settare la location (indirizzo) ad un Server richiesto.
