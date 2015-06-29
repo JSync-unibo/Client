@@ -126,6 +126,8 @@ La struttura del Server è composta da:
 	* Il servizio <b>server.ol</b>, con le input choices relative ai diversi comandi provenienti dal 				  <u>clientUtilities.ol</u>
 	* La cartella <b>serverRepo</b> (non presente inizialmente), contenente tutte le repositories aggiunte
 
+___
+
 Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra i Clients e i Servers. <br>
 La Cli è collegata con il clientUtilities attraverso l'embedding, per permettere la comunicazione senza aver bisogno di un indirizzo.<br>Per gestire la trasmissione dei messaggi tra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server.<br>
 Inoltre utilizziamo dei servizi chiamati <b>"clientDefine.ol"</b> (dalla parte del Client) e <b>"serverDefine.ol"</b> (dalla parte del Server) per gestire diversi metodi, tra i quali la lettura e la scrittura del file xml, il registro dei Servers, la visita ricorsiva di una repository, la creazione di cartelle e l'operazione modulo per l'incremento dei readers / writers. <br>
