@@ -106,8 +106,8 @@ eliminare.
 
 Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra gli utenti e i Servers. <br>
 Il Cli è collegato con il clientUtilities attraverso l'embedding, per permettere la comunicazione senza aver bisogno di un indirizzo.<br>Per gestire la trasmissione dei messaggi tra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server.<br>
-Inoltre utilizziamo dei servizi chiamati <b>"clientDefine.ol"</b> (dalla parte del Clienyt) e <b>"serverDefine.ol"</b> (dalla parte del Server) per gestire diversi metodi, tra i quali la lettura e scrittura del file xml, il registro dei Servers, la visita ricorsiva di una repository, la creazione di cartelle e l'operazione modulo per l'incremento dei readers / writers. <br>
-In particolare, dopo aver inserito un comando in console, esso è splittato nella Cli, per analizzare ogni singola stringa e differenziare le varie funzionalità; successivamente si invia il comando nel clientUtilities, dove sarà presente la input choice relativa.<br>
+Inoltre utilizziamo dei servizi chiamati <b>"clientDefine.ol"</b> (dalla parte del Client) e <b>"serverDefine.ol"</b> (dalla parte del Server) per gestire diversi metodi, tra i quali la lettura e la scrittura del file xml, il registro dei Servers, la visita ricorsiva di una repository, la creazione di cartelle e l'operazione modulo per l'incremento dei readers / writers. <br>
+In particolare, dopo aver inserito un comando in console, esso è splittato nella Cli, per analizzare ogni singola stringa e differenziare le varie funzionalità; successivamente si invia il comando nel clientUtilities, eseguendo la input choice relativa.<br>
 Di seguito elenchiamo i comandi, descrivendoli nello specifico:
 
 * <b>NB</b>: Ogni funzionalità è inclusa in uno scope per gestire le eccezioni che si presentano, tra le quali l’inserimento di dati non corretti, la connessione assente con il Server ed un file non trovato.
