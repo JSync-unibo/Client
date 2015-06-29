@@ -224,35 +224,31 @@ Comando per inviare l'aggiornamento di una repository locale sul Server, control
 
 Comando per scaricare una repository specifica dal Server e sovrascriverla alla propria locale oppure crearla se non è presente.
 
-Client:
+<b>Client</b>:
 
-   1) Si legge il file xml e si richiama il metodo registro, così da prelevare 
-      l'indirizzo del Server nel quale richiedere la pull.
+1. Si legge il file xml e si richiama il metodo registro, così da prelevare l'indirizzo del Server nel quale          richiedere la pull.
 
-   2) Si invia la richiesta di incremento della variabile globale dei readers.
+2. Si invia la richiesta di incremento della variabile globale dei readers.
 
-   3) Se la variabile dei readers è stata incrementata, si invia il nome della repository desiderata al Server
-      e si aspetta la struttura di tutte le cartelle e sottocartelle.
+3. Se la variabile dei readers è stata incrementata, si invia il nome della repository desiderata al Server
+   e si aspetta la struttura di tutte le cartelle e sottocartelle.
 
-   4) Una volta conosciuta la struttura, si richiede un file alla volta al Server, che provvederà ad inviarli.
+4. Una volta conosciuta la struttura, si richiede un file alla volta al Server, che provvederà ad inviarli.
 
-   5) Quando arriva un file, si sostituisce la repository globale da "serverRepo" a "localRepo" e si creano le 
-      cartelle per i files che ne necessitano, in caso non esistano.
+5. Quando arriva un file, si sostituisce la repository globale da "serverRepo" a "localRepo" e si creano le 
+   cartelle per i files che ne necessitano, in caso non esistano.
 
-   6) Infine si invia la richiesta di decremento della variabile globale dei readers, a operazione conclusa.
+6. Infine si invia la richiesta di decremento della variabile globale dei readers, a operazione conclusa.
 
-Server:
+<b>Server</b>:
 
-   1) Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un "synchronized" per renderla
-      atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere eseguita.
+1. Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un "synchronized" per        renderla atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere     eseguita.
 
-   2) Se la variabile dei readers è stata incrementata, riceve il nome della repository da inviare; se esiste ritorna un 
-      messaggio di successo insieme alla struttura delle cartelle contenute nella propria repository.
+2. Se la variabile dei readers è stata incrementata, riceve il nome della repository da inviare; se esiste ritorna    un messaggio di successo insieme alla struttura delle cartelle contenute nella propria repository.
 
-   3) Riceve una alla volta la richiesta di un file da inviare, contenuto nella repository in questione, e lo spedisce al
-      Client.
+3. Riceve una alla volta la richiesta di un file da inviare, contenuto nella repository in questione, e lo spedisce    al Client.
 
-   4) Infine decrementa la variabile globale dei readers, inclusa in un "synchronized".
+4. Infine decrementa la variabile globale dei readers, inclusa in un "synchronized".
 
 
 ### GESTIONE READER-WRITER
