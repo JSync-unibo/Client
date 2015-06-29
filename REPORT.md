@@ -48,20 +48,19 @@ Esistono già 3 Repositories salvate sui server
 
 Elenco di comandi di esplicazione di JSync-Lobster
 
-1. Lanciare entrambi i Servers e Clients
+1) Lanciare entrambi i Servers e Clients
 
-2. In entrambi i Clients sono presenti già alcuni Server registrati
+2) In entrambi i Clients sono presenti già alcuni Server registrati
 ```java
 list servers    // ritorna la lista dei Servers registrati (contenuti nel file config.xml)
 ```
-
-3. Dal Client <b>_Desert0.1</b> eseguire il comando
+3) Dal Client <b>_Desert0.1</b> eseguire il comando
  ```java
 addServer 5000_localhost socket://localhost:5000    //aggiunge un ulteriore Server registrato
 ```
 A questo punto il Client <b>_Desert0.1</b> avrà entrambi i Servers registrati
 
-4. Si possono visualizzare le Repositories registrate localmente con il comando
+4) Si possono visualizzare le Repositories registrate localmente con il comando
  ```java
 list reg_repos
 ```
@@ -70,23 +69,23 @@ oppure tutte le Repositories disponibili sui server registrati tramite il comand
 list new_repos
 ```
 
-5. Eseguire l'operazione Pull della Repository <b>SerieA_Player</b>
+5) Eseguire l'operazione Pull della Repository <b>SerieA_Player</b>
  ```java
 pull 5000_localhost SerieA_Player
 ```
 
-6. <b>_Desert0.1</b> a questo punto può modificare la Repository ed effetture una Push
+6) <b>_Desert0.1</b> a questo punto può modificare la Repository ed effetture una Push
 ```java
 push 5000_localhost SerieA_Player
 ```
 
-7. A questo punto <b>_WebDesign</b> può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
+7) A questo punto <b>_WebDesign</b> può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
 ```java
 pull 5000_localhost SerieA_Player
 ```
 e notificare che la versione è stata effettivamente incrementata, con l'aggiunta degli ulteriori file modificati.
 
-8. Prove sulla gestione della concorrenza si possono eseguire semplicemente con il comando 
+8) Prove sulla gestione della concorrenza si possono eseguire semplicemente con il comando 
 ```java
 push 5000_localhost SerieA_Player
 ```
@@ -368,4 +367,4 @@ Nella nostra soluzione non è possibile spedire immagini, ma solo files prettame
 
 ## Push della stessa Repository
 <p style="text-align:justify;font-size:12px">
-Durante le scelte d'implementazione della push, abbiamo riscontrato il problema della perdita di dati da parte di un Client. Per esemepio se avvengono 2 push della stessa repository, ad avere una perdita di dati sarà il Client con la versione più vecchia, cioè quello che arriva dopo. Abbiamo pensato che comunque il Client in questione verra avvisato da un messaggio che lo informerà di aggiornare la versione prima di procedere con la push, quindi prima di fare la pull potrà salvare i dati su cui stava lavorando senza perdere nulla. La procedura più giusta e funzionante sarebbe stata sicuramente quella del Merge dei file, però questo non veniva richiesto nelle specifiche del progetto quindi abbiamo optato per questa idea.
+Durante le scelte d' implementazione della push, abbiamo riscontrato il problema della perdita di dati da parte di un Client. Per esempio se avvengono 2 push della stessa repository, ad avere una perdita di dati sarà il Client con la versione più vecchia, cioè quello che arriva dopo.<br> Abbiamo pensato che comunque il Client in questione verrà avvisato da un messaggio che lo informerà di aggiornare la versione prima di procedere con la push, quindi prima di fare la pull potrà salvare i dati su cui stava lavorando senza perdere nulla.<br> La procedura più giusta e funzionante sarebbe stata sicuramente quella del merging dei files, però ciò non veniva richiesto nelle specifiche del progetto quindi abbiamo optato per questa idea.
