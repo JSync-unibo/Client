@@ -100,12 +100,34 @@ eliminare.
 
 ![Client structure](img_report/client_structure.png)
 
+La struttura del Client è composta da:
+
+* Una cartella <b>client_utilities</b> che contiene:
+	* La cartella <b>interfaces</b> con al proprio interno l'interfaccia locale tra la Cli ed il clientUtilities 			  (<u>localInterface.iol</u>) e l'interfaccia con il Server (<u>toServer.iol</u>)
+	* Il servizio <b>clientDefine.ol</b> contenente i vari define richiamati in <u>clientUtilities.ol</u>
+	* Il servizio <b>clientUtilities.ol</b>, il quale ha la funzione di intermediario tra il Client ed il Server, con le 
+	  input choices relative ai comandi ricevuti dalla Cli
+	
+* Una (o più) cartelle <b>Client[n]</b> con all'interno:
+	* Il servizio <b>cli.ol</b>, che ha la funzione di UI, dove si inseriscono i diversi comandi possibili
+	* La cartella <b>localRepo</b> (non presente inizialmente), contenente tutte le repositories aggiunte
+	* Il file <b>config.xml</b>, con la lista dei Servers registrati in ogni Client
+
 ####Server
 
 ![Server structure](img_report/server_structure.png)
 
+La struttura del Server è composta da:
+* Una cartella <b>server_utilities</b> che contiene:
+	* La cartella <b>interface</b> con all'interno l'interfaccia tra il clientUtilities ed il Server 				  (<u>fromClient.iol</u>)
+	* Il servizio <b>serverDefine.ol</b> contenente i vari define richiamati in <u>server.ol</u>
+	
+* Uno (o più) cartelle <b>Server[n]</b> con all'interno:
+	* Il servizio <b>server.ol</b>, con le input choices relative ai diversi comandi provenienti dal 				  <u>clientUtilities.ol</u>
+	* La cartella <b>serverRepo</b> (non presente inizialmente), contenente tutte le repositories aggiunte
+
 Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra i Clients e i Servers. <br>
-Il Cli è collegato con il clientUtilities attraverso l'embedding, per permettere la comunicazione senza aver bisogno di un indirizzo.<br>Per gestire la trasmissione dei messaggi tra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server.<br>
+La Cli è collegata con il clientUtilities attraverso l'embedding, per permettere la comunicazione senza aver bisogno di un indirizzo.<br>Per gestire la trasmissione dei messaggi tra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server.<br>
 Inoltre utilizziamo dei servizi chiamati <b>"clientDefine.ol"</b> (dalla parte del Client) e <b>"serverDefine.ol"</b> (dalla parte del Server) per gestire diversi metodi, tra i quali la lettura e la scrittura del file xml, il registro dei Servers, la visita ricorsiva di una repository, la creazione di cartelle e l'operazione modulo per l'incremento dei readers / writers. <br>
 In particolare, dopo aver inserito un comando in console, esso è splittato nella Cli, per analizzare ogni singola stringa e differenziare le varie funzionalità; successivamente si invia il comando nel clientUtilities, eseguendo la input choice relativa.<br>
 Di seguito elenchiamo i comandi, descrivendoli nello specifico:
@@ -122,7 +144,7 @@ Finalizzato alla lettura delle repositories locali, all' inizio si pone come rep
 
 ### Add Server
 
-Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome del Server esiste già (confrontando il nome scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>
+Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome del Server esiste già (confrontando il nome scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>.
 
 ### Remove Server
 
@@ -303,18 +325,18 @@ Per la creazione di cartelle nell' AddRepository e nella Pull.
 ![Creazione cartelle](img_report/writeFilePath.png)
 
 ####Visita delle cartelle - clientDefine & serverDefine
-Per la visita ricorsiva delle cartelle. La visita funziona quanto segue: partendo da un percorso assoluto, si utilizza il comando list dell'interfaccia string_utils per ottenere tutte le sottocartelle e i files in esso contenuti. Con un ciclo for si salvano le sottocartelle e i files in una variabile diversa e per ognuno si applica nuovamente il comando list: se ciò che ritorna è un elemento vuoto, allora significa che si sta esaminando un file o una cartella vuota. Nel caso in cui il nome contenga un ".", il percorso viene salvato in una variabile finale perchè si tratta di un file; in caso contrario il percorso non viene salvato. Poichè la struttura che memorizza i percorsi assoluti delle cartelle, memorizza anche un attributo booleano mark, che indica se la cartella è già stata visitata o meno, con un ciclo while si cerca la prima cartella con questo attributo settato a false. Dopo ciò, vengono preparate le variabili per riniziare la visita, e il define viene richiamato.
+Per la visita ricorsiva delle cartelle.<br> La visita funziona quanto segue: partendo da un percorso assoluto, si utilizza il comando <u>list/u> dell'interfaccia <b>string_utils.iol</b> per ottenere tutte le sottocartelle e i files in esso contenuti.<br> Con un ciclo for si salvano le sottocartelle e i files in una variabile diversa e per ognuno si applica nuovamente il comando <u>list</u>: se ciò che ritorna è un elemento vuoto, allora significa che si sta esaminando un file o una cartella vuota.<br> Nel caso in cui il nome contenga un ".", il percorso viene salvato in una variabile finale perchè si tratta di un file; in caso contrario il percorso non viene salvato. <br>Poichè la struttura che memorizza i percorsi assoluti delle cartelle, memorizza anche un attributo booleano mark, che indica se la cartella è già stata visitata o meno, con un ciclo while si cerca la prima cartella con tale attributo settato a false.<br> Dopo ciò, si preparano le variabili per iniziare nuovamente la visita, e si richiama il define.
 
 ![Visita cartelle](img_report/visita1.png)
 ![Visita cartelle](img_report/visita2.png)
 
 ####Inizializzazione delle cartelle - clientDefine & serverDefine
-Per inizializzare la visita delle cartelle, e per ottenere i percorsi relativi. Il percorso assoluto iniziale viene diviso e in una variabile viene salvato l'ultimo elemento ottenuto dall'operazione split, che corrisponderà all'inizio del percorso relativo. Viene richiamata la visita, e la variabile ottenuta viene divisa nuovamente: quando si trova un valore uguale alla variabile che ha memorizzato il percorso relativo, allora tutti i successivi valori, che erano stati divisi, vengono salvati per formare percorso relativo.
+Per inizializzare la visita delle cartelle, e per ottenere i percorsi relativi.<br> Il percorso assoluto iniziale viene diviso e in una variabile viene salvato l'ultimo elemento ottenuto dall'operazione <u>split</u>, che corrisponde all'inizio del percorso relativo.<br> Si richiama la visita, e la variabile ottenuta viene divisa nuovamente: quando si trova un valore uguale alla variabile che ha memorizzato il percorso relativo, allora tutti i successivi valori, che erano stati divisi, vengono salvati per formare il percorso relativo.
 
 ![Inizializz Visita](img_report/inizializVisita.png)
 
 ####Modulo - serverDefine
-Utilizzato per individuare il corretto indice della variabile globale che corrisponde ai readers/writers. Poichè si dispone di due indici, 0 e 1, l'operazione modulo viene effettuata solo nel caso in cui, in una formula a mod b, a sia maggiore di b, quindi solo quando l'indice corrisponde a 1; nel caso in cui l'indice sia minore, questo viene solo incrementato di 1. Di conseguenza, a seconda dell'indice passato si ottiene quello opposto. E' stato usato in questo modo per poter generalizzare il più possibile la Request-Response per l'incremento della variabile globale dei readers/writers.
+Utilizzato per individuare il corretto indice della variabile globale che corrisponde ai readers/writers.<br> Poichè si dispone di due indici, 0 e 1, l'operazione modulo viene effettuata solo nel caso in cui, in una formula a mod b, a sia maggiore di b, quindi solo quando l'indice corrisponde a 1; nel caso in cui l'indice sia minore, questo viene solo incrementato di 1. Di conseguenza, a seconda dell'indice passato si ottiene quello opposto.<br> E' stato usato in questo modo per poter generalizzare il più possibile la Request-Response per l'incremento della variabile globale dei readers/writers.
 
 ![Modulo](img_report/modulo.png)
 
@@ -329,3 +351,7 @@ Inizialmente, per non appesantire il Client e per sfruttare nel migliore dei mod
 <p style="text-align:justify;font-size:12px">
 Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè non sapevamo come far visitare tutte le sotto-cartelle della cartella principale e non solo i files contenuti all’interno.<br> In seguito abbiamo deciso di implementare una visita ricorsiva di tutte le sotto-cartelle, gestendo anche la differenza tra la lettura del file, che accetta un percorso assoluto, e la scrittura, che accetta un percorso relativo.<br> Inoltre nell'Add repository, se sono presenti cartelle vuote nella directory locale che si desidera aggiungere nel Client e nel Server, abbiamo deciso di non farle aggiungere, mentre nella Pull ritorna un messaggio di repository vuota, se nel Server è stato cancellato il contenuto della repository in questione.
 </p>
+
+### Invio di immagini
+<p style="text-align:justify;font-size:12px">
+Nella nostra soluzione non è possibile spedire immagini, ma solo files prettamente testuali.<br> Per quella funzionalità, basterebbe aggiungere una conversione in binario del contenuto del file.
