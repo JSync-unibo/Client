@@ -6,7 +6,7 @@
 			|	|	|
 			|	|	+---localInterface.iol
 			|	|	|
-			|	|	\---toServer.iol
+			|	|	+---toServer.iol
 			|	|
 			|	+---clientDefine.ol
 			|	|

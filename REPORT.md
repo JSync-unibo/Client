@@ -241,21 +241,65 @@ Client:
    2) Si invia la richiesta di incremento della variabile globale dei writers.
 
    3) Se la variabile è stata incrementata, si procede alla spedizione del file di versione,
-      per controllare se è maggiore o uguale di quella sul Server (solo in tal caso si può eseguire la push)
+      per controllare se è maggiore o uguale di quello sul Server (solo in tal caso si può eseguire la push).
 
    4) Successivamente si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica
-      la repository globale da "localRepo" a "serverRepo" e si possono inviare sul Server, sovrascrivendoli
-      su quelli già presenti o creandoli se non esistono
+      la repository globale da "localRepo" a "serverRepo" e si inviano uno alla volta sul Server, sovrascrivendoli
+      su quelli già presenti o creandoli se non esistono.
 
+   5) Mentre il file di versione è gestito attraverso una richiesta di esso al Server, così da sovrascriverlo a 
+      quello locale, dopo che già è stato incrementato.
 
+   6) Infine si invia la richiesta di decremento della variabile globale dei writers, a operazione conclusa.
 
+Server:
+
+   1) Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un "synchronized" per renderla
+      atomica) sono nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere eseguita. 
+
+   2) Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla se è maggiore o
+      uguale del suo, in tal caso incrementa la sua versione, all'interno di un "synchronized" per renderla atomica, e 
+      ritorna un messaggio di successo al Client.
+
+   3) Riceve uno alla volta i files dal Client, per sovrascriverli ai suoi o crearli se non sono presenti.
+
+   4) Riceve la richiesta dal Client di inviargli il file di versione incrementato.
+
+   5) Infine decrementa la variabile globale dei writers, inclusa in un "synchronized".
 
 ### PULL
 
+Comando per scaricare una repository specifica dal Server e sovrascriverla alla propria locale oppure crearla se non è presente.
 
+Client:
 
+   1) Si legge il file xml e si richiama il metodo registro, così da prelevare 
+      l'indirizzo del Server nel quale richiedere la pull.
 
+   2) Si invia la richiesta di incremento della variabile globale dei readers.
 
+   3) Se la variabile dei readers è stata incrementata, si invia il nome della repository desiderata al Server
+      e si aspetta la struttura di tutte le cartelle e sottocartelle.
+
+   4) Una volta conosciuta la struttura, si richiede un file alla volta al Server, che provvederà ad inviarli.
+
+   5) Quando arriva un file, si sostituisce la repository globale da "serverRepo" a "localRepo" e si creano le 
+      cartelle per i files che ne necessitano, in caso non esistano.
+
+   6) Infine si invia la richiesta di decremento della variabile globale dei readers, a operazione conclusa.
+
+Server:
+
+   1) Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un "synchronized" per renderla
+      atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere eseguita.
+
+   2) Se la variabile dei readers è stata incrementata, riceve il nome della repository da inviare; se esiste ritorna un 
+      messaggio di successo insieme alla struttura delle cartelle contenute nella propria repository.
+
+   3) Riceve una alla volta la richiesta di un file da inviare, contenuto nella repository in questione, e lo spedisce al
+      Client.
+
+   4) Infine decrementa la variabile globale dei readers, inclusa in un "synchronized".
 
 
 ### GESTIONE READER-WRITER
