@@ -259,6 +259,7 @@ Alla fine abbiamo optato per due implementazioni diverse:
 
 * <b>Push-push</b><br>
 Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. <br>
+Poichè la scrittura del file di versione è una sezione critica, abbiamo deciso di utilizzare un synchronized per racchiudere questa parte, in modo tale che l'istruzione venga eseguita in maniera atomica. <br>
 (Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1, che dovrà effettuare una pull, andando a cancellare tutte le sue modifiche locali).<br>
 Bisogna tenere presente che invece due push di due repositories diverse sono permesse, perché una non va ad interferire con l’altra.<br>
 
