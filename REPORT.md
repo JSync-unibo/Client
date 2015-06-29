@@ -171,30 +171,22 @@ Questo comando serve per far stampare tutte le repositories dei Server registrat
 
 <b>Server</b>:
 
-   1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo listFile di file.iol per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
+1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo listFile di file.iol per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
 
 
 ### DELETE
 
 Comando per eliminare una repository sia sul Server sia sul Client.
 
-Client:
+<b>Client</b>:
 
-   1) Si legge il file xml e si richiama il metodo registro, per avere 
-	   le informazioni necessarie per collegarsi con il Server nel 
-      quale eliminare la repository.
+1. Si legge il file xml e si richiama il metodo registro, per avere le informazioni necessarie per collegarsi con     il Server nel quale eliminare la repository.
 
-	2) Si invia la richiesta di eliminazione della repo al Server ed in
-	   caso di cancellazione avvenuta oppure se la repo già era stata 
-      cancellata in precedenza, eseguiamo la stessa operazione per il Client, 
-      con il comando "deleteDir" di file.iol, eliminando l’intera cartella che era stata inserita in input.
+2. Si invia la richiesta di eliminazione della repo al Server ed in caso di cancellazione avvenuta oppure se la       repo già era stata cancellata in precedenza, eseguiamo la stessa operazione per il Client, con il comando          "deleteDir" di file.iol, eliminando l’intera cartella che era stata inserita in input.
 
-Server:
+<b>Server</b>:
 
-	1) Riceve il messaggio dal Client della repository da eliminare,
-	   scorre la lista di tutte quelle presenti in “serverRepo” e se il 
-      nome corrisponde a quello ricevuto, elimina la cartella e 
-      ritorna il messaggio di operazione effettuata.
+1. Riceve il messaggio dal Client della repository da eliminare, scorre la lista di tutte quelle presenti in          “serverRepo” e se il nome corrisponde a quello ricevuto, elimina la cartella e ritorna il messaggio di             operazione effettuata.
 
 ### PUSH
 
