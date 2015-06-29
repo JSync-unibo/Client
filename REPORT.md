@@ -192,39 +192,33 @@ Comando per eliminare una repository sia sul Server sia sul Client.
 
 Comando per inviare l'aggiornamento di una repository locale sul Server, controllando i files di versione di entrambi.
 
-Client:
+<b>Client</b>:
 
-   1) Si legge il file xml e si richiama il metodo registro, così da prelevare
-      l'indirizzo del Server nel quale inviare la push.
+1. Si legge il file xml e si richiama il metodo registro, così da prelevare l'indirizzo del Server nel quale          inviare la push.
 
-   2) Si invia la richiesta di incremento della variabile globale dei writers.
+2. Si invia la richiesta di incremento della variabile globale dei writers.
 
-   3) Se la variabile è stata incrementata, si procede alla spedizione del file di versione,
-      per controllare se è maggiore o uguale di quello sul Server (solo in tal caso si può eseguire la push).
+3. Se la variabile è stata incrementata, si procede alla spedizione del file di versione, per controllare se è        maggiore o uguale di quello sul Server (solo in tal caso si può eseguire la push).
 
-   4) Successivamente si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica
-      la repository globale da "localRepo" a "serverRepo" e si inviano uno alla volta sul Server, sovrascrivendoli
-      su quelli già presenti o creandoli se non esistono.
+4. Successivamente si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica la       repository globale da "localRepo" a "serverRepo" e si inviano uno alla volta sul Server, sovrascrivendoli
+   su quelli già presenti o creandoli se non esistono.
 
-   5) Mentre il file di versione è gestito attraverso una richiesta di esso al Server, così da sovrascriverlo a 
-      quello locale, dopo che già è stato incrementato.
+5. Mentre il file di versione è gestito attraverso una richiesta di esso al Server, così da sovrascriverlo a 
+   quello locale, dopo che già è stato incrementato.
 
-   6) Infine si invia la richiesta di decremento della variabile globale dei writers, a operazione conclusa.
+6. Infine si invia la richiesta di decremento della variabile globale dei writers, a operazione conclusa.
 
-Server:
+<b>Server</b>:
 
-   1) Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un "synchronized" per renderla
-      atomica) sono nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere eseguita. 
+1. Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un "synchronized" per        renderla atomica) sono nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere     eseguita. 
 
-   2) Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla se è maggiore o
-      uguale del suo, in tal caso incrementa la sua versione, all'interno di un "synchronized" per renderla atomica, e 
-      ritorna un messaggio di successo al Client.
+2. Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla se è           maggiore o uguale del suo, in tal caso incrementa la sua versione, all'interno di un "synchronized" per renderla    atomica, e ritorna un messaggio di successo al Client.
 
-   3) Riceve uno alla volta i files dal Client, per sovrascriverli ai suoi o crearli se non sono presenti.
+3. Riceve uno alla volta i files dal Client, per sovrascriverli ai suoi o crearli se non sono presenti.
 
-   4) Riceve la richiesta dal Client di inviargli il file di versione incrementato.
+4. Riceve la richiesta dal Client di inviargli il file di versione incrementato.
 
-   5) Infine decrementa la variabile globale dei writers, inclusa in un "synchronized".
+5. Infine decrementa la variabile globale dei writers, inclusa in un "synchronized".
 
 ### PULL
 
