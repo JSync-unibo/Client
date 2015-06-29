@@ -2,7 +2,8 @@
 >*Build software better, together.*
 
 
-## LOBSTER
+## LOBSTER 
+![Icon](img_report/lobster.png)
 
 Componenti:
 
@@ -97,18 +98,20 @@ eliminare.
 
 ####Client
 
-![Client structure](client_structure.png)
+![Client structure](img_report/client_structure.png)
 
 ####Server
 
-![Server structure](server_structure.png)
+![Server structure](img_report/server_structure.png)
 
-Il progetto è diviso in più Cli, Servers ed un Client che fa da tramite.<br>
-Il Client è collegato alla Cli attraverso l'embedding, così da essere connessi localmente, senza aver bisogno di un indirizzo. Per gestire la trasmissione dei messaggi fra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server. 
-Inoltre utilizziamo un servizio che includiamo nel Client per gestire diversi metodi, come la lettura e scrittura del file xml, ma anche la visita e creazione di cartelle, che ritroviamo anche in un servizio incluso nel Server.
-Il comando viene prima splittato nella Cli, così da essere inviata ogni stringa inserita ed analizzarla singolarmente.
-Di seguito elenchiamo i comandi, descrivendoli nello specifico e tenendo presente che in ogni comando abbiamo inserito uno scope per gestire diverse eccezioni che si presentano, tra le quali l’inserimento di dati non corretti, la connessione assente con il Server ed un file non trovato.
-Inoltre il procedimento è eseguito se i risultati splittati nella Cli corrispondono alla lunghezza richiesta del comando (es: list(1) servers(2) -> il risultato dello split deve essere di dimensione 2).
+Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra gli utenti e i Servers. <br>
+Il Cli è collegato con il clientUtilities attraverso l'embedding, per permettere la comunicazione senza aver bisogno di un indirizzo.<br>Per gestire la trasmissione dei messaggi tra di essi, ad ogni comando è associato un servizio diverso, che può essere eseguito localmente o attraverso una porta collegata ad un Server.<br>
+Inoltre utilizziamo dei servizi chiamati <b>"clientDefine.ol"</b> (dalla parte del Clienyt) e <b>"serverDefine.ol"</b> (dalla parte del Server) per gestire diversi metodi, tra i quali la lettura e scrittura del file xml, il registro dei Servers, la visita ricorsiva di una repository, la creazione di cartelle e l'operazione modulo per l'incremento dei readers / writers. <br>
+In particolare, dopo aver inserito un comando in console, esso è splittato nella Cli, per analizzare ogni singola stringa e differenziare le varie funzionalità; successivamente si invia il comando nel clientUtilities, dove sarà presente la input choice relativa.<br>
+Di seguito elenchiamo i comandi, descrivendoli nello specifico:
+
+* <b>NB</b>: Ogni funzionalità è inclusa in uno scope per gestire le eccezioni che si presentano, tra le quali l’inserimento di dati non corretti, la connessione assente con il Server ed un file non trovato.
+* <b>NB (2)</b>: L'esecuzione del procedimento è eseguito solo se i risultati splittati nella Cli corrispondono alla lunghezza richiesta del comando (es: list(1) servers(2) -> il risultato dello split deve essere di dimensione 2).
 
 ### List Servers
 Una volta controllato che i dati inseriti in input siano giusti, procediamo con la lettura del file xml (richiamato dal servizio “utilities.ol”) e se sono presenti Servers nella lista, per ognuno di essi vengono stampate le relative informazioni (nome ed indirizzo), altrimenti un messaggio di avviso che non sono presenti Servers registrati.
@@ -249,26 +252,68 @@ Comando per scaricare una repository specifica dal Server e sovrascriverla alla 
 4. Infine decrementa la variabile globale dei readers, inclusa in un "synchronized".
 
 
-### Gestione reader-writer
-<p style="text-align:justify;font-size:12px">
+## Gestione reader-writer
+
 Per la gestione della concorrenza tra readers e writers abbiamo avuto diverse alternative valide: l’uso dei semafori nella libreria di Jolie; gestione dei controlli tramite il file di versione; l’utilizzo di una coda o un merging dei file (GitHub style).<br>
 Alla fine abbiamo optato per due implementazioni diverse:
 
-<b>Push-push</b>
-Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. 
-(Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1, che dovrà effettuare una pull, andando a cancellare tutte le sue modifiche locali)
-Bisogna tenere presente che invece due push di due repositories diverse sono permesse, perché una non va ad interferire con l’altra.
+* <b>Push-push</b><br>
+Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. <br>
+(Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1, che dovrà effettuare una pull, andando a cancellare tutte le sue modifiche locali).<br>
+Bisogna tenere presente che invece due push di due repositories diverse sono permesse, perché una non va ad interferire con l’altra.<br>
 
-<b> Push-pull / pull-push</b>
-Per questo tipo di gestione invece abbiamo utilizzato dei <u>contatori</u> (reader e writer) globali nel Server, che saranno condivise da tutti i Clients e possono verificarsi due casi:
+![Push push](img_report/push-push.png)
 
-- Il Client1 esegue una push, il writerCount sarà incrementato e se contemporaneamente il Client2 vuole eseguire una pull, controlla se il writerCount è uguale a 1, in questo caso sarà bloccato con un messaggio di avviso e solo in seguito, quando la push sarà completata, allora potrà richiamare la pull.
+* <b> Push-pull / pull-push</b><br>
+Quando gestiamo writer-reader e viceversa, abbiamo utilizzato dei <u>contatori</u> (reader e writer) globali e atomici nel Server, che saranno condivisi da tutti i Clients. <br>
+Nello specifico abbiamo due casi:
 
-- Il Client1 esegue una pull, il readerCount sarà incrementato e se il Client2 vuole eseguire una push dovrà controllare se il readerCount sia maggiore o uguale a 1, nel caso i readers siano più di uno, il Client2 dovrà aspettare più del dovuto (problema di starvation). Solo quando readerCount sarà uguale a 0, allora potrà effettuare la push.
+	* Il Client1 esegue una **push**: il writerCount sarà incrementato e se contemporaneamente il Client2 vuole eseguire una pull, controlla se il writerCount è uguale a 1, in questo caso sarà bloccato con un messaggio di avviso e solo in seguito, quando la push sarà completata, potrà richiamare la pull.
 
-<b> Pull-pull</b>
+	![Push pull](img_report/push-pull.png)
+
+	* Il Client1 esegue una **pull**: il readerCount sarà incrementato e se il Client2 vuole eseguire una push dovrà controllare se il readerCount è maggiore o uguale a 1, nel caso i readers siano più di uno, il Client2 dovrà aspettare a tempo indeterminato (problema di starvation). Solo quando il readerCount è uguale a 0, il Client2 potrà effettuare la push.
+
+	![Pull push](img_report/pull-push.png)
+
+* <b> Pull-pull</b><br>
 Due (o più) readers invece sono permessi, quindi non abbiamo inserito <u>nessun controllo</u>, poiché tutti possono scaricare contemporaneamente il contenuto dello stesso Server.
-</p>
+
+![Pull pull](img_report/pull-pull.png)
+
+## Define utilizzati
+
+Nei servizi <b>"clientDefine.ol"</b> e <b>"serverDefine.ol"</b> abbiamo incluso dei define, richiamati frequentemente nei diversi comandi:
+
+####Registro - clientDefine
+Utilizzato per settare la location (indirizzo) ad un Server richiesto.
+
+![Registro](img_report/registro.png)
+
+####Lettura / scrittura del file xml - clientDefine
+Per la lettura e scrittura del file xml, che contiene la lista dei Servers registrati dai diversi utenti.
+
+![Lettura e scrittura file xml](img_report/read-writeFile.png)
+
+####Creazione di cartelle - clientDefine
+Per la creazione di cartelle nell' AddRepository e nella Pull.
+
+![Creazione cartelle](img_report/writeFilePath.png)
+
+####Visita delle cartelle - clientDefine & serverDefine
+Per la visita ricorsiva delle cartelle.
+
+![Visita cartelle](img_report/visita1.png)
+![Visita cartelle](img_report/visita2.png)
+
+####Inizializzazione delle cartelle - clientDefine & serverDefine
+
+![Inizializz Visita](img_report/inizializVisita.png)
+
+####Modulo - serverDefine
+Utilizzato per l'incremento della variabile globale dei reader o writer.
+
+![Modulo](img_report/modulo.png)
 
 ## Problemi riscontrati & soluzioni adottate
 
