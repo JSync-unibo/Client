@@ -301,17 +301,18 @@ Per la creazione di cartelle nell' AddRepository e nella Pull.
 ![Creazione cartelle](img_report/writeFilePath.png)
 
 ####Visita delle cartelle - clientDefine & serverDefine
-Per la visita ricorsiva delle cartelle.
+Per la visita ricorsiva delle cartelle. La visita funziona quanto segue: partendo da un percorso assoluto, si utilizza il comando list dell'interfaccia string_utils per ottenere tutte le sottocartelle e i files in esso contenuti. Con un ciclo for si salvano le sottocartelle e i files in una variabile diversa e per ognuno si applica nuovamente il comando list: se ciò che ritorna è un elemento vuoto, allora significa che si sta esaminando un file o una cartella vuota. Nel caso in cui il nome contenga un ".", il percorso viene salvato in una variabile finale perchè si tratta di un file; in caso contrario il percorso non viene salvato. Poichè la struttura che memorizza i percorsi assoluti delle cartelle, memorizza anche un attributo booleano mark, che indica se la cartella è già stata visitata o meno, con un ciclo while si cerca la prima cartella con questo attributo settato a false. Dopo ciò, vengono preparate le variabili per riniziare la visita, e il define viene richiamato.
 
 ![Visita cartelle](img_report/visita1.png)
 ![Visita cartelle](img_report/visita2.png)
 
 ####Inizializzazione delle cartelle - clientDefine & serverDefine
+Per inizializzare la visita delle cartelle, e per ottenere i percorsi relativi. Il percorso assoluto iniziale viene diviso e in una variabile viene salvato l'ultimo elemento ottenuto dall'operazione split, che corrisponderà all'inizio del percorso relativo. Viene richiamata la visita, e la variabile ottenuta viene divisa nuovamente: quando si trova un valore uguale alla variabile che ha memorizzato il percorso relativo, allora tutti i successivi valori, che erano stati divisi, vengono salvati per formare percorso relativo.
 
 ![Inizializz Visita](img_report/inizializVisita.png)
 
 ####Modulo - serverDefine
-Utilizzato per l'incremento della variabile globale dei reader o writer.
+Utilizzato per individuare il corretto indice della variabile globale che corrisponde ai readers/writers. Poichè si dispone di due indici, 0 e 1, l'operazione modulo viene effettuata solo nel caso in cui, in una formula a mod b, a sia maggiore di b, quindi solo quando l'indice corrisponde a 1; nel caso in cui l'indice sia minore, questo viene solo incrementato di 1. Di conseguenza, a seconda dell'indice passato si ottiene quello opposto. E' stato usato in questo modo per poter generalizzare il più possibile la Request-Response per l'incremento della variabile globale dei readers/writers.
 
 ![Modulo](img_report/modulo.png)
 
