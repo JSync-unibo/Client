@@ -291,7 +291,7 @@ Per la gestione della concorrenza tra readers e writers abbiamo avuto diverse al
 Alla fine abbiamo optato per due implementazioni diverse:
 
 * <b>Push-push</b><br>
-Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sullo stesso Server, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. <br>
+Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sulla stessa repository, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. <br>
 Poichè la scrittura del file di versione è una sezione critica, abbiamo deciso di utilizzare un costrutto <u>synchronized</u> per racchiudere questa parte, in modo tale che l'istruzione venga eseguita in maniera atomica. <br>
 (Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1, che dovrà effettuare una pull, andando a cancellare tutte le sue modifiche locali).<br>
 Bisogna tenere presente che invece due push di due repositories diverse sono permesse, perché una non va ad interferire con l’altra.<br>
@@ -365,3 +365,7 @@ Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè non sapev
 ### Invio di immagini
 <p style="text-align:justify;font-size:12px">
 Nella nostra soluzione non è possibile spedire immagini, ma solo files prettamente testuali.<br> Per quella funzionalità, basterebbe aggiungere una conversione in binario del contenuto del file.
+
+## Push della stessa Repository
+<p style="text-align:justify;font-size:12px">
+Durante le scelte d'implementazione della push, abbiamo riscontrato il problema della perdita di dati da parte di un Client. Per esemepio se avvengono 2 push della stessa repository, ad avere una perdita di dati sarà il Client con la versione più vecchia, cioè quello che arriva dopo. Abbiamo pensato che comunque il Client in questione verra avvisato da un messaggio che lo informerà di aggiornare la versione prima di procedere con la push, quindi prima di fare la pull potrà salvare i dati su cui stava lavorando senza perdere nulla. La procedura più giusta e funzionante sarebbe stata sicuramente quella del Merge dei file, però questo non veniva richiesto nelle specifiche del progetto quindi abbiamo optato per questa idea.
