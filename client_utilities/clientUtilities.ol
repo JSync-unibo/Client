@@ -243,48 +243,51 @@ main
 	  	*/
 	  	[ listNewRepos( resultSplit )( response ){
 
-	  		// Nel caso in cui i dati inseriti non siano corretti
-  			install( datiNonCorretti => response = " Not correct data.\n");
+	  		scope( dati ) {
+	  			
+		  		// Nel caso in cui i dati inseriti non siano corretti
+	  			install( datiNonCorretti => response = " Not correct data.\n");
 
-  			if(#resultSplit.result == 2) {
-  				
-  				// Lettura del file xml (richiamata dal servizio clientDefine), 
-	  			// con risultato la variabile contenente i Servers
-	  			readFile;
+	  			if(#resultSplit.result == 2) {
+	  				
+	  				// Lettura del file xml (richiamata dal servizio clientDefine), 
+		  			// con risultato la variabile contenente i Servers
+		  			readFile;
 
-	  			// Se la lista non è vuota
-	  			if(is_defined( configList.server )) {
+		  			// Se la lista non è vuota
+		  			if(is_defined( configList.server )) {
 
-			  		for (i=0, i<#configList.server, i++) {
-			  			
-			  			scope( currentServer )
-			  			{
-			  				// Quando si tenta la connessione con i Servers,
-			  				// può saltare l'eccezione nel caso in cui uno di essi non sia in ascolto
-			  				install( IOException  => response += "       no reachable.\n" );
+				  		for (i=0, i<#configList.server, i++) {
+				  			
+				  			scope( currentServer )
+				  			{
+				  				// Quando si tenta la connessione con i Servers,
+				  				// può saltare l'eccezione nel caso in cui uno di essi non sia in ascolto
+				  				install( IOException  => response += "       no reachable.\n" );
 
-			  			  	// Inserito l'indirizzo per collegarsi al Server corrente
-				  			ServerConnection.location = configList.server[i].address;
+				  			  	// Inserito l'indirizzo per collegarsi al Server corrente
+					  			ServerConnection.location = configList.server[i].address;
 
-				  			// Formatta l'output
-				  			response += "\n - "+configList.server[i].name +":\n";
+					  			// Formatta l'output
+					  			response += "\n - "+configList.server[i].name +":\n";
 
-				  			// Operazione con il Server, aspettando la lista di tutte le sue repositories.
-				  			// Può sollevare IOException
-				  			listRepo@ServerConnection()( responseMessage );
+					  			// Operazione con il Server, aspettando la lista di tutte le sue repositories.
+					  			// Può sollevare IOException
+					  			listRepo@ServerConnection()( responseMessage );
 
-				  			// Si crea l'output con l'elenco dei nomi dei Servers e le relative repositories
-				  			response += responseMessage+"\n"
-			  			}
-			  		}
+					  			// Si crea l'output con l'elenco dei nomi dei Servers e le relative repositories
+					  			response += responseMessage+"\n"
+				  			}
+				  		}
+				  	}
+
+				  	else
+						response = " There are no servers.\n"					
 			  	}
 
-			  	else
-					response = " There are no servers.\n"					
-		  	}
-
-		  	else 
-				throw( datiNonCorretti )
+			  	else 
+					throw( datiNonCorretti )
+			}
 
 	  	} ] { nullProcess }
 	  	
@@ -442,7 +445,7 @@ main
 			  		registro;
 	  				
 	  				// Eliminazione della cartella locale, se presente
-			  		deleteDir@File( "LocalRepo/" + message.repoName )( deleted );
+			  		deleteDir@File( "localRepo/" + message.repoName )( deleted );
 
 	  				// Invio dei dati al Server, per eliminare la repository su di esso
 	  				// ed aspetta un messaggio di risposta	
