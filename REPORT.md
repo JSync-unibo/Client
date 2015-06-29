@@ -38,7 +38,7 @@ _WebDesign  | 4000_localhost
 _Desert0.1     | 5000_localhost
 
 
-Esistono già 3 Repositories salvate sui server
+Esistono già 3 Repositories salvate sui Servers
 
 - 4000_localhost
       - Design_Assets
@@ -50,7 +50,7 @@ Elenco di comandi di esplicazione di JSync-Lobster
 
 1) Lanciare entrambi i Servers e Clients
 
-2) In entrambi i Clients sono presenti già alcuni Server registrati
+2) In entrambi i Clients sono presenti già alcuni Servers registrati
 ```java
 list servers    // ritorna la lista dei Servers registrati (contenuti nel file config.xml)
 ```
@@ -58,13 +58,13 @@ list servers    // ritorna la lista dei Servers registrati (contenuti nel file c
  ```java
 addServer 5000_localhost socket://localhost:5000    //aggiunge un ulteriore Server registrato
 ```
-A questo punto il Client <b>_Desert0.1</b> avrà entrambi i Servers registrati
+A questo punto il Client <b>_Desert0.1</b> avrà entrambi i Servers registrati.
 
 4) Si possono visualizzare le Repositories registrate localmente con il comando
  ```java
 list reg_repos
 ```
-oppure tutte le Repositories disponibili sui server registrati tramite il comando
+oppure tutte le Repositories disponibili sui Servers registrati tramite il comando
  ```java
 list new_repos
 ```
@@ -74,24 +74,24 @@ list new_repos
 pull 5000_localhost SerieA_Player
 ```
 
-6) <b>_Desert0.1</b> a questo punto può modificare la Repository ed effetture una Push
+6) <b>_Desert0.1</b> a questo punto si può modificare la Repository ed effetture una Push
 ```java
 push 5000_localhost SerieA_Player
 ```
 
-7) A questo punto <b>_WebDesign</b> può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
+7) In seguito <b>_WebDesign</b> può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
 ```java
 pull 5000_localhost SerieA_Player
 ```
-e notificare che la versione è stata effettivamente incrementata, con l'aggiunta degli ulteriori file modificati.
+e notificare che la versione è stata effettivamente incrementata, con l'aggiunta degli ulteriori files modificati.
 
 8) Prove sulla gestione della concorrenza si possono eseguire semplicemente con il comando 
 ```java
 push 5000_localhost SerieA_Player
 ```
-in entrambi i client
+in entrambi i Clients.
 
-Ulteriormente si possono eseguire comandi di eliminazione Server e Repository
+9) Ulteriormente si possono eseguire comandi di eliminazione di un Server e di una Repository
 ```java
 removeServer 4000_localhost
 
