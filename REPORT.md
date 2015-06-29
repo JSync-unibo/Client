@@ -130,49 +130,23 @@ Dopo la consueta lettura del file xml, inseriamo un ulteriore scope, che in caso
 
 Questo è il primo comando che ha bisogno dell’intervento del Server.
 
-Client: 
+<b>Client</b>: 
 
-1) Riceve dalla Cli il nome del Server a cui si deve connettere, e 
-   si effettua il Binding, attraverso il richiamo del metodo 
-   registro (in “utilities.ol”), scorrendo la lista dei Servers per 
-   individuare l’indirizzo del Server a cui collegarsi ed 
-   aggiungerlo alla porta di comunicazione.
+1. Riceve dalla Cli il nome del Server a cui si deve connettere, e si effettua il Binding, attraverso il richiamo     del metodo registro (in “utilities.ol”), scorrendo la lista dei Servers per individuare l’indirizzo del Server a    cui collegarsi ed aggiungerlo alla porta di comunicazione.
 
-2) Poi con l’operazione AddRepository si connette con il Server per 
-   effettuare un controllo e se il messaggio che gli ritorna è
-   positivo, allora prosegue analizzando il percorso della 
-   directory locale inserito in input, per aggiungerlo sia nel 
-   Client che nel Server.
+2. Poi con l’operazione AddRepository si connette con il Server per effettuare un controllo e se il messaggio che     gli ritorna è positivo, allora prosegue analizzando il percorso della directory locale inserito in input, per      aggiungerlo sia nel Client che nel Server.
 
-3) Richiamiamo la visita delle cartelle (in “utilities.ol”) e per 
-   ogni file trovato si legge il suo percorso assoluto (readFile)    
-   per ottenere così il contenuto del file, in seguito viene 
-   inviato al Server il suo percorso relativo, provvedendo ad   
-   inserirlo nella repository appena creata.
+3. Richiamiamo la visita delle cartelle (in “utilities.ol”) e per ogni file trovato si legge il suo percorso          assoluto (readFile) per ottenere così il contenuto del file, in seguito viene inviato al Server il suo percorso    relativo, provvedendo ad inserirlo nella repository appena creata.
 
-4) Successivamente richiamiamo il metodo writeFilePath (in  
-   “utilities.ol”) per creare la cartella “localRepo” ed inserire 
-   tutti i file della directory locale nella repository   
-         specificata in input.
+4. Successivamente richiamiamo il metodo writeFilePath (in “utilities.ol”) per creare la cartella “localRepo” ed      inserire tutti i file della directory locale nella repository specificata in input.
 
-5) Infine nella repository appena creata, si inserisce un file .txt  
-   di versione, che sarà incrementato ogni volta che si esegue una 
-   push.
+5. Infine nella repository appena creata, si inserisce un file .txt di versione, che sarà incrementato ogni volta     che si esegue una push.
 
-Server:
+<b>Server</b>:
 
-1) Riceve dal Client il nome della repository da cercare nella   
-   propria cartella, se esiste allora ritorna un messaggio di 
-   errore, altrimenti crea la cartella “serverRepo”, se non è già 
-   presente, che contiene tutte le cartelle del Server, e poi viene 
-   creato il file di versione, il quale sarà aggiornato ogni volta 
-   che riceve una push.
+1. Riceve dal Client il nome della repository da cercare nella propria cartella, se esiste allora ritorna un          messaggio di errore, altrimenti crea la cartella “serverRepo”, se non è già presente, che contiene tutte le        cartelle del Server, e poi viene creato il file di versione, il quale sarà aggiornato ogni volta che riceve una    push.
 
-2) In seguito con un’altra operazione riceve il percorso relativo 
-   di ogni singolo file, ricavato dal Client attraverso la visita 
-   della directory locale, e lo splitta, per creare la cartella a 
-   cui appartiene il file, ed infine scriverlo con il comando 
-   writeFile
+2. In seguito con un’altra operazione riceve il percorso relativo di ogni singolo file, ricavato dal Client           attraverso la visita della directory locale, e lo splitta, per creare la cartella a cui appartiene il file, ed     infine scriverlo con il comando writeFile.
 
 
 
