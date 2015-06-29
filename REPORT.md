@@ -13,19 +13,19 @@ Componenti:
 - **Valentina Tosto**   0000692741
 
 ## Introduzione
-<p style="text-align:justify;font-size:12px">
+
 <b>JSync-Lobster</b> è un servizio di condivisione di repositories tra Clients.<br>
 Grazie ad una semplice ed intuitiva <b>UI</b> in modalità command line (Cli), l'utente può interagire con i Servers registrati, che mantengono le informazioni sulle repositories.<br>
 Con pochi comandi l'utente può gestire i diversi Servers e richiedere o creare una repository su di essi, tenendo conto delle varie eccezioni che potrebbero sollevarsi durante l'esecuzione.<br>
 L'utilità di tale servizio è data attraverso una pratica gestione dei readers-writers, permettendo a tutti gli utenti di avere la possibilità di gestire le repositories sul Server in comune, rispettando la concorrenza.<br>
 La <b>UX</b> è agevolata anche grazie all'aggiunta di un comando per visualizzare tutte le funzionalità offerte da JSync.<br>
 In seguito spiegheremo nel dettaglio la struttura completa del nostro progetto.
-</p>
+
 
 ## Consegna
 
-Il progetto deve essere eseguito lanciando la/le cli ed i server a disposizione.<br>
-Successivamente si scrive un comando in input sulla <b>UI</b>, il quale sarà inviato al Client, e si aspetterà una sua risposta.
+Il progetto deve essere eseguito lanciando i servizi <b>cli.ol</b> ed i <b>server.ol</b> a disposizione.<br>
+Successivamente si scrive un comando in input sulla <b>UI</b>, il quale sarà inviato al <b>clientUtilities.ol</b>, e si aspetterà una sua risposta.
 
 ### Demo
 
@@ -352,19 +352,20 @@ Utilizzato per individuare il corretto indice della variabile globale che corris
 ## Problemi riscontrati & soluzioni adottate
 
 ### File manager
-<p style="text-align:justify;font-size:12px">
+
 Inizialmente, per non appesantire il Client e per sfruttare nel migliore dei modi i servizi di Jolie, volevamo implementare un servizio a parte chiamato <b>fileManager.ol</b>.<br> Questo servizio, collegato al <b>clientUtilities.ol</b> attraverso l’embedding, serviva per gestire la lettura e scrittura del file xml e per la visita ricorsiva delle cartelle.<br> Alla fine però non è stato possibile mettere in atto questa idea perchè abbiamo riscontrato dei problemi. Lavorando su sistemi operativi diversi abbiamo notato che su macchina Linux si incorreva su errori riguardanti i threads e il programma si arrestava. Invece su macchina Windows sembrava non esserci alcun errore, abbiamo provato a fare le prove da lei consigliate, disinstallare OpenJDK e installare la versione ufficiale di Java, cioè quella di Oracle, ma il problema non si è risolto.<br> Non riuscendo a capire il perchè su macchina Linux il programma generasse questi errori, abbiamo cercato di capire se su macchina Windows andasse veramente tutto bene. Dopo tante prove abbiamo riscontrato il problema anche su di esso, notando che l'utilizzo della CPU era notevole; infatti appena lanciato il programma, l'utilizzo della CPU arrivava al 100%, dopo qualche secondo il consumo si abbassava, per poi ritornare in pochi secondi al 100%.<br> Allora a quel punto abbiamo deciso di creare il servizio <b>clientDefine.ol</b>, contenente tutti i define del <b>clientUtilities.ol</b>, importandolo in esso,  con la sola differenza di implementarlo senza embedding. In tal modo il programma gira perfettamente su entrambi i sistemi operativi, con un ridotto utilizzo della Cpu.
-</p>
+
 
 ### Add Repository / Pull (gestione delle cartelle)
-<p style="text-align:justify;font-size:12px">
+
 Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè non sapevamo come far visitare tutte le sotto-cartelle della cartella principale e non solo i files contenuti all’interno.<br> In seguito abbiamo deciso di implementare una visita ricorsiva di tutte le sotto-cartelle, gestendo anche la differenza tra la lettura del file, che accetta un percorso assoluto, e la scrittura, che accetta un percorso relativo.<br> Inoltre nell'Add repository, se sono presenti cartelle vuote nella directory locale che si desidera aggiungere nel Client e nel Server, abbiamo deciso di non farle aggiungere, mentre nella Pull ritorna un messaggio di repository vuota, se nel Server è stato cancellato il contenuto della repository in questione.
-</p>
+
 
 ### Invio di immagini
-<p style="text-align:justify;font-size:12px">
+
 Nella nostra soluzione non è possibile spedire immagini, ma solo files prettamente testuali.<br> Per quella funzionalità, basterebbe aggiungere una conversione in binario del contenuto del file.
 
-## Push della stessa Repository
-<p style="text-align:justify;font-size:12px">
+
+### Push della stessa Repository
+
 Durante le scelte d' implementazione della push, abbiamo riscontrato il problema della perdita di dati da parte di un Client. Per esempio se avvengono 2 push della stessa repository, ad avere una perdita di dati sarà il Client con la versione più vecchia, cioè quello che arriva dopo.<br> Abbiamo pensato che comunque il Client in questione verrà avvisato da un messaggio che lo informerà di aggiornare la versione prima di procedere con la push, quindi prima di fare la pull potrà salvare i dati su cui stava lavorando senza perdere nulla.<br> La procedura più giusta e funzionante sarebbe stata sicuramente quella del merging dei files, però ciò non veniva richiesto nelle specifiche del progetto quindi abbiamo optato per questa idea.
