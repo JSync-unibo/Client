@@ -197,7 +197,7 @@ Questo comando serve per far stampare tutte le repositories dei Server registrat
 
 <b>Server</b>:
 
-1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo <u>listFile/u> di <b>file.iol</b> per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
+1. Riceve la richiesta dal Client di inviargli tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo <u>listFile</u> di <b>file.iol</b> per ottenere l’elenco, se sono disponibili repo, e poi       inviarlo al Client.
 
 
 ### Delete
@@ -206,7 +206,7 @@ Comando per eliminare una repository sia sul Server sia sul Client.
 
 <b>Client</b>:
 
-1. Si legge il file xml e si richiama il metodo registro (nel servizio <b>clientDefine</b>, per ricavare le informazioni necessarie a comunicare con     il Server nel quale eliminare la repository.
+1. Si legge il file xml e si richiama il metodo registro (nel servizio <b>clientDefine</b>), per ricavare le informazioni necessarie a comunicare con     il Server nel quale eliminare la repository.
 
 2. Si invia la richiesta di eliminazione della repository al Server ed in caso di cancellazione avvenuta (oppure se la       repository già era stata cancellata in precedenza), si esegue la stessa operazione nel Client, con il comando          <u>deleteDir</u> di <b>"file.iol"</b>, eliminando l’intera cartella richiesta in input.
 
