@@ -384,3 +384,12 @@ Durante le scelte d' implementazione della push, abbiamo riscontrato il problema
 
 Visto che abbiamo lavorato solo su macchine Windows e Linux, abbiamo voluto provare il progetto anche su un Mac.<br> Eseguendo le varie prove abbiamo notato un errore mai comparso nè su Windows nè su Linux.<br> Quando si apre una cartella manualmente, come "localRepo", si genera automaticamente un file nascosto chiamato ".DS_Store".<br> E se in seguito si richiama un comando, ad esempio <u>list reg_repos</u>, oltre a stampare le repositories salvate localmente, stamperà anche questo file nascosto.
 
+### Define Modulo
+
+Il define Modulo è stato implementato così inizialmente, poi ci siamo resi conto che ci sarebbe potuta essere un'ottimizzazione del codice: si sarebbe potuto eliminare il confronto della variabile passata traslando le posizioni delle  variabili globali da 0 e 1, a 1 e 2, in modo tale che l'operazione modulo si sarebbe potuta risolvere quanto segue (sia 'a' il valore passato corrispondente all'indice della variabile, e 'mod' il risultato ottenuto):
+
+						(a+1) % 2 = mod+1
+			
+In questo modo, se la variabile passata fosse stata 1, allora il risultato sarebbe stato 2; se invece la variabile fosse stata 2, il risultato sarebbe stato 1. 
+Avevamo anche pensato di tenere come indici della variabile globale 0 e 1, mentre gli identificativi passati dalle operazioni push e pull settarli come 1 e 2: l'operazione modulo avrebbe funzionato anche senza fare nessun tipo di incremento alla variabile 'a' e alla variabile finale 'mod', ma avremmo dovuto fare comunque dei confronti per fare l'incremento e il decremento della posizione corrispondente alle due operazioni, riducendo l'ottimizzazione data dal metodo modulo.
+Infine abbiamo mantenuto la scelta fatta a livello di codice per questioni di tempo sulla consegna.
