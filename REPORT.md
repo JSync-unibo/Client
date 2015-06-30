@@ -370,7 +370,7 @@ Nella nostra soluzione non è possibile spedire immagini, ma solo files prettame
 
 Durante le scelte d' implementazione della push, abbiamo riscontrato il problema della perdita di dati da parte di un Client. Per esempio se avvengono 2 push della stessa repository, ad avere una perdita di dati sarà il Client con la versione più vecchia, cioè quello che arriva successivamente.<br> Abbiamo pensato che comunque il Client in questione sarà notificato con un messaggio di aggiornare la versione prima di procedere con la push, quindi prima di effettuare la pull potrà salvare i dati su cui stava lavorando senza perdere nulla.<br> La procedura più ragionevole sarebbe stata sicuramente quella del merging dei files, però ciò non era richiesto nelle specifiche del progetto quindi abbiamo optato per tralasciare questa idea.
 
-### .DS_Store su macchina MAC
+### .DS_Store su MAC
 
 Visto che abbiamo lavorato solo su macchine Windows e Linux, abbiamo voluto provare il progetto anche su un Mac.<br> Eseguendo le varie prove abbiamo notato un errore mai comparso nè su Windows nè su Linux.<br> Quando si apre una cartella manualmente, come "localRepo", si genera automaticamente un file nascosto chiamato ".DS_Store".<br> E se in seguito si richiama un comando, ad esempio <u>list reg_repos</u>, oltre a stampare le repositories salvate localmente, stamperà anche questo file nascosto.
 
