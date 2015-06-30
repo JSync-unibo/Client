@@ -142,8 +142,8 @@ Inoltre sono utilizzati dei servizi chiamati <b>"clientDefine.ol"</b> (dalla par
 In particolare, dopo aver inserito un comando in console, è splittato nella Cli, per analizzare ogni singola stringa e differenziare le varie funzionalità; successivamente si invia il comando nel clientUtilities, eseguendo l'operazione relativa.<br>
 Di seguito elenchiamo i comandi, descrivendoli nello specifico:
 
-* <b>NB</b>: Ogni funzionalità è inclusa in uno scope per gestire le eccezioni che si presentano, tra le quali l’inserimento di dati non corretti, la connessione assente con il Server ed un file non trovato.
-* <b>NB (2)</b>: L'esecuzione del procedimento è eseguito solo se i risultati splittati nella Cli corrispondono alla lunghezza richiesta del comando (es: list(1) servers(2) -> il risultato dello split deve essere di dimensione 2).
+* <b>N.B.</b>: Ogni funzionalità è inclusa in uno scope per gestire le eccezioni che si presentano, tra le quali l’inserimento di dati non corretti, la connessione assente con il Server ed un file non trovato.
+* <b>N.B. (2)</b>: L'esecuzione del procedimento è eseguito solo se i risultati splittati nella Cli corrispondono alla lunghezza richiesta del comando (es: list(1) servers(2) -> il risultato dello split deve essere di dimensione 2).
 
 ### List Servers
 
@@ -151,15 +151,19 @@ Inizialmente si controlla che i dati siano inseriti correttamente, in seguito si
 
 ### List reg_repos
 
-Finalizzato alla lettura delle repositories locali, all' inizio si pone come repository principale, che contiene le cartelle create, il nome “localRepo”, e si ricerca ogni repository contenuta richiamando l’operazione <u>list</u> del servizio <b>"file.iol"</b> ed infine si stampano tutte, se sono presenti, altrimenti sarà visualizzato un messaggio di avviso.
+Esegue l'operazione <u>list</u> della libreria <b>"File"</b> di Jolie, ritorna l'elenco totale delle repositories, all'interno della cartella "localRepo".
+Se non ci sono repositories ritorna un messaggio di errore, in caso positivo ritorna la lista di tutte le repositories locali.
 
 ### Add Server
 
-Quando si aggiunge un Server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome o indirizzo del Server esiste già (confrontando il nome o l'indirizzo scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>.
+Quando si aggiunge un Server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome o indirizzo del Server sono già presenti (confrontando il nome o l'indirizzo scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>.
 
 ### Remove Server
 
-Dopo la consueta lettura del file xml, si inserisce un ulteriore costrutto <u>scope</u>, che in caso di Server trovato (e rimosso) solleva l’eccezione di operazione avvenuta con successo.<br> Se il nome inserito in input corrisponde ad uno dei nomi registrati sulla lista, allora si elimina (con il comando <u>undef</u>) e si richiama la scrittura del file xml per apportare le modifiche effettuate.
+Dopo la lettura del file xml, Se il nome inserito in input corrisponde ad uno dei nomi registrati sulla lista, allora viene eliminato (con il comando <u>undef</u>) e si richiama la scrittura del file xml per apportare le modifiche effettuate.
+
+<b>N.B.</b> se durante la ricerca trova il serverName richiesto dall'utente, allora dopo averlo eliminato, e riscritto il file di configurazione salta un eccezione, che viene catturata e chiude l'intera operazione.
+Ottimizza la ricerca, differenziando caso ottimo[O(1)] da caso pessimo[O(n)].
 
 ### Add Repository
 
@@ -167,21 +171,22 @@ Comando per il quale è necessario l’intervento del Server, perchè serve per 
 
 <b>Client</b>: 
 
-1. Riceve dalla Cli il nome del Server a cui si deve connettere, e si effettua il <u>binding</u>, attraverso il richiamo    del metodo registro (nel servizio <b>clientDefine</b>), scorrendo la lista dei Servers per individuare l’indirizzo del Server a cui collegarsi ed aggiungerlo alla porta di comunicazione.
+1. Riceve dalla Cli il nome del Server a cui si deve connettere, e si effettua il <u>binding</u>, attraverso il metodo registro (nel servizio <b>clientDefine</b>), scorrendo la lista dei Servers per individuare l’indirizzo del Server a cui collegarsi e modificando la Location della porta di comunicazione.
 
-2. Con l’operazione <u>addRepository</u> si controlla sul Server se il nome della repository da inserire è già esistente, in questo caso ritorna un errore. Se non sono presenti errori allora prosegue analizzando il percorso della directory locale inserito in input, per aggiungerlo al Client e spedirlo al Server.
+2. Con l’operazione <u>addRepository</u> si controlla sul Server se il nome della repository da inserire è già esistente, in questo caso ritorna un errore. Invece se non sono presenti errori prosegue analizzando il percorso della directory locale inserito in input.
 
-3. Si richiama la visita delle cartelle (nel servizio <b>clientDefine</b>) e per ogni file trovato si legge il suo percorso          assoluto (<u>readFile</u>) per ottenere così il contenuto del file; in seguito si invia al Server il suo percorso    relativo, provvedendo ad inserirlo nella repository appena creata.
+3. Si richiama la visita delle cartelle (nel servizio <b>clientDefine</b>) e per ogni file trovato si legge il suo percorso          assoluto (<u>readFile</u>) per ottenere così tutto il contenuto del file; in seguito si invia al Server il percorso    relativo di ogni singolo file, provvedendo ad inserirlo nella repository appena creata.
+<b>N.B.</b> E' necessaria la distinziona tra percorso assoluto e percorso relativo. Il percorso assoluto è il percorso locale della cartella da cui attingere i file. Si avranno tanti percorsi relativi quanti sono i file al'interno della cartella
 
 4. Successivamente si richiama il metodo writeFilePath (nel servizio <b>clientDefine</b>) per creare tutte le cartelle del percorso relativo del file, nel caso in cui non esistessero. 
 
-5. Infine nella repository appena creata, si inserisce un file di versione, incrementato ogni volta che si esegue una push.
+5. Infine nella repository locale creata, si inserisce un file di versione, incrementato ogni volta che si esegue una push.
 
 <b>Server</b>:
 
-1. Riceve dal Client il nome della repository da ricercare, se già esiste allora ritorna un messaggio di errore, altrimenti si crea e si aggiunge il file di versione con contenuto uguale a 0.
+1. Riceve dal Client il nome della repository da ricercare, se già esiste la cartella corrispondente allora ritorna un messaggio di errore, altrimenti si crea e si aggiunge il file di versione con contenuto uguale a 0.
 
-2. Con un' ulteriore operazione riceve il percorso relativo di ogni singolo file, ricavato dal Client           attraverso la visita della directory locale, che viene splittato, per creare la cartella a cui appartiene il file, ed     infine scritto nella repository richiesta, con il comando <u>writeFile</u>.
+2. Con un' ulteriore operazione riceve il percorso relativo di ogni singolo file, attraverso la visita della directory locale, che viene splittato, per creare la cartella a cui appartiene il file, ed     infine scritto nella repository richiesta, con il comando <u>writeFile</u>.
 
 
 
@@ -200,13 +205,12 @@ Comando per far stampare tutte le repositories dei Servers registrati.
 
 <b>Client</b>:
 	
-1. Se la lista dei Servers nel file xml non è vuota si collega ad ognuno di essi, e cattura             un'eccezione nel caso in cui uno o più Servers non siano in ascolto nella location selezionata (Server non         raggiungibile).
-
-2. Invia la richiesta delle repositories disponibili sui Servers accesi, per stamparne l’elenco. 
+1. Se la lista dei Servers nel file xml non è vuota si collega ad ognuno di essi, e cattura             un'eccezione nel caso in cui uno o più Servers non esistano o non siano raggiungibili.<br>
+<b>N.B.</b> la richiesta della lista delle repositories incluse nel Server, è implementata all'interno di uno scope, se anche un solo Server non è raggiungibile il corrispondente Fault non interromperà l'intera operazione, ma passerà al Server successivo.
 
 <b>Server</b>:
 
-1. Riceve la richiesta dal Client di inviare tutti i nomi delle repositories presenti nella directory               “serverRepo”. Richiama il metodo <u>listFile</u> di <b>file.iol</b> per ottenere l’elenco, se sono disponibili repositories, ed inviarlo al Client, altrimenti sarà stampato un messaggio di avviso relativo al Server con nessuna repository.
+1. Riceve la richiesta dal Client di inviare tutti i nomi delle repositories presenti nella directory               "serverRepo". Richiama il metodo <u>listFile</u> di <b>file.iol</b> per ottenere l’elenco, se sono disponibili repositories, ed inviarlo al Client, altrimenti sarà stampato un messaggio di avviso relativo al Server con nessuna repository.
 
 
 ### Delete
@@ -217,11 +221,11 @@ Comando per eliminare una repository sia sul Server che sul Client.
 
 1. Si legge il file xml e si richiama il metodo registro (nel servizio <b>clientDefine</b>), per ricavare l'indirizzo necessario a comunicare con il Server richiesto.
 
-2. Si invia la richiesta di eliminazione della repository al Server ed in caso di cancellazione avvenuta (oppure se la       repository già era stata cancellata in precedenza), si esegue la stessa operazione nel Client, con il comando          <u>deleteDir</u> di <b>"file.iol"</b>, eliminando l’intera cartella richiesta in input.
+2. Si invia la richiesta di eliminazione della repository al Server ed in caso di cancellazione avvenuta (oppure se la       repository già era stata cancellata in precedenza), si esegue la stessa operazione nel Client, <u>deleteDir</u> di <b>"file.iol"</b>, eliminando l’intera cartella richiesta dall'utente.
 
 <b>Server</b>:
 
-1. Riceve il messaggio dal Client con il nome della repository da eliminare, scorre la lista di tutte le repositories presenti in          “serverRepo” e se il nome corrisponde a quello ricevuto, elimina la cartella e ritorna il messaggio di             operazione effettuata.
+1. Riceve il messaggio dal Client con il nome della repository da eliminare, scorre la lista di tutte le repositories presenti in          "serverRepo" e se il nome corrisponde a quello ricevuto, elimina la cartella e ritorna il messaggio di             operazione effettuata.
 
 ### Push
 
@@ -238,16 +242,17 @@ Comando per inviare l'aggiornamento di una repository del Client sul Server, con
 4. Si esegue la lettura di tutti gli altri files (ignorando quello di versione), si modifica la       repository globale da "localRepo" a "serverRepo" e si inviano uno alla volta sul Server, sovrascrivendoli
    su quelli già presenti o creandoli se non esistono.
 
-5. Il file di versione è gestito attraverso una richiesta al Server, che gli invierà la sua versione da sovrascrivere a  
+5. Il file di versione è gestito attraverso una richiesta al Server, che invierà la sua versione da sovrascrivere a  
    quella locale, dopo che già era stata incrementata.
 
 6. Infine si invia la richiesta di decremento della variabile globale dei writers, a operazione conclusa.
+<br><b>N.B.</b> la richiesta di incremento/decremento della variabile globale Writers/Readers è ciò che scandisce la concorrenza
 
 <b>Server</b>:
 
-1. Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un costrutto <u>synchronized</u> per        renderla atomica) sono nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere     eseguita. 
+1. Riceve la richiesta di incremento della variabile globale dei writers (all'interno di un costrutto <u>synchronized</u> per        rendere atomica l'operazione) solo nel caso in cui il numero dei readers sia uguale a 0, altrimenti la push non può essere     eseguita. 
 
-2. Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla inizialmente se esiste già la repository richiesta, con all'interno il file di versione: se esiste allora confronta le due versioni, solo se quella del Client  è maggiore o uguale di quella del Server allora si incrementa (all'interno di un costrutto <u>synchronized</u> per renderla    atomica); altrimenti se la repository non esiste, si crea e si inserisce all'interno il file di versione, inviato dal Client
+2. Se la variabile dei writers è stata incrementata, riceve il file di versione dal Client e controlla inizialmente se esiste già la repository richiesta, con all'interno il file di versione: se esiste allora confronta le due versioni, solo se quella del Client  è maggiore o uguale di quella del Server allora si incrementa (anche questa operazione all'interno di un costrutto <u>synchronized</u>); altrimenti se la repository non esiste, si crea e si inserisce all'interno il file di versione, inviato dal Client
 
 3. Riceve uno alla volta i files dal Client, per sovrascriverli ai suoi o crearli se non sono presenti.
 
@@ -266,7 +271,7 @@ Comando per scaricare una repository specifica dal Server e sovrascriverla alla 
 2. Si invia la richiesta di incremento della variabile globale dei readers.
 
 3. Se la variabile dei readers è stata incrementata, si invia il nome della repository desiderata al Server
-   e si aspetta la struttura di tutte le cartelle e sottocartelle.
+   ricevendo la struttura di tutte le cartelle e sottocartelle.
 
 4. Dopo che si ha a disposizione la struttura, si richiedono i files, uno alla volta, al Server, che provvederà ad inviarli.
 
@@ -277,11 +282,11 @@ Comando per scaricare una repository specifica dal Server e sovrascriverla alla 
 
 <b>Server</b>:
 
-1. Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un costrutto <u>synchronized</u> per        renderla atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere     eseguita.
+1. Riceve la richiesta di incremento della variabile globale dei readers (all'interno di un costrutto <u>synchronized</u> per        rendere l'operazione atomica) sono nel caso in cui il numero dei writers sia uguale a 0, altrimenti la pull non può essere     eseguita.
 
 2. Se la variabile dei readers è stata incrementata, riceve il nome della repository da inviare; se esiste ritorna    un messaggio di successo insieme alla struttura delle cartelle contenute nella propria repository.
 
-3. Riceve una alla volta la richiesta di un file da inviare, contenuto nella repository in questione, e lo spedisce    al Client.
+3. Riceve una alla volta la richiesta di ogni file contenuto nella repository in questione, e lo spedisce    al Client.
 
 4. Infine decrementa la variabile globale dei readers, inclusa in un costrutto <u>synchronized</u>.
 
@@ -295,12 +300,12 @@ Alla fine abbiamo optato per due implementazioni diverse:
 Due (o più) writers sono gestiti attraverso il <u>controllo di versione</u>, se il Client1 prova ad effettuare una push mentre il Client2 sta già eseguendo la sua sulla stessa repository, allora il Client1 dovrà prima aggiornare la sua versione, con una pull, e solo successivamente può caricare i suoi files. <br>
 Poichè la scrittura del file di versione è una sezione critica, abbiamo deciso di utilizzare un costrutto <u>synchronized</u> per racchiudere questa parte, in modo tale che l'istruzione sia eseguita in maniera atomica. <br>
 (Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1 - problema trattato nel dettaglio nella sezione dei "Problemi riscontrati").<br>
-E' da tenere presente che due push di due repositories diverse sono permesse, perché una non interferisce con l’altra.<br>
+E' da tenere presente che due push di due repositories diverse sono permesse, perché si tratta di diverse informazioni condivise.<br>
 
 ![Push push](img_report/push-push.png)
 
 * <b> Push-pull / pull-push</b><br>
-Per gestire il problema writer-reader e viceversa, abbiamo utilizzato dei <u>contatori</u> (reader e writer) globali e atomici nel Server, che saranno condivisi da tutti i Clients. <br>
+Per gestire il problema writer-reader e viceversa, abbiamo utilizzato dei <u>contatori</u> (reader e writer) globali e atomici nel Server, che saranno condivisi da tutte le operazioni del Server richieste dai Clients. <br>
 Nello specifico si possono presentare due casi:
 
 	* Il Client1 esegue una **push**: il writerCount sarà incrementato e se contemporaneamente il Client2 esegue una pull, controlla se il writerCount è uguale a 1, in questo caso sarà bloccato con un messaggio di avviso e solo in seguito, quando la push sarà completata, potrà richiamare la pull.
@@ -312,7 +317,7 @@ Nello specifico si possono presentare due casi:
 	![Pull push](img_report/pull-push.png)
 
 * <b> Pull-pull</b><br>
-Due (o più) readers invece sono permessi, quindi non abbiamo inserito <u>nessun controllo</u>, perchè tutti possono scaricare contemporaneamente il contenuto della stessa repository.
+Due (o più) readers invece sono permessi, quindi non abbiamo inserito __nessun controllo__, perchè tutti possono scaricare contemporaneamente il contenuto della stessa repository.
 
 ![Pull pull](img_report/pull-pull.png)
 
@@ -331,7 +336,9 @@ Per la lettura e scrittura del file xml, che contiene la lista dei Servers regis
 ![Lettura e scrittura file xml](img_report/read-writeFile.png)
 
 ####Creazione di cartelle - clientDefine
-Per la creazione di cartelle nell' AddRepository e nella Pull.
+Per ogni cartella all'interno del percorso di un singolo file, si richeide la sua creazione.
+Se è già esistente, non sarà creata.
+<b>e.g.</b> nel caso di una pull di una Repository che contiene più cartelle annidate, se non esiste il percorso esatto (formato dalle stesse cartelle del Server) si incorrerà in un errore)
 
 ![Creazione cartelle](img_report/writeFilePath.png)
 
