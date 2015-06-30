@@ -99,7 +99,7 @@ removeServer 4000_localhost
 
 delete 5000_localhost SerieA_Player
 ```
-
+<b>N.B.</b> _Creazione/Lettura e visita di cartelle non funzionano con cartelle che hanno spazi nel nome<b>!!</b>_
 
 ## Implementazione
 
@@ -345,6 +345,8 @@ Se è già esistente, non sarà creata.
 
 ####Visita delle cartelle - clientDefine & serverDefine
 Per la visita ricorsiva delle cartelle.<br> La visita funziona quanto segue: partendo da un percorso assoluto, si utilizza il comando <u>list</u> dell'interfaccia <b>string_utils.iol</b> per ottenere tutte le sottocartelle e i files in esso contenuti.<br> Con un ciclo for si salvano le sottocartelle e i files in una variabile diversa e per ognuno si applica nuovamente il comando <u>list</u>: se ciò che ritorna è un elemento vuoto, allora significa che si sta esaminando un file o una cartella vuota.<br> Nel caso in cui il nome contenga un ".", il percorso viene salvato in una variabile finale perchè si tratta di un file; in caso contrario il percorso non viene salvato. <br>Poichè la struttura che memorizza i percorsi assoluti delle cartelle, memorizza anche un attributo booleano mark, che indica se la cartella è già stata visitata o meno, con un ciclo while si cerca la prima cartella con tale attributo settato a false.<br> Dopo ciò, si preparano le variabili per iniziare nuovamente la visita, e si richiama il define.
+
+<b>N.B.</b> Questo metodo non funziona con cartelle che hanno spazi nel nome!
 
 ![Visita cartelle](img_report/visita1.png)
 ![Visita cartelle](img_report/visita2.png)
