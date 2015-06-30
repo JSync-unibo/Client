@@ -3,7 +3,6 @@
 
 
 ## LOBSTER 
-![Icon](img_report/lobster.png)
 
 Componenti:
 
@@ -11,6 +10,8 @@ Componenti:
 - **Michele Lorubio**   0000693868
 - **Chiara Babina**	  0000693799
 - **Valentina Tosto**   0000692741
+
+![Icon](img_report/Screenshot (76).png)
 
 ## Introduzione
 
