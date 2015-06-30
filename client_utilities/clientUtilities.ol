@@ -511,7 +511,8 @@ main
 	  			install( datiNonCorretti => response = " Not correct data.\n" );
 
 	  			// Sollevata se la repository da inviare non esiste
-	  			install( FileNotFound => response = " "+ resultSplit.result[2] + " doesn't exists.\n");
+	  			install( FileNotFound => response = " "+ resultSplit.result[2] + " doesn't exists.\n";
+	  									 decreaseCount@ServerConnection( globalVar.id ) );
 
 	  			if(#resultSplit.result == 3) {
 
