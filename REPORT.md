@@ -12,6 +12,7 @@ Componenti:
 - **Valentina Tosto**   0000692741
 
 ![Icon](img_report/Screenshot (77).png)
+<img src="http://robertospinaci.com/img_report/Screenshot (77).png">
 
 ## Introduzione
 
