@@ -637,13 +637,14 @@ main
 									}
 							  	}
 				  			}
-		  				};
+		  				}
+		  			};
 
-		  				// Dopo aver finito la push, si decrementa il numero di writers
-		  				decreaseCount@ServerConnection( globalVar.id );
+		  			// Dopo aver finito la push, si decrementa il numero di writers
+		  			decreaseCount@ServerConnection( globalVar.id );
 
-		  				response = responseMessage.message
-		  			}
+		  			response = responseMessage.message
+		  			
 				}
 
 	  			else 
