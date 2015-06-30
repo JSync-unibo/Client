@@ -11,7 +11,7 @@ Componenti:
 - **Chiara Babina**	  0000693799
 - **Valentina Tosto**   0000692741
 
-![Icon](img_report/Screenshot (76).png)
+![Icon](img_report/Screenshot (77).png)
 
 ## Introduzione
 
