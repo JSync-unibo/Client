@@ -37,7 +37,7 @@ define help
 
  Optional :
  - help                                 Show this help message
- - close:                               Close the Cli
+ - close                                Close the Cli
 
  List Command :
  - list servers                         Show list of registred servers
