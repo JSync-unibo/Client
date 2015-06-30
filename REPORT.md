@@ -11,7 +11,6 @@ Componenti:
 - **Chiara Babina**	  0000693799
 - **Valentina Tosto**   0000692741
 
-![Icon](img_report/Screenshot (77).png)
 <img src="http://robertospinaci.com/img_report/Screenshot (77).png">
 
 ## Introduzione
@@ -108,7 +107,7 @@ delete 5000_localhost SerieA_Player
 
 ####Client
 
-![Client structure](img_report/client_structure.png)
+<img src="http://robertospinaci.com/img_report/client_structure.png">
 
 La struttura del Client è composta da:
 
@@ -125,7 +124,7 @@ La struttura del Client è composta da:
 
 ####Server
 
-![Server structure](img_report/server_structure.png)
+<img src="http://robertospinaci.com/img_report/server_structure.png">
 
 La struttura del Server è composta da:
 * Una cartella <b>server_utilities</b> che contiene:
@@ -304,7 +303,7 @@ Poichè la scrittura del file di versione è una sezione critica, abbiamo deciso
 (Siamo consapevoli che questa scelta porta ad una perdita di dati da parte del Client1 - problema trattato nel dettaglio nella sezione dei "Problemi riscontrati").<br>
 E' da tenere presente che due push di due repositories diverse sono permesse, perché si tratta di diverse informazioni condivise.<br>
 
-![Push push](img_report/push-push.png)
+<img src="http://robertospinaci.com/img_report/push-push.png">
 
 * <b> Push-pull / pull-push</b><br>
 Per gestire il problema writer-reader e viceversa, abbiamo utilizzato dei <u>contatori</u> (reader e writer) globali e atomici nel Server, che saranno condivisi da tutte le operazioni del Server richieste dai Clients. <br>
@@ -312,16 +311,16 @@ Nello specifico si possono presentare due casi:
 
 	* Il Client1 esegue una **push**: il writerCount sarà incrementato e se contemporaneamente il Client2 esegue una pull, controlla se il writerCount è uguale a 1, in questo caso sarà bloccato con un messaggio di avviso e solo in seguito, quando la push sarà completata, potrà richiamare la pull.
 
-	![Push pull](img_report/push-pull.png)
+	<img src="http://robertospinaci.com/img_report/push-pull.png">
 
 	* Il Client1 esegue una **pull**: il readerCount sarà incrementato e se il Client2 esegue una push dovrà controllare se il readerCount è maggiore o uguale a 1, nel caso i readers siano più di uno, il Client2 dovrà aspettare a tempo indeterminato (problema di starvation). Solo quando il readerCount è uguale a 0, il Client2 potrà effettuare la push.
 
-	![Pull push](img_report/pull-push.png)
+	<img src="http://robertospinaci.com/img_report/pull-push.png">
 
 * <b> Pull-pull</b><br>
 Due (o più) readers invece sono permessi, quindi non abbiamo inserito __nessun controllo__, perchè tutti possono scaricare contemporaneamente il contenuto della stessa repository.
 
-![Pull pull](img_report/pull-pull.png)
+<img src="http://robertospinaci.com/img_report/pull-pull.png">
 
 ## Define utilizzati
 
@@ -330,37 +329,37 @@ Nei servizi <b>clientDefine.ol</b> e <b>serverDefine.ol</b> abbiamo incluso dei 
 ####Registro - clientDefine
 Utilizzato per settare la location (indirizzo) ad un Server richiesto.
 
-![Registro](img_report/registro.png)
+<img src="http://robertospinaci.com/img_report/registro.png">
 
 ####Lettura / scrittura del file xml - clientDefine
 Per la lettura e scrittura del file xml, che contiene la lista dei Servers registrati dai diversi utenti.
 
-![Lettura e scrittura file xml](img_report/read-writeFile.png)
+<img src="http://robertospinaci.com/img_report/read-writeFile.png">
 
 ####Creazione di cartelle - clientDefine
 Per ogni cartella all'interno del percorso di un singolo file, si richeide la sua creazione.
 Se è già esistente, non sarà creata.
 <b>e.g.</b> nel caso di una pull di una Repository che contiene più cartelle annidate, se non esiste il percorso esatto (formato dalle stesse cartelle del Server) si incorrerà in un errore)
 
-![Creazione cartelle](img_report/writeFilePath.png)
+<img src="http://robertospinaci.com/img_report/writeFilePath.png">
 
 ####Visita delle cartelle - clientDefine & serverDefine
 Per la visita ricorsiva delle cartelle.<br> La visita funziona quanto segue: partendo da un percorso assoluto, si utilizza il comando <u>list</u> dell'interfaccia <b>string_utils.iol</b> per ottenere tutte le sottocartelle e i files in esso contenuti.<br> Con un ciclo for si salvano le sottocartelle e i files in una variabile diversa e per ognuno si applica nuovamente il comando <u>list</u>: se ciò che ritorna è un elemento vuoto, allora significa che si sta esaminando un file o una cartella vuota.<br> Nel caso in cui il nome contenga un ".", il percorso viene salvato in una variabile finale perchè si tratta di un file; in caso contrario il percorso non viene salvato. <br>Poichè la struttura che memorizza i percorsi assoluti delle cartelle, memorizza anche un attributo booleano mark, che indica se la cartella è già stata visitata o meno, con un ciclo while si cerca la prima cartella con tale attributo settato a false.<br> Dopo ciò, si preparano le variabili per iniziare nuovamente la visita, e si richiama il define.
 
 <b>N.B.</b> Questo metodo non funziona con cartelle che hanno spazi nel nome!
 
-![Visita cartelle](img_report/visita1.png)
-![Visita cartelle](img_report/visita2.png)
+<img src="http://robertospinaci.com/img_report/visita1.png">
+<img src="http://robertospinaci.com/img_report/visita2.png">
 
 ####Inizializzazione delle cartelle - clientDefine & serverDefine
 Per inizializzare la visita delle cartelle, e per ottenere i percorsi relativi.<br> Il percorso assoluto iniziale viene diviso e in una variabile viene salvato l'ultimo elemento ottenuto dall'operazione <u>split</u>, che corrisponde all'inizio del percorso relativo.<br> Si richiama la visita, e la variabile ottenuta viene divisa nuovamente: quando si trova un valore uguale alla variabile che ha memorizzato il percorso relativo, allora tutti i successivi valori, che erano stati divisi, vengono salvati per formare il percorso relativo.
 
-![Inizializz Visita](img_report/inizializVisita.png)
+<img src="http://robertospinaci.com/img_report/inizializVisita.png">
 
 ####Modulo - serverDefine
 Utilizzato per individuare il corretto indice della variabile globale che corrisponde ai readers/writers.<br> Poichè si dispone di due indici, 0 e 1, l'operazione modulo viene effettuata solo nel caso in cui, in una formula a mod b, a sia maggiore di b, quindi solo quando l'indice corrisponde a 1; nel caso in cui l'indice sia minore, questo viene solo incrementato di 1. Di conseguenza, a seconda dell'indice passato si ottiene quello opposto.<br> E' stato usato in questo modo per poter generalizzare il più possibile la Request-Response per l'incremento della variabile globale dei readers/writers.
 
-![Modulo](img_report/modulo.png)
+<img src="http://robertospinaci.com/img_report/modulo.png">
 
 ## Problemi riscontrati & soluzioni adottate
 
