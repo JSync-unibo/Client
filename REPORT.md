@@ -33,6 +33,21 @@ Successivamente si scrive un comando in input sulla <b>UI</b>, il quale sarà in
 Questa demo esplicativa è in riferimento alla cartella Demo.zip, contenuta nella root del progetto.
 Di seguito la struttura
 
+<table>
+<tr>
+<td><b>Client side</b></td>
+<td><b>Server side</b></td>
+</tr>
+<tr>
+<td>_WebDesign</td>
+<td>4000_localhost</td>
+</tr>
+<tr>
+<td>_Desert0.1</td>
+<td>5000_localhost</td>
+</tr>
+</table>
+
    Client side   |   Server side
 -------------------| -------------
 _WebDesign  | 4000_localhost
@@ -100,6 +115,10 @@ removeServer 4000_localhost
 delete 5000_localhost SerieA_Player
 ```
 <b>N.B.</b> _Creazione/Lettura e visita di cartelle non funzionano con cartelle che hanno spazi nel nome<b>!!</b>_
+
+
+
+
 
 ## Implementazione
 
