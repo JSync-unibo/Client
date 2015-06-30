@@ -153,7 +153,7 @@ Finalizzato alla lettura delle repositories locali, all' inizio si pone come rep
 
 ### Add Server
 
-Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome del Server esiste già (confrontando il nome scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>.
+Quando si aggiunge un server si richiama il metodo per la lettura del file xml e si effettua prima un controllo se il nome o indirizzo del Server esiste già (confrontando il nome o l'indirizzo scritto in input con quelli presenti sulla lista), in tal caso viene stampato un messaggio, altrimenti inseriamo il nome ed indirizzo del Server desiderato nel file xml, richiamando il metodo <u>writeFile</u>, presente sempre nel servizio <b>clientDefine</b>.
 
 ### Remove Server
 

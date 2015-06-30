@@ -134,6 +134,9 @@ main
 	  			// Salta un eccezione anche se esiste già il Server con lo stesso nome
 	  			install( serverDoppio => response = " "+ resultSplit.result[1] + " name is already in use.\n" );
 
+	  			// Salta un eccezione anche se esiste il Server con lo stesso indirizzo
+	  			install( serverDoppio2 => response = " "+ resultSplit.result[2] + " address is already in use.\n" );
+
 	  			if(#resultSplit.result == 3) {
 
 	  				// Lettura del file xml (richiamata dal servizio clientDefine), 
@@ -147,6 +150,11 @@ main
 							
 							// Sollevata l'eccezione di Server doppio
 							throw( serverDoppio )
+						}
+
+						else if(resultSplit.result[2] == configList.server[i].address) {
+
+							throw( serverDoppio2 )
 						}
 
 					};
