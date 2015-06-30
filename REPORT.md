@@ -69,23 +69,23 @@ oppure tutte le Repositories disponibili sui Servers registrati tramite il coman
 list new_repos
 ```
 
-5) Eseguire l'operazione Pull della Repository <b>SerieA_Player</b>
+5) Sempre dal Client <b>_Desert0.1</b> eseguire l'operazione Pull della Repository <b>SerieA_Player</b>
  ```java
 pull 5000_localhost SerieA_Player
 ```
 
-6) <b>_Desert0.1</b> a questo punto si può modificare la Repository ed effetture una Push
+6) <b>_Desert0.1</b> a questo punto può modificare la Repository ed effetture una Push
 ```java
 push 5000_localhost SerieA_Player
 ```
 
-7) In seguito <b>_WebDesign</b> può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
+7) In seguito dal Client <b>_WebDesign</b> si può eseguire, a sua volta, una Pull di <b>SerieA_Player</b>
 ```java
 pull 5000_localhost SerieA_Player
 ```
 e notificare che la versione è stata effettivamente incrementata, con l'aggiunta degli ulteriori files modificati.
 
-8) Prove sulla gestione della concorrenza si possono eseguire semplicemente con il comando 
+8) Prove sulla gestione della concorrenza possono essere eseguite semplicemente con il comando 
 ```java
 push 5000_localhost SerieA_Player
 ```
@@ -360,11 +360,9 @@ Inizialmente, per non appesantire il Client e per sfruttare nel migliore dei mod
 
 Abbiamo avuto dei problemi riguardo i percorsi delle cartelle, poichè non sapevamo come far visitare tutte le sotto-cartelle della cartella principale e non solo i files contenuti all’interno.<br> In seguito abbiamo deciso di implementare una visita ricorsiva di tutte le sotto-cartelle, gestendo anche la differenza tra la lettura del file, che accetta un percorso assoluto, e la scrittura, che accetta un percorso relativo.<br> Inoltre nell'Add repository, se sono presenti cartelle vuote nella directory locale che si desidera aggiungere nel Client e nel Server, abbiamo deciso di non farle aggiungere, mentre nella Pull ritorna un messaggio di repository vuota, se nel Server è stato cancellato il contenuto della repository in questione.
 
-
 ### Invio di immagini
 
 Nella nostra soluzione non è possibile spedire immagini, ma solo files prettamente testuali.<br> Per quella funzionalità, basterebbe aggiungere una conversione in binario del contenuto del file.
-
 
 ### Push della stessa Repository
 
@@ -372,5 +370,5 @@ Durante le scelte d' implementazione della push, abbiamo riscontrato il problema
 
 ### .DS_Store su macchina MAC
 
-Visto che abbiamo lavorato solo su macchine Windows e Linux, abbiamo voluto provare il progetto anche su un Mac. Facendo le varie prove abbiamo notato un errore che non era mai comparso ne su Windows ne su Linux. In pratica quando si apre una cartella manualmente, tipo "localRepo", si genera automaticamente un file nasconsto chiamato ".DS_Store". Se per esempio poi si richiama il comando "list reg repos", oltre a stampare le repository salvate localmente, stampa anche questo file nascosto.
+Visto che abbiamo lavorato solo su macchine Windows e Linux, abbiamo voluto provare il progetto anche su un Mac.<br> Facendo le varie prove abbiamo notato un errore che non era mai comparso nè su Windows nè su Linux.<br> Nel dettaglio quando si apre una cartella manualmente, come "localRepo", si genera automaticamente un file nascosto chiamato ".DS_Store".<br> Se poi ad esempio si richiama il comando <u>list reg_repos</u>, oltre a stampare le repositories salvate localmente, stamperà anche questo file nascosto.
 
