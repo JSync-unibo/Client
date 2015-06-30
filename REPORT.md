@@ -48,12 +48,6 @@ Di seguito la struttura
 </tr>
 </table>
 
-   Client side   |   Server side
--------------------| -------------
-_WebDesign  | 4000_localhost
-_Desert0.1     | 5000_localhost
-
-
 Esistono già 3 Repositories salvate sui Servers
 
 - 4000_localhost
