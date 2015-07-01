@@ -14,22 +14,22 @@ Componenti:
 <img src="http://robertospinaci.com/img_report/Screenshot (77).png">
 
 ## Introduzione
-
+<p>
 <b>JSync-Lobster</b> è un servizio di condivisione di repositories tra Clients.<br>
 Grazie ad una semplice ed intuitiva <b>UI</b> in modalità command line (Cli), l'utente può interagire con i Servers registrati, che mantengono le informazioni sulle repositories.<br>
 Con pochi comandi l'utente può gestire i diversi Servers e richiedere o creare una repository su di essi, tenendo conto delle varie eccezioni che potrebbero sollevarsi durante l'esecuzione.<br>
 L'utilità di tale servizio è data attraverso una pratica gestione del problema readers-writers, permettendo a tutti gli utenti di avere la possibilità di gestire le repositories sui Servers in comune, rispettando la concorrenza.<br>
 La <b>UX</b> è agevolata anche grazie all'aggiunta di un comando per visualizzare tutte le funzionalità offerte da JSync.<br>
 In seguito spiegheremo nel dettaglio la struttura completa del nostro progetto.
-
+</p>
 
 ## Consegna
-
+<p>
 Il progetto deve essere eseguito lanciando i servizi <b>cli.ol</b> ed i <b>server.ol</b> a disposizione.<br>
 Successivamente si scrive un comando in input sulla <b>UI</b>, il quale sarà inviato al <b>clientUtilities.ol</b>, e si aspetterà una sua risposta.
-
+</p>
 ### Demo
-
+<p>
 Questa demo esplicativa è in riferimento alla cartella Demo.zip, contenuta nella root del progetto.
 Di seguito la struttura
 
@@ -109,7 +109,7 @@ removeServer 4000_localhost
 delete 5000_localhost SerieA_Player
 ```
 <b>N.B.</b> _Creazione/Lettura e visita di cartelle non funzionano con cartelle che hanno spazi nel nome<b>!!</b>_
-
+</p>
 
 
 
@@ -117,7 +117,7 @@ delete 5000_localhost SerieA_Player
 ## Implementazione
 
 ### Struttura del Progetto
-
+<p>
 ####Client
 
 <img src="http://robertospinaci.com/img_report/client_structure.png">
@@ -134,7 +134,8 @@ La struttura del Client è composta da:
 	* Il servizio <b>cli.ol</b>, che ha la funzione di UI, dove si inseriscono i diversi comandi possibili
 	* La cartella <b>localRepo</b> (non presente inizialmente), contenente tutte le repositories aggiunte
 	* Il file <b>config.xml</b>, con la lista dei Servers registrati in ogni Client
-
+</p>
+<p>
 ####Server
 
 <img src="http://robertospinaci.com/img_report/server_structure.png">
@@ -147,7 +148,7 @@ La struttura del Server è composta da:
 * Uno (o più) cartelle <b>Server[n]</b> con all'interno:
 	* Il servizio <b>server.ol</b>, con le operazioni relative ai diversi comandi provenienti dal 				  <u>clientUtilities.ol</u>
 	* La cartella <b>serverRepo</b> (non presente inizialmente), contenente tutte le repositories aggiunte
-
+</p>
 ___
 
 Il progetto è diviso in <b>più Cli</b> (che corrispondono ai diversi Client) e <b>Servers</b>, mentre il servizio <b>"clientUtilities.ol"</b> ha la funzione di gestire i diversi comandi tra i Clients e i Servers. <br>
