@@ -29,7 +29,7 @@ Il progetto deve essere eseguito lanciando i servizi <b>cli.ol</b> ed i <b>serve
 Successivamente si scrive un comando in input sulla <b>UI</b>, il quale sarà inviato al <b>clientUtilities.ol</b>, e si aspetterà una sua risposta.
 </p>
 ### Demo
-<p>
+
 Questa demo esplicativa è in riferimento alla cartella Demo.zip, contenuta nella root del progetto.
 Di seguito la struttura
 
@@ -109,10 +109,6 @@ removeServer 4000_localhost
 delete 5000_localhost SerieA_Player
 ```
 <b>N.B.</b> _Creazione/Lettura e visita di cartelle non funzionano con cartelle che hanno spazi nel nome<b>!!</b>_
-</p>
-
-
-
 
 ## Implementazione
 
