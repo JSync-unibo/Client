@@ -113,9 +113,9 @@ delete 5000_localhost SerieA_Player
 ## Implementazione
 
 ### Struttura del Progetto
-<p>
-####Client
 
+####Client
+<p>
 <img src="http://robertospinaci.com/img_report/client_structure.png">
 
 La struttura del Client è composta da:
@@ -131,9 +131,9 @@ La struttura del Client è composta da:
 	* La cartella <b>localRepo</b> (non presente inizialmente), contenente tutte le repositories aggiunte
 	* Il file <b>config.xml</b>, con la lista dei Servers registrati in ogni Client
 </p>
-<p>
-####Server
 
+####Server
+<p>
 <img src="http://robertospinaci.com/img_report/server_structure.png">
 
 La struttura del Server è composta da:
